@@ -1,9 +1,9 @@
 import { Body, Controller, Post, UnauthorizedException } from '@nestjs/common';
-import { AuthCredentialsDto } from './dto/auth-credential.dto';
 import { VerifyOtp } from './dto/verifyOtp.dto';
 import { AuthService } from './providers/auth.service';
 import { MFAService } from './providers/mfa.service';
 import { sendOtpDto } from './dto/sendOtp.dto';
+import { SignUpDto } from './dto/singnUp.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -13,16 +13,14 @@ export class AuthController {
   ) {}
 
   @Post('signup')
-  signUp(@Body() authCredentialsDto: AuthCredentialsDto): Promise<void> {
-    return this.authService.signUp(authCredentialsDto);
+  signUp(@Body() signUpDto: SignUpDto): Promise<void> {
+    return this.authService.signUp(signUpDto);
   }
 
   @Post('sendOtp')
   async generate2FA(@Body() sendOtpDto: sendOtpDto): Promise<any> {
     // Send the token via SMS
-    const secret = await this.mfaService.send2FAToken(sendOtpDto);
-
-    return { message: '2FA code sent via SMS', secret };
+    return await this.mfaService.send2FAToken(sendOtpDto);
   }
 
   @Post('verifyOtp')
@@ -35,10 +33,10 @@ export class AuthController {
     return { message: '2FA verified successfully' };
   }
 
-  @Post('signin')
-  signIn(
-    @Body() authCredentialsDto: AuthCredentialsDto,
-  ): Promise<{ accessToken: string }> {
-    return this.authService.signIn(authCredentialsDto);
-  }
+  // @Post('signin')
+  // signIn(
+  //   @Body() authCredentialsDto: AuthCredentialsDto,
+  // ): Promise<{ accessToken: string }> {
+  //   return this.authService.signIn(authCredentialsDto);
+  // }
 }
