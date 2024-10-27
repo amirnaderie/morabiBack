@@ -1,10 +1,12 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinTable,
   ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Task } from 'src/tasks/task.entity';
 import { Role } from './role.entity';
@@ -17,7 +19,7 @@ export class User {
   @Column({ nullable: false, length: 20 })
   userName: string;
 
-  @Column({  length: 40 })
+  @Column({ length: 40 })
   userFamily: string;
 
   @Column({ length: 100 })
@@ -32,4 +34,10 @@ export class User {
 
   @OneToMany((_type) => Task, (task) => task.user, { eager: true })
   tasks: Task[];
+
+  @CreateDateColumn({ name: 'created_at', default: () => 'CURRENT_TIMESTAMP' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ name: 'updated_at' })
+  updatedAt: Date;
 }
