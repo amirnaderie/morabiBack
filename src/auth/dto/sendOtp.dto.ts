@@ -8,7 +8,7 @@ import {
   MinLength,
 } from 'class-validator';
 
-export class sendOtpDto {
+export class SendOtpDto {
   @IsString()
   @MinLength(2)
   @MaxLength(20)

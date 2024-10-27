@@ -1,8 +1,8 @@
-import { Body, Controller, Post, UnauthorizedException } from '@nestjs/common';
+import { Body, Controller, ParseIntPipe, Post, UnauthorizedException } from '@nestjs/common';
 import { VerifyOtp } from './dto/verifyOtp.dto';
 import { AuthService } from './providers/auth.service';
 import { MFAService } from './providers/mfa.service';
-import { sendOtpDto } from './dto/sendOtp.dto';
+import { SendOtpDto } from './dto/sendOtp.dto';
 import { SignUpDto } from './dto/singnUp.dto';
 
 @Controller('auth')
@@ -18,9 +18,17 @@ export class AuthController {
   }
 
   @Post('sendOtp')
-  async generate2FA(@Body() sendOtpDto: sendOtpDto): Promise<any> {
+  async generate2FA(@Body() sendOtpDto: SendOtpDto): Promise<string> {
     // Send the token via SMS
     return await this.mfaService.send2FAToken(sendOtpDto);
+  }
+
+  @Post('sendOtp_Forget_Password')
+  async generate2FAForgetPassword(
+    @Body('userMobile') userMobile: string,
+  ): Promise<string> {
+    // Send the token via SMS
+    return await this.mfaService.generate2FAForgetPassword(userMobile);
   }
 
   @Post('verifyOtp')

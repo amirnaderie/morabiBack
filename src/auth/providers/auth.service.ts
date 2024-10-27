@@ -13,7 +13,6 @@ import { User } from 'src/users/entities/user.entity';
 import { SignUpDto } from '../dto/singnUp.dto';
 import { MFAService } from './mfa.service';
 import Redis from 'ioredis';
-import { sendOtpDto } from '../dto/sendOtp.dto';
 // import { JwtPayload } from './jwt-payload.interface';
 
 @Injectable()

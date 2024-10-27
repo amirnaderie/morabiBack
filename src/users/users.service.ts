@@ -31,8 +31,8 @@ export class UsersService {
     return `This action removes a #${id} user`;
   }
 
-  async userMobileExists(userMobile: string): Promise<boolean> {
+  async getUserByMobile(userMobile: string): Promise<User> {
     const user = await this.usresRepository.findOneBy({ userMobile });
-    return !!user;
+    return user;
   }
 }

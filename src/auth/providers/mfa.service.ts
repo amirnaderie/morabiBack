@@ -9,8 +9,10 @@ import { ConfigService } from '@nestjs/config';
 import Redis from 'ioredis';
 import * as speakeasy from 'speakeasy';
 import { VerifyOtp } from '../dto/verifyOtp.dto';
-import { sendOtpDto } from '../dto/sendOtp.dto';
+import { SendOtpDto } from '../dto/sendOtp.dto';
 import { UsersService } from 'src/users/users.service';
+import { User } from 'src/users/entities/user.entity';
+import { PickType } from '@nestjs/mapped-types';
 
 @Injectable()
 export class MFAService {
@@ -58,15 +60,32 @@ export class MFAService {
     }
   }
 
-  // Send SMS using Twilio
-  async send2FAToken(sendOtpDto: sendOtpDto): Promise<string> {
-    const { userMobile, userFamily, userName } = sendOtpDto;
-    const isMobileExists: boolean =
-      await this.usersService.userMobileExists(userMobile);
+  async generate2FAForgetPassword(userMobile: string): Promise<string> {
+    const user: User = await this.usersService.getUserByMobile(userMobile);
 
-    if (isMobileExists)
+    if (!user)
+      throw new ConflictException('این شماره همراه پیش از این ثبت نشده است');
+
+    return this.sendSMS({
+      userFamily: user.userFamily,
+      userMobile: user.userMobile,
+      userName: user.userName,
+    });
+  }
+
+  // Send SMS using Twilio
+  async send2FAToken(sendOtpDto: SendOtpDto): Promise<string> {
+    const { userMobile, userFamily, userName } = sendOtpDto;
+    const user: User = await this.usersService.getUserByMobile(userMobile);
+
+    if (user)
       throw new ConflictException('این شماره همراه پیش از این ثبت شده است');
 
+    return this.sendSMS(sendOtpDto);
+  }
+
+  private sendSMS = async (sendOtpDto: SendOtpDto) => {
+    const { userMobile, userFamily, userName } = sendOtpDto;
     const secret = this.generate2FASecret(); // Save this secret in your user record in DB
     const token = this.generate2FAToken(secret);
     const mockSmsUrl = 'https://run.mocky.io/v3/your-mock-id'; // Mocky URL
@@ -100,5 +119,5 @@ export class MFAService {
     } else {
       throw new Error('Failed to send SMS');
     }
-  }
+  };
 }
