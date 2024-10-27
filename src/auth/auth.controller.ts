@@ -1,10 +1,4 @@
-import {
-  Body,
-  Controller,
-  ParseIntPipe,
-  Post,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Body, Controller, Post, UnauthorizedException } from '@nestjs/common';
 import { VerifyOtp } from './dto/verifyOtp.dto';
 import { AuthService } from './providers/auth.service';
 import { MFAService } from './providers/mfa.service';
@@ -19,18 +13,18 @@ export class AuthController {
     private mfaService: MFAService,
   ) {}
 
-  @Post('signup')
+  @Post('sign-up')
   signUp(@Body() signUpDto: SignUpDto): Promise<void> {
     return this.authService.signUp(signUpDto);
   }
 
-  @Post('sendOtp')
+  @Post('send-otp')
   async generate2FA(@Body() sendOtpDto: SendOtpDto): Promise<string> {
     // Send the token via SMS
     return await this.mfaService.send2FAToken(sendOtpDto);
   }
 
-  @Post('sendOtp_Forget_Password')
+  @Post('send-otp-forget-password')
   async generate2FAForgetPassword(
     @Body('userMobile') userMobile: string,
   ): Promise<string> {
@@ -38,13 +32,13 @@ export class AuthController {
     return await this.mfaService.generate2FAForgetPassword(userMobile);
   }
 
-  @Post('change_Forgot_Password')
+  @Post('change-forgot-password')
   async changeForgotPassword(@Body() signUpDto: SignUpDto): Promise<void> {
     // Send the token via SMS
     return await this.authService.changeForgotPassword(signUpDto);
   }
 
-  @Post('verifyOtp')
+  @Post('verify-otp')
   async verify2FA(@Body() verifyOtp: VerifyOtp) {
     const isValid = await this.mfaService.verify2FAToken(verifyOtp);
     if (!isValid) {
@@ -54,10 +48,8 @@ export class AuthController {
     return { message: '2FA verified successfully' };
   }
 
-  @Post('signin')
-  signIn(
-    @Body() signInDto: SignInDto,
-  ): Promise<{ accessToken: string }> {
+  @Post('sign-in')
+  signIn(@Body() signInDto: SignInDto): Promise<{ accessToken: string }> {
     return this.authService.signIn(signInDto);
   }
 }
