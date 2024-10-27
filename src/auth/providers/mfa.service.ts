@@ -1,5 +1,10 @@
 import { HttpService } from '@nestjs/axios';
-import { Inject, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Inject,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Redis from 'ioredis';
 import * as speakeasy from 'speakeasy';
@@ -55,47 +60,44 @@ export class MFAService {
 
   // Send SMS using Twilio
   async send2FAToken(sendOtpDto: sendOtpDto): Promise<string> {
-    try {
-      const { userMobile, userFamily, userName } = sendOtpDto;
-      const isMobileExists: boolean =
-        await this.usersService.userMobileExists(userMobile);
-      if (!isMobileExists) {
-        const secret = this.generate2FASecret(); // Save this secret in your user record in DB
-        const token = this.generate2FAToken(secret);
-        const mockSmsUrl = 'https://run.mocky.io/v3/your-mock-id'; // Mocky URL
+    const { userMobile, userFamily, userName } = sendOtpDto;
+    const isMobileExists: boolean =
+      await this.usersService.userMobileExists(userMobile);
 
-        // const response = await lastValueFrom(
-        //   this.httpService.post(mockSmsUrl, {
-        //     phoneNumber,
-        //     message: `Your 2FA code is: ${token}`,
-        //   }),
-        // );
-        console.log('token', token);
-        console.log('secret', secret);
-        const response = { status: 200 };
-        if (response.status === 200) {
-          await this.redis.set(
-            `${token}${secret}`,
-            JSON.stringify({ userMobile, userFamily, userName }),
-            'EX',
-            parseInt(this.configService.get<string>('OTP_EXPIRESIN')) + 4,
-          );
+    if (isMobileExists)
+      throw new ConflictException('این شماره همراه پیش از این ثبت شده است');
 
-          await this.redis.set(
-            secret,
-            parseInt(this.configService.get<string>('OTP_COUNT')),
-            'EX',
-            parseInt(this.configService.get<string>('OTP_EXPIRESIN')),
-          );
-          return secret;
-          //console.log('SMS sent successfully:', response.data);
-          //return response.data;
-        } else {
-          throw new Error('Failed to send SMS');
-        }
-      }
-    } catch (error) {
-      console.error('Error sending SMS:', error.message);
+    const secret = this.generate2FASecret(); // Save this secret in your user record in DB
+    const token = this.generate2FAToken(secret);
+    const mockSmsUrl = 'https://run.mocky.io/v3/your-mock-id'; // Mocky URL
+
+    // const response = await lastValueFrom(
+    //   this.httpService.post(mockSmsUrl, {
+    //     phoneNumber,
+    //     message: `Your 2FA code is: ${token}`,
+    //   }),
+    // );
+    console.log('token', token);
+    console.log('secret', secret);
+    const response = { status: 200 };
+    if (response.status === 200) {
+      await this.redis.set(
+        `${token}${secret}`,
+        JSON.stringify({ userMobile, userFamily, userName, secret }),
+        'EX',
+        parseInt(this.configService.get<string>('OTP_EXPIRESIN')) + 4,
+      );
+
+      await this.redis.set(
+        secret,
+        parseInt(this.configService.get<string>('OTP_COUNT')),
+        'EX',
+        parseInt(this.configService.get<string>('OTP_EXPIRESIN')),
+      );
+      return secret;
+      //console.log('SMS sent successfully:', response.data);
+      //return response.data;
+    } else {
       throw new Error('Failed to send SMS');
     }
   }

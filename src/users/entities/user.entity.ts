@@ -14,10 +14,10 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ nullable: false, unique: true, length: 20 })
+  @Column({ nullable: false, length: 20 })
   userName: string;
 
-  @Column({ unique: true, length: 40 })
+  @Column({  length: 40 })
   userFamily: string;
 
   @Column({ length: 100 })
