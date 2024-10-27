@@ -54,7 +54,7 @@ export class MFAService {
         secret: secret,
         encoding: 'base32',
         token: token,
-        window: 1, // Allow a small drift time
+        window: 3, // Allow a small drift time
         steps: parseInt(this.configService.get<string>('OTP_EXPIRESIN')),
       });
     }
