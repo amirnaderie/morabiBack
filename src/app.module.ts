@@ -13,7 +13,6 @@ import { PermissionModule } from './permission/permission.module';
 import { FileModule } from './file/file.module';
 import { UtilityModule } from './utility/utility.module';
 
-
 @Module({
   imports: [
     ConfigModule.forRoot({ envFilePath: `.env.dev`, isGlobal: true }),
@@ -46,7 +45,6 @@ import { UtilityModule } from './utility/utility.module';
     PermissionModule,
     FileModule,
     UtilityModule,
-
   ],
 })
 export class AppModule {}
