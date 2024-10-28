@@ -1,16 +1,16 @@
 import { Module } from '@nestjs/common';
-import { TasksModule } from './tasks/tasks.module';
+import { TasksModule } from './modules/tasks/tasks.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
-import { AuthModule } from './auth/auth.module';
+import { AuthModule } from './modules/auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { RedisModule } from './redis/redis.module';
-import { UsersModule } from './users/users.module';
+import { RedisModule } from './modules/redis/redis.module';
+import { UsersModule } from './modules/users/users.module';
 
-import { RolesModule } from './roles/roles.module';
-import { PermissionModule } from './permission/permission.module';
+import { RolesModule } from './modules/roles/roles.module';
+import { PermissionModule } from './modules/permission/permission.module';
 
-import { FileModule } from './file/file.module';
+import { FileModule } from './modules/file/file.module';
 import { UtilityModule } from './utility/utility.module';
 
 @Module({
