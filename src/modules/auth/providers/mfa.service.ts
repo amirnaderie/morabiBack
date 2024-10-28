@@ -1,19 +1,13 @@
 import { HttpService } from '@nestjs/axios';
-import {
-  ConflictException,
-  Inject,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { ConflictException, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Redis from 'ioredis';
 import * as speakeasy from 'speakeasy';
 import { VerifyOtp } from '../dto/verifyOtp.dto';
 import { SendOtpDto } from '../dto/sendOtp.dto';
-import { UsersService } from 'src/modules/users/users.service';
 import { User } from 'src/modules/users/entities/user.entity';
-import { PickType } from '@nestjs/mapped-types';
 import { lastValueFrom } from 'rxjs';
+import { UsersService } from 'src/modules/users/providers/users.service';
 
 @Injectable()
 export class MFAService {
@@ -76,7 +70,7 @@ export class MFAService {
 
   // Send SMS using Twilio
   async send2FAToken(sendOtpDto: SendOtpDto): Promise<string> {
-    const { userMobile, userFamily, userName } = sendOtpDto;
+    const { userMobile } = sendOtpDto;
     const user: User = await this.usersService.getUserByMobile(userMobile);
 
     if (user)

@@ -9,7 +9,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Task } from 'src/modules/tasks/task.entity';
-import { Role } from './role.entity';
+import { Roles } from 'src/modules/roles/roles.entity';
 
 @Entity()
 export class User {
@@ -28,11 +28,11 @@ export class User {
   @Column({ unique: true, length: 12 })
   userMobile: string;
 
-  @ManyToMany(() => Role, (role) => role.users, { eager: true })
+  @ManyToMany(() => Roles, (role) => role.users, { eager: true })
   @JoinTable({ name: 'user_roles' })
-  roles: Role[];
+  roles: Roles[];
 
-  @OneToMany((_type) => Task, (task) => task.user, { eager: true })
+  @OneToMany(() => Task, (task) => task.user, { eager: true })
   tasks: Task[];
 
   @CreateDateColumn({ name: 'created_at', default: () => 'CURRENT_TIMESTAMP' })

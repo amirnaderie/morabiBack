@@ -10,6 +10,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { User } from '../users/entities/user.entity';
 
 @Entity()
 export class Roles {
@@ -30,6 +31,9 @@ export class Roles {
 
   @DeleteDateColumn()
   deletedA: Date;
+
+  @ManyToMany(() => User, (user) => user.roles)
+  users: User[];
 
   @ManyToMany(() => Permission, (permission) => permission.roles, {
     cascade: true,
