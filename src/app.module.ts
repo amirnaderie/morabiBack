@@ -6,6 +6,8 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { RedisModule } from './redis/redis.module';
 import { UsersModule } from './users/users.module';
+import { FileModule } from './file/file.module';
+import { UtilityModule } from './utility/utility.module';
 
 @Module({
   imports: [
@@ -35,6 +37,8 @@ import { UsersModule } from './users/users.module';
     AuthModule,
     RedisModule,
     UsersModule,
+    FileModule,
+    UtilityModule,
   ],
 })
 export class AppModule {}

@@ -89,7 +89,7 @@ export class AuthService {
     try {
       let user = await this.usresRepository.findOneBy({ userMobile });
       user.password = hashedPassword;
-      user.updatedAt = new Date();
+      // user.updatedAt = new Date();
       if (user) {
         await this.usresRepository.save(user);
       }
