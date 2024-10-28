@@ -10,6 +10,7 @@ import {
 import { CreateRoleDto } from './dto/create-roles.dto';
 import { Roles } from './roles.entity';
 import { RolesService } from './providers/roles.service';
+import { UpdateRoleDto } from './dto/update-roles.dto';
 
 @Controller('roles')
 export class RolesController {
@@ -28,7 +29,7 @@ export class RolesController {
   @Patch('/:id')
   updateRoles(
     @Param('id') id: string,
-    @Body() updateRolesDto: CreateRoleDto,
+    @Body() updateRolesDto: UpdateRoleDto,
   ): Promise<Roles> {
     return this.rolesService.updateRoles(id, updateRolesDto);
   }

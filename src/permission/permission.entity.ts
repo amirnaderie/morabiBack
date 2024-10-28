@@ -1,5 +1,4 @@
-import { Permission } from 'src/permission/permission.entity';
-
+import { Roles } from 'src/roles/roles.entity';
 import {
   Column,
   CreateDateColumn,
@@ -12,7 +11,7 @@ import {
 } from 'typeorm';
 
 @Entity()
-export class Roles {
+export class Permission {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -31,11 +30,9 @@ export class Roles {
   @DeleteDateColumn()
   deletedA: Date;
 
-  @ManyToMany(() => Permission, (permission) => permission.roles, {
-    cascade: true,
-  })
+  @ManyToMany(() => Roles, (role) => role.permissions)
   @JoinTable({
     name: 'role-permission',
   })
-  permissions: Permission[];
+  roles: Roles[];
 }
