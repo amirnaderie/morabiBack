@@ -13,6 +13,7 @@ import { SendOtpDto } from '../dto/sendOtp.dto';
 import { UsersService } from 'src/modules/users/users.service';
 import { User } from 'src/modules/users/entities/user.entity';
 import { PickType } from '@nestjs/mapped-types';
+import { lastValueFrom } from 'rxjs';
 
 @Injectable()
 export class MFAService {
@@ -88,17 +89,14 @@ export class MFAService {
     const { userMobile, userFamily, userName } = sendOtpDto;
     const secret = this.generate2FASecret(); // Save this secret in your user record in DB
     const token = this.generate2FAToken(secret);
-    const mockSmsUrl = 'https://run.mocky.io/v3/your-mock-id'; // Mocky URL
+    const mockSmsUrl = `${this.configService.get<string>('PROVIDER_URL')}&receptor=${userMobile}&token=${token}`;
 
-    // const response = await lastValueFrom(
-    //   this.httpService.post(mockSmsUrl, {
-    //     phoneNumber,
-    //     message: `Your 2FA code is: ${token}`,
-    //   }),
-    // );
-    console.log('token', token);
-    console.log('secret', secret);
-    const response = { status: 200 };
+    const response = await lastValueFrom(
+      this.httpService.post(mockSmsUrl, null),
+    );
+    // console.log('token', token);
+    // console.log('secret', secret);
+    // const response = { status: 200 };
     if (response.status === 200) {
       await this.redis.set(
         `${token}${secret}`,
