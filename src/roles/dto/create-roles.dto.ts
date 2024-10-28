@@ -2,8 +2,8 @@ import { IsNotEmpty } from 'class-validator';
 
 export class CreateRoleDto {
   @IsNotEmpty()
-  title: string;
+  name: string;
 
   @IsNotEmpty()
-  enTitle: string;
+  enName: string;
 }

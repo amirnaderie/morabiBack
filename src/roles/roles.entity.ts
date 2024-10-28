@@ -1,22 +1,24 @@
+import { User } from 'src/users/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
 @Entity()
-export class Role {
+export class Roles {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column()
-  title: string;
+  name: string;
 
   @Column()
-  enTitle: string;
+  enName: string;
 
   @CreateDateColumn()
   createdA: Date;
@@ -26,4 +28,7 @@ export class Role {
 
   @DeleteDateColumn()
   deletedA: Date;
+
+  @ManyToMany(() => User, (user) => user.roles)
+  users: User[];
 }
