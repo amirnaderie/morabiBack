@@ -10,6 +10,8 @@ import { User } from 'src/modules/users/entities/user.entity';
 import { Role } from 'src/modules/users/entities/role.entity';
 import { UserRole } from 'src/modules/users/enum/role.enum';
 import { UsersModule } from 'src/modules/users/users.module';
+import { AlsModule } from 'src/middleware/als.module';
+import { TokenService } from './providers/token.service';
 
 @Module({
   imports: [
@@ -31,8 +33,8 @@ import { UsersModule } from 'src/modules/users/users.module';
     }),
     HttpModule,
   ],
-  providers: [AuthService, MFAService],
+  providers: [AuthService, MFAService,TokenService],
   controllers: [AuthController],
-  exports: [AuthService, JwtModule],
+  exports: [AuthService, JwtModule,TokenService],
 })
 export class AuthModule {}
