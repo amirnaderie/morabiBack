@@ -1,6 +1,8 @@
 import { DataSource } from 'typeorm';
 import { RoleSeed } from './seeds/role-seed.entity';
-import { roleSeed } from './seeds/role.seed';
+import { createRoleSeed } from './seeds/role.seed';
+import { UserSeed } from './seeds/user-seed.entity';
+import { PermissionSeed } from './seeds/permission-seed.entity';
 
 const AppDataSource = new DataSource({
   type: 'mssql',
@@ -9,14 +11,16 @@ const AppDataSource = new DataSource({
   username: 'sa',
   password: 'arman123456#A',
   database: 'morabi_db',
-  options: { encrypt: false },
-  entities: [RoleSeed],
+  options: { trustServerCertificate: true },
+  synchronize: true,
+  entities: [RoleSeed, UserSeed, PermissionSeed],
 });
 
 AppDataSource.initialize()
   .then(async () => {
     console.log('seed started!');
-    await roleSeed(AppDataSource);
+    await createRoleSeed(AppDataSource);
+    // await createPermissionSeed(AppDataSource);
     AppDataSource.destroy();
     console.log('seed finish!');
   })

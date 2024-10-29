@@ -5,17 +5,24 @@ import { RoleSeed } from './role-seed.entity';
   console.log('roleSeed');
 })();
 
-export const roleSeed = async (AppDataSource: DataSource) => {
+export const createRoleSeed = async (AppDataSource: DataSource) => {
   try {
     console.info('role seed start...');
     const queryRunner = AppDataSource.createQueryRunner();
+    const queryBuilder = AppDataSource.createQueryBuilder();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
-    const roleRepository = queryRunner.manager.getRepository(RoleSeed);
+    // const roleRepository = queryRunner.manager.getRepository(RoleSeed);
+    await queryBuilder
+      .insert()
+      .into(RoleSeed)
+      .values([
+        { name: 'ادمین', enName: 'admin' },
+        { name: 'مربی', enName: 'morabi' },
+      ])
+      .execute();
 
-    const roles = await roleRepository.find();
-    console.log(roles, 'dd');
     console.info('role seed finished');
   } catch (error) {
     console.error(error);
