@@ -1,7 +1,7 @@
-import { Roles } from 'src/modules/roles/roles.entity';
+import { Role } from 'src/modules/role/role.entity';
 
 export class UserResponseDto {
   id: string;
   userName: string;
-  roles: Roles[];
+  roles: Role[];
 }

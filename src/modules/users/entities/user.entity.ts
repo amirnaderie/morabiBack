@@ -9,7 +9,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Task } from 'src/modules/tasks/task.entity';
-import { Roles } from 'src/modules/roles/roles.entity';
+import { Role } from 'src/modules/role/role.entity';
 
 @Entity()
 export class User {
@@ -28,9 +28,9 @@ export class User {
   @Column({ unique: true, length: 12 })
   userMobile: string;
 
-  @ManyToMany(() => Roles, (role) => role.users, { eager: true })
+  @ManyToMany(() => Role, (role) => role.users, { eager: true })
   @JoinTable({ name: 'user_roles' })
-  roles: Roles[];
+  roles: Role[];
 
   @OneToMany(() => Task, (task) => task.user, { eager: true })
   tasks: Task[];

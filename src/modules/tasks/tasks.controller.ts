@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
   Query,
+  SetMetadata,
   UseGuards,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
@@ -16,12 +17,10 @@ import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
 import { UpdateTaskStatusDto } from './dto/update-task.dto';
 import { Task } from './task.entity';
 import { AuthGuard } from 'src/modules/auth/auth.guard';
-import { Roles } from 'src/modules/auth/roles.decorator';
-import { RolesGuard } from 'src/modules/auth/role.guard';
 import { GetUser } from 'src/modules/auth/get-user.decorator';
 import { Logger } from '@nestjs/common';
 import { User } from 'src/modules/users/entities/user.entity';
-import { UserRole } from 'src/modules/users/enum/role.enum';
+import { RolesGuard } from 'src/guards/role.guard';
 
 @Controller('tasks')
 @UseGuards(AuthGuard, RolesGuard)
@@ -39,6 +38,7 @@ export class TasksController {
   }
 
   @Post()
+  @SetMetadata('permission', 'create-task')
   createTask(
     @Body() createTaskDto: CreateTaskDto,
     @GetUser() user: User,
@@ -47,7 +47,6 @@ export class TasksController {
   }
 
   @Get('/:id')
-  // @Roles(UserRole.ATHLETE,UserRole.ADMIN,UserRole.MORABI)
   getTaskById(@Param('id') id: string, @GetUser() user: User): Promise<Task> {
     return this.tasksService.getTaskById(id, user);
   }

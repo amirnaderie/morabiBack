@@ -1,5 +1,3 @@
-import { Permission } from 'src/modules/permission/permission.entity';
-
 import {
   Column,
   CreateDateColumn,
@@ -10,10 +8,11 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { User } from '../users/entities/user.entity';
+import { UserSeed } from './user-seed.entity';
+import { PermissionSeed } from './permission-seed.entity';
 
-@Entity()
-export class Roles {
+@Entity('role')
+export class RoleSeed {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -32,14 +31,14 @@ export class Roles {
   @DeleteDateColumn()
   deletedA: Date;
 
-  @ManyToMany(() => User, (user) => user.roles)
-  users: User[];
+  @ManyToMany(() => UserSeed, (user) => user.roles)
+  users: UserSeed[];
 
-  @ManyToMany(() => Permission, (permission) => permission.roles, {
+  @ManyToMany(() => PermissionSeed, (permission) => permission.roles, {
     cascade: true,
   })
   @JoinTable({
     name: 'role-permission',
   })
-  permissions: Permission[];
+  permissions: PermissionSeed[];
 }

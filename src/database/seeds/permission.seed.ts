@@ -1,11 +1,11 @@
 import { DataSource } from 'typeorm';
-import { RoleSeed } from './entity/role-seed.entity';
+import { PermissionSeed } from './entity/permission-seed.entity';
 
 (async () => {
-  console.log('roleSeed');
+  console.log('permissionSeed');
 })();
 
-export const createRoleSeed = async (AppDataSource: DataSource) => {
+export const createPermissionSeed = async (AppDataSource: DataSource) => {
   try {
     console.info('role seed start...');
     const queryRunner = AppDataSource.createQueryRunner();
@@ -16,11 +16,8 @@ export const createRoleSeed = async (AppDataSource: DataSource) => {
     // const roleRepository = queryRunner.manager.getRepository(RoleSeed);
     await queryBuilder
       .insert()
-      .into(RoleSeed)
-      .values([
-        { name: 'ادمین', enName: 'admin' },
-        { name: 'مربی', enName: 'morabi' },
-      ])
+      .into(PermissionSeed)
+      .values([{ name: 'ایجاد حرکت', enName: 'admin' }])
       .execute();
 
     console.info('role seed finished');

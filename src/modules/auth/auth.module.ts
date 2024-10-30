@@ -9,13 +9,14 @@ import { MFAService } from './providers/mfa.service';
 import { User } from 'src/modules/users/entities/user.entity';
 import { UsersModule } from 'src/modules/users/users.module';
 import { TokenService } from './providers/token.service';
-import { Roles } from '../roles/roles.entity';
+import { RolesModule } from '../role/role.module';
+import { Role } from '../role/role.entity';
 
 @Module({
   imports: [
     forwardRef(() => UsersModule),
     ConfigModule,
-    TypeOrmModule.forFeature([User, Roles]),
+    TypeOrmModule.forFeature([User, Role]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -30,9 +31,10 @@ import { Roles } from '../roles/roles.entity';
       },
     }),
     HttpModule,
+    forwardRef(() => RolesModule),
   ],
-  providers: [AuthService, MFAService,TokenService],
+  providers: [AuthService, MFAService, TokenService],
   controllers: [AuthController],
-  exports: [AuthService, JwtModule,TokenService],
+  exports: [AuthService, JwtModule, TokenService],
 })
 export class AuthModule {}

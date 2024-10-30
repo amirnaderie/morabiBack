@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
-import { RolesService } from 'src/modules/roles/providers/roles.service';
+import { RolesService } from 'src/modules/role/providers/role.service';
 import { AssginUserRoleDto } from '../dto/assign-user-roles.dto';
 
 @Injectable()

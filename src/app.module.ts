@@ -7,7 +7,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { RedisModule } from './modules/redis/redis.module';
 import { UsersModule } from './modules/users/users.module';
 
-import { RolesModule } from './modules/roles/roles.module';
+import { RolesModule } from './modules/role/role.module';
 import { PermissionModule } from './modules/permission/permission.module';
 
 import { FileModule } from './modules/file/file.module';

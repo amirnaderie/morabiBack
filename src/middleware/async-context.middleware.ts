@@ -1,6 +1,6 @@
 // async-context.middleware.ts
 import { Injectable, NestMiddleware } from '@nestjs/common';
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { AsyncLocalStorage } from 'async_hooks';
 
 @Injectable()
@@ -10,7 +10,9 @@ export class AsyncContextMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: () => void) {
     const store = {
       correlationId: req.headers['x-correlation-id'],
-      accessToken: req.headers['authorization']?req.headers['authorization'].toString().split(' ')[1]:"",
+      accessToken: req.headers['authorization']
+        ? req.headers['authorization'].toString().split(' ')[1]
+        : '',
     };
     this.als.run(store, () => {
       next(); // Continue to the next middleware or request handler

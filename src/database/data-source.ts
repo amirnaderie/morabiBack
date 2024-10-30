@@ -1,8 +1,8 @@
 import { DataSource } from 'typeorm';
-import { RoleSeed } from './seeds/role-seed.entity';
+import { RoleSeed } from './seeds/entity/role-seed.entity';
 import { createRoleSeed } from './seeds/role.seed';
-import { UserSeed } from './seeds/user-seed.entity';
-import { PermissionSeed } from './seeds/permission-seed.entity';
+import { UserSeed } from './seeds/entity/user-seed.entity';
+import { PermissionSeed } from './seeds/entity/permission-seed.entity';
 
 const AppDataSource = new DataSource({
   type: 'mssql',
@@ -19,8 +19,10 @@ const AppDataSource = new DataSource({
 AppDataSource.initialize()
   .then(async () => {
     console.log('seed started!');
+
     await createRoleSeed(AppDataSource);
     // await createPermissionSeed(AppDataSource);
+
     AppDataSource.destroy();
     console.log('seed finish!');
   })

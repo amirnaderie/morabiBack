@@ -3,9 +3,7 @@ import { GetUser } from 'src/modules/auth/get-user.decorator';
 import { User } from './entities/user.entity';
 import { UserResponseDto } from './dto/response/userResponse.dto';
 import { AuthGuard } from 'src/modules/auth/auth.guard';
-import { Roles } from 'src/modules/auth/roles.decorator';
 // import { RolesGuard } from 'src/modules/auth/role.guard';
-import { UserRole } from './enum/role.enum';
 import { AssginUserRoleDto } from './dto/assign-user-roles.dto';
 import { UsersService } from './providers/users.service';
 
@@ -40,7 +38,6 @@ export class UsersController {
   // }
 
   @Get('/me')
-  @Roles(UserRole.ATHLETE, UserRole.ADMIN, UserRole.MORABI)
   me(@GetUser() user: User): UserResponseDto {
     return {
       userName: user.userName,

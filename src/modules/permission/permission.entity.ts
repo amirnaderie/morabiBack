@@ -1,4 +1,3 @@
-import { Roles } from 'src/modules/roles/roles.entity';
 import {
   Column,
   CreateDateColumn,
@@ -9,6 +8,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Role } from '../role/role.entity';
 
 @Entity()
 export class Permission {
@@ -30,9 +30,9 @@ export class Permission {
   @DeleteDateColumn()
   deletedA: Date;
 
-  @ManyToMany(() => Roles, (role) => role.permissions)
+  @ManyToMany(() => Role, (role) => role.permissions)
   @JoinTable({
     name: 'role-permission',
   })
-  roles: Roles[];
+  roles: Role[];
 }

@@ -2,25 +2,28 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { CreateRoleDto } from '../dto/create-roles.dto';
-import { Roles } from '../roles.entity';
-import { UpdateRoleDto } from '../dto/update-roles.dto';
+import { CreateRoleDto } from '../dto/create-role.dto';
+import { UpdateRoleDto } from '../dto/update-role.dto';
 import { PermissionService } from 'src/modules/permission/providers/permission.service';
+import { Role } from '../role.entity';
 
 @Injectable()
 export class RolesService {
   constructor(
-    @InjectRepository(Roles)
-    private readonly rolesRepository: Repository<Roles>,
+    @InjectRepository(Role)
+    private readonly rolesRepository: Repository<Role>,
     private permissionService: PermissionService,
   ) {}
 
   async findOne(id: string) {
     return await this.rolesRepository.findOne({
       where: { id: id },
+      relations: {
+        permissions: true,
+      },
     });
   }
-  async createRole(createRoleDto: CreateRoleDto): Promise<Roles> {
+  async createRole(createRoleDto: CreateRoleDto): Promise<Role> {
     const { name, enName } = createRoleDto;
     console.log(name, enName, 'name, enName ');
     const roles = this.rolesRepository.create({
@@ -31,7 +34,7 @@ export class RolesService {
     return cretaedRole;
   }
 
-  async updateRoles(id: string, updateRoleDto: UpdateRoleDto): Promise<Roles> {
+  async updateRoles(id: string, updateRoleDto: UpdateRoleDto): Promise<Role> {
     const { name, enName, permissions } = updateRoleDto;
     const p = [];
     console.log('permissions => ', permissions);
@@ -63,7 +66,7 @@ export class RolesService {
     return roles;
   }
 
-  async getRoles(): Promise<Roles[]> {
+  async getRoles(): Promise<Role[]> {
     const roles = await this.rolesRepository.find({
       relations: {
         permissions: true,
