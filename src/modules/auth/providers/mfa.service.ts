@@ -88,9 +88,7 @@ export class MFAService {
     const response = await lastValueFrom(
       this.httpService.post(mockSmsUrl, null),
     );
-    // console.log('token', token);
-    // console.log('secret', secret);
-    // const response = { status: 200 };
+
     if (response.status === 200) {
       await this.redis.set(
         `${token}${secret}`,
@@ -109,7 +107,7 @@ export class MFAService {
       //console.log('SMS sent successfully:', response.data);
       //return response.data;
     } else {
-      throw new Error('Failed to send SMS');
+      throw new Error('خطا در عملیات');
     }
   };
 }

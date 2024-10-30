@@ -15,8 +15,8 @@
     "strictNullChecks": false,
     "noImplicitAny": false,
     "strictBindCallApply": false,
-    "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false,
-    "typeRoots": ["./node_modules/@types", "custom.d.ts"]
-  }
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": false
+  },
+  "include": ["src"]
 }

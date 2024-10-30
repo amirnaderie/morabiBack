@@ -8,6 +8,7 @@ import { AuthService } from './providers/auth.service';
 import { MFAService } from './providers/mfa.service';
 import { User } from 'src/modules/users/entities/user.entity';
 import { UsersModule } from 'src/modules/users/users.module';
+import { TokenService } from './providers/token.service';
 import { Roles } from '../roles/roles.entity';
 
 @Module({
@@ -30,8 +31,8 @@ import { Roles } from '../roles/roles.entity';
     }),
     HttpModule,
   ],
-  providers: [AuthService, MFAService],
+  providers: [AuthService, MFAService,TokenService],
   controllers: [AuthController],
-  exports: [AuthService, JwtModule],
+  exports: [AuthService, JwtModule,TokenService],
 })
 export class AuthModule {}

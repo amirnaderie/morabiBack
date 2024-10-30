@@ -7,17 +7,23 @@ import { Like, Repository } from 'typeorm';
 import { Task } from './task.entity';
 import { User } from 'src/modules/users/entities/user.entity';
 import { TaskStatus } from './enum/task-status.enum';
+import { AsyncLocalStorage } from 'async_hooks';
+import { GetUser } from '../auth/get-user.decorator';
+import { TokenService } from '../auth/providers/token.service';
 
 @Injectable()
 export class TasksService {
   constructor(
     @InjectRepository(Task) // You can inject without using forFeature()
     private readonly tasksRepository: Repository<Task>,
+    private readonly als: AsyncLocalStorage<any>,
+    private readonly tokenService: TokenService
   ) {}
 
   async getTasks(filterDto: GetTasksFilterDto, user: User): Promise<Task[]> {
     const { status, search } = filterDto;
-
+    const correlationId = this.als.getStore()['Correlationid'];
+    const accessToken = this.als.getStore()['accessToken'];
     const localUser = { id: user.id };
     let whereCondition: any = { user: localUser }; // Base condition: filter by user
 
@@ -36,26 +42,19 @@ export class TasksService {
       where: whereCondition,
     });
 
-    // let tasks = await this.tasksRepository.find({
-    //   where: status
-    //     ? search
-    //       ? [
-    //           { status, title: Like(`%${search}%`), user },
-    //           { status, description: Like(`%${search}%`), user },
-    //         ]
-    //       : { status, user }
-    //     : search
-    //       ? [
-    //           { title: Like(`%${search}%`), user },
-    //           { description: Like(`%${search}%`), user },
-    //         ]
-    //       : { user },
-    // });
-
     return tasks;
   }
 
   async getTaskById(id: string, user: User): Promise<Task> {
+    const correlationId = this.als.getStore()['correlationId'];
+    const accessToken = this.als.getStore()['accessToken'];
+    const userData= this.tokenService.decodeToken(accessToken)
+    console.log('correlationId',correlationId);
+    //   const aaaa = this.als.getStore().get('userData');
+    // const userData = this.als.getStore()['userData'];
+    // const transactionId = this.als.getStore().get('userData');
+    // console.log('userData', userData);
+
     const localUser = { id: user.id };
     const found = await this.tasksRepository.findOne({
       where: { id, user: localUser },

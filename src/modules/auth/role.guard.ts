@@ -8,10 +8,14 @@ import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
 import { ROLES_KEY } from './roles.decorator';
 import { UserRole } from 'src/modules/users/enum/role.enum';
+import { AsyncLocalStorage } from 'async_hooks';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
-  constructor(private reflector: Reflector) {}
+  constructor(
+    private reflector: Reflector,
+    private readonly als: AsyncLocalStorage<any>,
+  ) {}
 
   canActivate(
     context: ExecutionContext,
