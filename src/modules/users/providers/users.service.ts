@@ -2,16 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
-import { CreateUserDto } from '../dto/create-user.dto';
-import { UpdateUserDto } from '../dto/update-user.dto';
+import { RolesService } from 'src/modules/roles/providers/roles.service';
+import { AssginUserRoleDto } from '../dto/assign-user-roles.dto';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) // You can inject without using forFeature()
-    private readonly usresRepository: Repository<User>,
+    private readonly userRepository: Repository<User>,
+    private rolesServise: RolesService,
   ) {}
-  create(createUserDto: CreateUserDto) {
+  create() {
     return 'This action adds a new user';
   }
 
@@ -19,11 +20,13 @@ export class UsersService {
     return `This action returns all users`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: string) {
+    return await this.userRepository.findOne({
+      where: { id: id },
+    });
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
+  update(id: number) {
     return `This action updates a #${id} user`;
   }
 
@@ -32,7 +35,24 @@ export class UsersService {
   }
 
   async getUserByMobile(userMobile: string): Promise<User> {
-    const user = await this.usresRepository.findOneBy({ userMobile });
+    const user = await this.userRepository.findOneBy({ userMobile });
     return user;
+  }
+
+  async assginRole(assginUserRoleDto: AssginUserRoleDto): Promise<User> {
+    try {
+      console.log('dddd');
+
+      const { userId, roleId } = assginUserRoleDto;
+
+      const user = await this.findOne(userId);
+      const role = await this.rolesServise.findOne(roleId);
+      console.log(user.roles, 'user.roles');
+      user.roles = [role];
+
+      return await this.userRepository.save(user);
+    } catch (error) {
+      console.log(error, 'error');
+    }
   }
 }

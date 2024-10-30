@@ -1,32 +1,22 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  UseGuards,
-} from '@nestjs/common';
-import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
 import { GetUser } from 'src/modules/auth/get-user.decorator';
 import { User } from './entities/user.entity';
 import { UserResponseDto } from './dto/response/userResponse.dto';
 import { AuthGuard } from 'src/modules/auth/auth.guard';
 import { Roles } from 'src/modules/auth/roles.decorator';
-import { RolesGuard } from 'src/modules/auth/role.guard';
+// import { RolesGuard } from 'src/modules/auth/role.guard';
 import { UserRole } from './enum/role.enum';
+import { AssginUserRoleDto } from './dto/assign-user-roles.dto';
+import { UsersService } from './providers/users.service';
 
 @Controller('users')
-@UseGuards(AuthGuard, RolesGuard)
+@UseGuards(AuthGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  create() {
+    return this.usersService.create();
   }
 
   // @Get()
@@ -57,5 +47,11 @@ export class UsersController {
       id: user.id,
       roles: user.roles,
     };
+  }
+
+  @Post('/assgin-role')
+  assginRole(@Body() assginUserRoleDto: AssginUserRoleDto): any {
+    console.log(655, assginUserRoleDto);
+    return this.usersService.assginRole(assginUserRoleDto);
   }
 }

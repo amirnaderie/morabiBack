@@ -7,17 +7,13 @@ import { HttpModule } from '@nestjs/axios';
 import { AuthService } from './providers/auth.service';
 import { MFAService } from './providers/mfa.service';
 import { User } from 'src/modules/users/entities/user.entity';
-import { Role } from 'src/modules/users/entities/role.entity';
-import { UserRole } from 'src/modules/users/enum/role.enum';
 import { UsersModule } from 'src/modules/users/users.module';
-import { AlsModule } from 'src/middleware/als.module';
-import { TokenService } from './providers/token.service';
 
 @Module({
   imports: [
     forwardRef(() => UsersModule),
     ConfigModule,
-    TypeOrmModule.forFeature([User, Role]),
+    TypeOrmModule.forFeature([User, Roles]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
