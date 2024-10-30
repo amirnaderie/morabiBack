@@ -1,11 +1,21 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { MulterFile } from '../fileOptions';
 import { InjectRepository } from '@nestjs/typeorm';
 import { File } from '../entities/file.entity';
 import { Repository } from 'typeorm';
 import { UtilityService } from 'src/utility/providers/utility.service';
 import { join } from 'path';
-import { existsSync, mkdirSync, writeFileSync } from 'fs';
+import {
+  createReadStream,
+  existsSync,
+  mkdirSync,
+  ReadStream,
+  writeFileSync,
+} from 'fs';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -61,5 +71,22 @@ export class FileService {
     const newFile = this.usresRepository.create({ fileName: filename });
     const savedFile = await this.usresRepository.save(newFile);
     return { fileId: savedFile.id };
+  }
+
+  async getFile(fileName: string): Promise<ReadStream> {
+    const filePath = join(__dirname, '..', '..', 'uploads', fileName);
+    if (!existsSync(filePath)) {
+      throw new NotFoundException(`فایلی با این شناسه یافت نشد`);
+    }
+    return createReadStream(filePath);
+  }
+
+  async getFileName(fileId: string): Promise<string> {
+    const foundFile: File = await this.usresRepository.findOneBy({
+      id: fileId,
+    });
+
+    if (!foundFile) throw new NotFoundException(`فایلی با این شناسه یافت نشد`);
+    return foundFile.fileName;
   }
 }
