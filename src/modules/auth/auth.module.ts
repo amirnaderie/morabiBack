@@ -8,6 +8,8 @@ import { AuthService } from './providers/auth.service';
 import { MFAService } from './providers/mfa.service';
 import { User } from 'src/modules/users/entities/user.entity';
 import { UsersModule } from 'src/modules/users/users.module';
+import { TokenService } from './providers/token.service';
+import { Roles } from '../roles/roles.entity';
 
 @Module({
   imports: [
