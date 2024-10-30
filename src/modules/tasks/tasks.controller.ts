@@ -47,7 +47,7 @@ export class TasksController {
   }
 
   @Get('/:id')
-  @Roles(UserRole.ATHLETE,UserRole.ADMIN,UserRole.MORABI)
+  // @Roles(UserRole.ATHLETE,UserRole.ADMIN,UserRole.MORABI)
   getTaskById(@Param('id') id: string, @GetUser() user: User): Promise<Task> {
     return this.tasksService.getTaskById(id, user);
   }
