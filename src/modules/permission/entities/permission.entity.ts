@@ -1,3 +1,4 @@
+import { Role } from 'src/modules/role/entities/role.entity';
 import {
   Column,
   CreateDateColumn,
@@ -8,7 +9,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Role } from '../role/role.entity';
 
 @Entity()
 export class Permission {

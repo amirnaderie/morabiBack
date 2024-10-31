@@ -20,7 +20,7 @@ export class AssignPermissionToRole {
   @IsString()
   @MaxLength(36)
   @MinLength(36)
-  roleId: string;
+  roleId: number;
 
   @IsArray()
   @IsString({ each: true })

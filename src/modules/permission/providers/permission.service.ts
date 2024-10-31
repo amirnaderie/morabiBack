@@ -4,7 +4,7 @@ import { In, Repository } from 'typeorm';
 
 // import { User } from 'src/users/entities/user.entity';
 import { CreatePermissionDto } from '../dto/create-permission.dto';
-import { Permission } from '../permission.entity';
+import { Permission } from '../entities/permission.entity';
 
 @Injectable()
 export class PermissionService {
@@ -27,7 +27,7 @@ export class PermissionService {
   }
 
   async updatePermission(
-    id: string,
+    id: number,
     updatePermissionDto: CreatePermissionDto,
   ): Promise<Permission> {
     const { name, enName } = updatePermissionDto;
@@ -49,7 +49,7 @@ export class PermissionService {
     return await this.permissionRepository.find();
   }
 
-  async deletePermission(id: string): Promise<void> {
+  async deletePermission(id: number): Promise<void> {
     const result = await this.permissionRepository.delete({
       id: id,
     });
@@ -58,7 +58,7 @@ export class PermissionService {
       throw new NotFoundException(`Permission with Id : ${id} not found`);
   }
 
-  async getPermissionRaw(id: string): Promise<Permission> {
+  async getPermissionRaw(id: number): Promise<Permission> {
     return await this.permissionRepository.findOne({
       where: {
         id: id,

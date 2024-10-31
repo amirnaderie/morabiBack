@@ -4,13 +4,14 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
 } from '@nestjs/common';
 import { AssignPermissionToRole, CreateRoleDto } from './dto/create-role.dto';
 import { RolesService } from './providers/role.service';
 import { UpdateRoleDto } from './dto/update-role.dto';
-import { Role } from './role.entity';
+import { Role } from './entities/role.entity';
 
 @Controller('role')
 export class RolesController {
@@ -35,14 +36,14 @@ export class RolesController {
 
   @Patch('/:id')
   updateRoles(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateRolesDto: UpdateRoleDto,
   ): Promise<Role> {
     return this.rolesService.updateRoles(id, updateRolesDto);
   }
 
   @Delete('/:id')
-  deleteRoles(@Param('id') id: string): Promise<void> {
+  deleteRoles(@Param('id', ParseIntPipe) id: number): Promise<void> {
     return this.rolesService.deleteRoles(id);
   }
 }
