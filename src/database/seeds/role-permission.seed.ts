@@ -13,12 +13,10 @@ export const addPermissionToRole = async (AppDataSource: DataSource) => {
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
-    await AppDataSource.query(
-      `DELETE FROM [role-permission] DBCC CHECKIDENT ([role-permission], RESEED, 0)`,
-    );
+    await AppDataSource.query(`DELETE FROM [role-permission]`);
 
     await AppDataSource.query(
-      `INSERT INTO role-permission (roleId,permisionId) VALUES(1,1) `,
+      `INSERT INTO [role-permission] (roleId,permissionId) VALUES(1,1) `,
     );
 
     console.info('role seed finished');
