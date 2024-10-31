@@ -1,26 +1,66 @@
 import { DataSource } from 'typeorm';
 
-(async () => {
-  console.log('roleSeed');
-})();
-
-export const addPermissionToRole = async (AppDataSource: DataSource) => {
+export const addPermissionToRole = async (ADS: DataSource) => {
   try {
-    console.info('role seed start...');
-
-    const queryRunner = AppDataSource.createQueryRunner();
-    // const queryBuilder = AppDataSource.createQueryBuilder();
+    const queryRunner = ADS.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
-    await AppDataSource.query(`DELETE FROM [role-permission]`);
+    await ADS.query(`DELETE FROM [role-permission]`);
 
-    await AppDataSource.query(
-      `INSERT INTO [role-permission] (roleId,permissionId) VALUES(1,1) `,
-    );
+    //  first number is roleId
+    //  second number is permissionId
+    const arr = [
+      '1,1',
+      '1,2',
+      '1,3',
+      '1,4',
+      '1,5',
+      '1,6',
+      '1,7',
+      '1,8',
+      '1,9',
+      '1,10',
+      '1,11',
+      '1,12',
+      '1,13',
+      '1,14',
+      '1,15',
+      '1,16',
+      '1,17',
+      '1,18',
+      '1,19',
+      '1,20',
+      '1,21',
+      '2,1',
+      '2,2',
+      '2,3',
+      '2,4',
+      '2,5',
+      '2,6',
+      '2,7',
+      '2,8',
+      '2,9',
+      '2,10',
+      '2,11',
+      '2,12',
+      '2,13',
+      '2,14',
+      '2,15',
+      '2,16',
+      '2,17',
+      '2,18',
+      '2,19',
+      '2,20',
+      '2,21',
+    ];
 
-    console.info('role seed finished');
+    for (let i = 0; i < arr.length; i++) {
+      await ADS.query(
+        `INSERT INTO [role-permission] (roleId,permissionId) VALUES(${arr[i]})`,
+      );
+    }
   } catch (error) {
-    console.error(error);
+    throw new Error(error);
   }
 };

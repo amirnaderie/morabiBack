@@ -1,13 +1,8 @@
 import { DataSource } from 'typeorm';
 import { RoleSeed } from './entity/role-seed.entity';
 
-(async () => {
-  console.log('roleSeed');
-})();
-
 export const createRoleSeed = async (AppDataSource: DataSource) => {
   try {
-    console.info('role seed start...');
     const queryRunner = AppDataSource.createQueryRunner();
     const queryBuilder = AppDataSource.createQueryBuilder();
     await queryRunner.connect();
@@ -26,9 +21,7 @@ export const createRoleSeed = async (AppDataSource: DataSource) => {
         { name: 'ورزشکار', enName: 'athlete' },
       ])
       .execute();
-
-    console.info('role seed finished');
   } catch (error) {
-    console.error(error);
+    throw new Error(error);
   }
 };

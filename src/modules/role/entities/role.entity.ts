@@ -32,12 +32,13 @@ export class Role {
   @DeleteDateColumn()
   deletedA: Date;
 
-  @ManyToMany(() => User, (user) => user.roles)
+  @ManyToMany(() => User, (user) => user.roles, { onDelete: 'CASCADE' })
   users: User[];
 
   @ManyToMany(() => Permission, (permission) => permission.roles, {
     cascade: true,
     eager: true,
+    onDelete: 'CASCADE',
   })
   @JoinTable({
     name: 'role-permission',

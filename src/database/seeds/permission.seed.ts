@@ -1,13 +1,8 @@
 import { DataSource } from 'typeorm';
 import { PermissionSeed } from './entity/permission-seed.entity';
 
-(async () => {
-  console.log('permissionSeed');
-})();
-
 export const createPermissionSeed = async (AppDataSource: DataSource) => {
   try {
-    console.info('Permission seed start...');
     const queryRunner = AppDataSource.createQueryRunner();
     const queryBuilder = AppDataSource.createQueryBuilder();
     await queryRunner.connect();
@@ -45,9 +40,7 @@ export const createPermissionSeed = async (AppDataSource: DataSource) => {
         { name: 'مشاهده تسک', enName: 'read-task' },
       ])
       .execute();
-
-    console.info('permission seed finished');
   } catch (error) {
-    console.error(error);
+    throw new Error(error);
   }
 };

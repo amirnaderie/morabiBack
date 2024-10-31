@@ -28,7 +28,10 @@ export class User {
   @Column({ unique: true, length: 12 })
   userMobile: string;
 
-  @ManyToMany(() => Role, (role) => role.users, { eager: true })
+  @ManyToMany(() => Role, (role) => role.users, {
+    eager: true,
+    onDelete: 'CASCADE',
+  })
   @JoinTable({ name: 'user_roles' })
   roles: Role[];
 

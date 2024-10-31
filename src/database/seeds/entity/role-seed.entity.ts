@@ -36,6 +36,7 @@ export class RoleSeed {
 
   @ManyToMany(() => PermissionSeed, (permission) => permission.roles, {
     cascade: true,
+    onDelete: 'CASCADE',
   })
   @JoinTable({
     name: 'role-permission',

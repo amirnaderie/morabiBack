@@ -30,7 +30,9 @@ export class PermissionSeed {
   @DeleteDateColumn()
   deletedA: Date;
 
-  @ManyToMany(() => RoleSeed, (role) => role.permissions)
+  @ManyToMany(() => RoleSeed, (role) => role.permissions, {
+    onDelete: 'CASCADE',
+  })
   @JoinTable({
     name: 'role-permission',
   })

@@ -21,15 +21,18 @@ const AppDataSource = new DataSource({
 
 AppDataSource.initialize()
   .then(async () => {
-    console.log('seed started!');
-
-    await createRoleSeed(AppDataSource);
-    await createPermissionSeed(AppDataSource);
-    await addPermissionToRole(AppDataSource);
-
-    AppDataSource.destroy();
-    console.log('seed finish!');
+    try {
+      console.log('\x1b[36m%s\x1b[0m', 'seed started!');
+      await createRoleSeed(AppDataSource);
+      await createPermissionSeed(AppDataSource);
+      await addPermissionToRole(AppDataSource);
+      AppDataSource.destroy();
+      console.log('\x1b[32m', '✅ seed finish successfully!');
+    } catch (error) {
+      throw new Error(error);
+    }
   })
   .catch((err) => {
-    console.error('Error during Data Source initialization', err);
+    console.error(err);
+    console.log('\x1b[31m', 'seed failed!!');
   });
