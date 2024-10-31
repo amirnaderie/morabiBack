@@ -14,8 +14,8 @@ import { User } from '../users/entities/user.entity';
 
 @Entity()
 export class Role {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Column()
   name: string;

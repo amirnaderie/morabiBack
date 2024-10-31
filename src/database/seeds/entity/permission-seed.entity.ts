@@ -12,8 +12,8 @@ import { RoleSeed } from './role-seed.entity';
 
 @Entity('permission')
 export class PermissionSeed {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Column()
   name: string;

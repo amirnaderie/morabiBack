@@ -12,7 +12,7 @@ import { RoleSeed } from './role-seed.entity';
 @Entity('user')
 export class UserSeed {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id: number;
 
   @Column({ nullable: false, length: 20 })
   userName: string;

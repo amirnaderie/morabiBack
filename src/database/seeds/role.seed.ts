@@ -13,12 +13,17 @@ export const createRoleSeed = async (AppDataSource: DataSource) => {
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
+    await AppDataSource.query(
+      `DELETE FROM [role] DBCC CHECKIDENT ([role], RESEED, 0)`,
+    );
+
     await queryBuilder
       .insert()
       .into(RoleSeed)
       .values([
         { name: 'ادمین', enName: 'admin' },
         { name: 'مربی', enName: 'coach' },
+        { name: 'ورزشکار', enName: 'athlete' },
       ])
       .execute();
 

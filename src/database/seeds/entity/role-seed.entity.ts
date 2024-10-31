@@ -13,8 +13,8 @@ import { PermissionSeed } from './permission-seed.entity';
 
 @Entity('role')
 export class RoleSeed {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Column()
   name: string;
