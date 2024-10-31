@@ -3,6 +3,7 @@ import { RoleSeed } from './seeds/entity/role-seed.entity';
 import { createRoleSeed } from './seeds/role.seed';
 import { UserSeed } from './seeds/entity/user-seed.entity';
 import { PermissionSeed } from './seeds/entity/permission-seed.entity';
+import { createPermissionSeed } from './seeds/permission.seed';
 
 const AppDataSource = new DataSource({
   type: 'mssql',
@@ -21,7 +22,7 @@ AppDataSource.initialize()
     console.log('seed started!');
 
     await createRoleSeed(AppDataSource);
-    // await createPermissionSeed(AppDataSource);
+    await createPermissionSeed(AppDataSource);
 
     AppDataSource.destroy();
     console.log('seed finish!');
