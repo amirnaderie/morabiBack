@@ -10,7 +10,7 @@ import { User } from 'src/modules/users/entities/user.entity';
 import { UsersModule } from 'src/modules/users/users.module';
 import { TokenService } from './providers/token.service';
 import { RolesModule } from '../role/role.module';
-import { Role } from '../role/role.entity';
+import { Role } from '../role/entities/role.entity';
 
 @Module({
   imports: [

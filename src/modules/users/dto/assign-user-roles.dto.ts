@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString, MaxLength, MinLength } from 'class-validator';
 
 export class AssginUserRoleDto {
   @IsNotEmpty()
@@ -8,8 +8,6 @@ export class AssginUserRoleDto {
   userId: string;
 
   @IsNotEmpty()
-  @IsString()
-  @MaxLength(36)
-  @MinLength(36)
-  roleId: string;
+  @IsNumber()
+  roleId: number;
 }

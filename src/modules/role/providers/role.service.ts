@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { AssignPermissionToRole, CreateRoleDto } from '../dto/create-role.dto';
 import { UpdateRoleDto } from '../dto/update-role.dto';
 import { PermissionService } from 'src/modules/permission/providers/permission.service';
-import { Role } from '../role.entity';
+import { Role } from '../entities/role.entity';
 
 @Injectable()
 export class RolesService {
@@ -15,7 +15,7 @@ export class RolesService {
     private permissionService: PermissionService,
   ) {}
 
-  async findOne(id: string) {
+  async findOne(id: number) {
     return await this.rolesRepository.findOne({
       where: { id: id },
       relations: {
@@ -53,16 +53,16 @@ export class RolesService {
     return result;
   }
 
-  async updateRoles(id: string, updateRoleDto: UpdateRoleDto): Promise<Role> {
+  async updateRoles(id: number, updateRoleDto: UpdateRoleDto): Promise<Role> {
     const { name, enName, permissions } = updateRoleDto;
     const p = [];
-    console.log('permissions => ', permissions);
-    console.log('p => ', p);
+    // console.log('permissions => ', permissions);
+    // console.log('p => ', p);
     const uniquePermission = [...new Set(permissions)];
     console.log('uniquePermission => ', uniquePermission);
     for (let i = 0; i < uniquePermission.length; i++) {
       const per = await this.permissionService.getPermissionRaw(
-        uniquePermission[i],
+        parseInt(uniquePermission[i]),
       );
       console.log(per, 'per');
       if (per) p.push(per);
@@ -94,7 +94,7 @@ export class RolesService {
     return roles;
   }
 
-  async deleteRoles(id: string): Promise<void> {
+  async deleteRoles(id: number): Promise<void> {
     const result = await this.rolesRepository.delete({
       id: id,
     });

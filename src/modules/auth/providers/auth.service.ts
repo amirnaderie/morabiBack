@@ -15,7 +15,7 @@ import { MFAService } from './mfa.service';
 import Redis from 'ioredis';
 import { SignInDto } from '../dto/signIn.dto';
 import { RolesService } from 'src/modules/role/providers/role.service';
-import { Role } from 'src/modules/role/role.entity';
+import { Role } from 'src/modules/role/entities/role.entity';
 // import { JwtPayload } from './jwt-payload.interface';
 
 @Injectable()
@@ -51,6 +51,7 @@ export class AuthService {
 
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(password, salt);
+    const role = await this.rolesService.findOne(2);
     const user = this.usresRepository.create({
       userName,
       password: hashedPassword,
@@ -58,6 +59,7 @@ export class AuthService {
       userFamily,
     });
     try {
+      user.roles = [role];
       await this.usresRepository.save(user);
     } catch (error) {
       if (error.number === 2627)

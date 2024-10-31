@@ -10,7 +10,7 @@ import {
   SetMetadata,
   UseGuards,
 } from '@nestjs/common';
-import { TasksService } from './tasks.service';
+import { TasksService } from './providers/tasks.service';
 
 import { CreateTaskDto } from './dto/create-task.dto';
 import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
@@ -48,6 +48,7 @@ export class TasksController {
   }
 
   @Get('/:id')
+  @SetMetadata('permission', 'get-task')
   getTaskById(@Param('id') id: string, @GetUser() user: User): Promise<Task> {
     return this.tasksService.getTaskById(id, user);
   }

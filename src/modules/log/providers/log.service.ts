@@ -19,7 +19,7 @@ export class LogService {
     request: string = '',
     logMessage: string,
   ): Promise<void> {
-    const correlationId = this.als.getStore()['Correlationid'];
+    const correlationId = this.als.getStore()['correlationId']||"1111";
     const accessToken = this.als.getStore()['accessToken'];
     const decodedAccessToken = this.tokenService.decodeToken(accessToken);
     const userId = decodedAccessToken.id;

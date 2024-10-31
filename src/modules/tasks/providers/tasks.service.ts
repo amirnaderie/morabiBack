@@ -1,15 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateTaskDto } from './dto/create-task.dto';
-import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
+import { CreateTaskDto } from '../dto/create-task.dto';
+import { GetTasksFilterDto } from '../dto/get-tasks-filter.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Like, Repository } from 'typeorm';
 
-import { Task } from './task.entity';
+import { Task } from '../task.entity';
 import { User } from 'src/modules/users/entities/user.entity';
-import { TaskStatus } from './enum/task-status.enum';
+import { TaskStatus } from '../enum/task-status.enum';
 import { AsyncLocalStorage } from 'async_hooks';
-import { GetUser } from '../auth/get-user.decorator';
-import { TokenService } from '../auth/providers/token.service';
+import { TokenService } from '../../auth/providers/token.service';
+import { LogService } from '../../log/providers/log.service';
 
 @Injectable()
 export class TasksService {
@@ -17,12 +17,13 @@ export class TasksService {
     @InjectRepository(Task) // You can inject without using forFeature()
     private readonly tasksRepository: Repository<Task>,
     private readonly als: AsyncLocalStorage<any>,
-    private readonly tokenService: TokenService
+    private readonly tokenService: TokenService,
+    private readonly logService: LogService
   ) {}
 
   async getTasks(filterDto: GetTasksFilterDto, user: User): Promise<Task[]> {
     const { status, search } = filterDto;
-    const correlationId = this.als.getStore()['Correlationid'];
+    const correlationId = this.als.getStore()['correlationid'];
     const accessToken = this.als.getStore()['accessToken'];
     const localUser = { id: user.id };
     let whereCondition: any = { user: localUser }; // Base condition: filter by user
@@ -46,10 +47,7 @@ export class TasksService {
   }
 
   async getTaskById(id: string, user: User): Promise<Task> {
-    const correlationId = this.als.getStore()['correlationId'];
-    const accessToken = this.als.getStore()['accessToken'];
-    const userData= this.tokenService.decodeToken(accessToken)
-    console.log('correlationId',correlationId);
+    this.logService.logData('TaskById',JSON.stringify( {id, user}),'Successfully retrieved')
     //   const aaaa = this.als.getStore().get('userData');
     // const userData = this.als.getStore()['userData'];
     // const transactionId = this.als.getStore().get('userData');
