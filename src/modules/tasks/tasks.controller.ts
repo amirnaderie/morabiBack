@@ -29,6 +29,7 @@ export class TasksController {
   constructor(private tasksService: TasksService) {}
 
   @Get()
+  @SetMetadata('permission', 'read-task')
   getTasks(
     @Query() filterDto: GetTasksFilterDto,
     @GetUser() user: User,

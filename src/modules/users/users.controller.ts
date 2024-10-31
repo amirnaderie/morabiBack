@@ -38,11 +38,14 @@ export class UsersController {
   // }
 
   @Get('/me')
-  me(@GetUser() user: User): UserResponseDto {
+  me(
+    @GetUser() user: User & { permissions: string[] },
+  ): UserResponseDto & { permissions: string[] } {
     return {
       userName: user.userName,
       id: user.id,
       roles: user.roles,
+      permissions: user.permissions,
     };
   }
 

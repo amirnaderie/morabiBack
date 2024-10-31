@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { CreateRoleDto } from '../dto/create-role.dto';
+import { AssignPermissionToRole, CreateRoleDto } from '../dto/create-role.dto';
 import { UpdateRoleDto } from '../dto/update-role.dto';
 import { PermissionService } from 'src/modules/permission/providers/permission.service';
 import { Role } from '../role.entity';
@@ -32,6 +32,25 @@ export class RolesService {
     });
     const cretaedRole = await this.rolesRepository.save(roles);
     return cretaedRole;
+  }
+
+  async assignPermissionToRole(
+    assignPermissionToRole: AssignPermissionToRole,
+  ): Promise<any> {
+    const { roleId, permissionIds } = assignPermissionToRole;
+
+    const permissions =
+      await this.permissionService.existPermissionIdsRaw(permissionIds);
+
+    const role = await this.rolesRepository.findOne({
+      where: { id: roleId },
+    });
+
+    role.permissions = permissions;
+
+    const result = this.rolesRepository.save(role);
+
+    return result;
   }
 
   async updateRoles(id: string, updateRoleDto: UpdateRoleDto): Promise<Role> {

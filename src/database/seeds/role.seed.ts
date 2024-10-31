@@ -13,13 +13,12 @@ export const createRoleSeed = async (AppDataSource: DataSource) => {
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
-    // const roleRepository = queryRunner.manager.getRepository(RoleSeed);
     await queryBuilder
       .insert()
       .into(RoleSeed)
       .values([
         { name: 'ادمین', enName: 'admin' },
-        { name: 'مربی', enName: 'morabi' },
+        { name: 'مربی', enName: 'coach' },
       ])
       .execute();
 

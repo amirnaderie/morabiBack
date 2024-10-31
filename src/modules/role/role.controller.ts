@@ -7,12 +7,12 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { CreateRoleDto } from './dto/create-role.dto';
+import { AssignPermissionToRole, CreateRoleDto } from './dto/create-role.dto';
 import { RolesService } from './providers/role.service';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { Role } from './role.entity';
 
-@Controller('roles')
+@Controller('role')
 export class RolesController {
   constructor(private rolesService: RolesService) {}
 
@@ -24,6 +24,13 @@ export class RolesController {
   @Post()
   createRoles(@Body() createRoleDto: CreateRoleDto): Promise<Role> {
     return this.rolesService.createRole(createRoleDto);
+  }
+
+  @Post('assign-permission')
+  assignPermissionToRole(
+    @Body() assignPermissionToRole: AssignPermissionToRole,
+  ): Promise<Role> {
+    return this.rolesService.assignPermissionToRole(assignPermissionToRole);
   }
 
   @Patch('/:id')

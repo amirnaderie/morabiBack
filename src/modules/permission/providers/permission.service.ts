@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 
 // import { User } from 'src/users/entities/user.entity';
 import { CreatePermissionDto } from '../dto/create-permission.dto';
@@ -64,5 +64,15 @@ export class PermissionService {
         id: id,
       },
     });
+  }
+
+  async existPermissionIdsRaw(ids: string[]): Promise<Permission[]> {
+    try {
+      return await this.permissionRepository.find({
+        where: { id: In([...ids]) },
+      });
+    } catch (error) {
+      throw new NotFoundException('permission not found', error);
+    }
   }
 }
