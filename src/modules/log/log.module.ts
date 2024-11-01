@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { LogService } from './providers/log.service';
 import { LogController } from './log.controller';
 import { AlsModule } from 'src/middleware/als.module';
@@ -7,7 +7,11 @@ import { Log } from './entities/log.entity';
 import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Log]), AlsModule,AuthModule],
+  imports: [
+    TypeOrmModule.forFeature([Log]),
+    AlsModule,
+    forwardRef(() => AuthModule),
+  ],
   controllers: [LogController],
   providers: [LogService],
   exports: [LogService],

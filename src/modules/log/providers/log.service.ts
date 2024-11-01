@@ -19,16 +19,21 @@ export class LogService {
     request: string = '',
     logMessage: string,
   ): Promise<void> {
-    const correlationId = this.als.getStore()['correlationId']||"1111";
-    const accessToken = this.als.getStore()['accessToken'];
-    const decodedAccessToken = this.tokenService.decodeToken(accessToken);
-    const userId = decodedAccessToken.id;
+    const correlationId: string = this.als.getStore()['correlationId'] || null;
+    const accessToken: string = this.als.getStore()['accessToken'];
+    const requestIp: string = this.als.getStore()['requestIp'];
+    let userId: string | null = '';
+    if (accessToken) {
+      const decodedAccessToken = this.tokenService.decodeToken(accessToken);
+      userId = decodedAccessToken.id;
+    } else userId = null;
     const log = this.LogsRepository.create({
       methodName,
       request,
       userId,
       logMessage,
       correlationId,
+      requestIp,
     });
     await this.LogsRepository.save(log);
   }

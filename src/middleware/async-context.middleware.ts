@@ -8,8 +8,11 @@ export class AsyncContextMiddleware implements NestMiddleware {
   constructor(private readonly als: AsyncLocalStorage<any>) {}
 
   use(req: Request, res: Response, next: () => void) {
+    //referer
     const store = {
-      correlationId: req.headers['x-correlation-id'],
+      correlationId:
+        req.headers['x-correlation-id'] || req.headers['postman-token'],
+      requestIp: req.headers['referer'] || '',
       accessToken: req.headers['authorization']
         ? req.headers['authorization'].toString().split(' ')[1]
         : '',

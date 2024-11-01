@@ -11,10 +11,12 @@ import { UsersModule } from 'src/modules/users/users.module';
 import { TokenService } from './providers/token.service';
 import { RolesModule } from '../role/role.module';
 import { Role } from '../role/entities/role.entity';
+import { LogModule } from '../log/log.module';
 
 @Module({
   imports: [
     forwardRef(() => UsersModule),
+    forwardRef(() => LogModule),
     ConfigModule,
     TypeOrmModule.forFeature([User, Role]),
     JwtModule.registerAsync({

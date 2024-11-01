@@ -3,7 +3,6 @@ import {
   CreateDateColumn,
   Entity,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity()
@@ -14,7 +13,7 @@ export class Log {
   @Column({ type: 'uuid', nullable: true })
   userId: string;
 
-  @Column({ type: 'uuid', nullable: false })
+  @Column({ type: 'uuid', nullable: true })
   correlationId: string;
 
   @Column({ nullable: true, length: 100 })
@@ -25,6 +24,9 @@ export class Log {
 
   @Column({ type: 'ntext', nullable: true })
   logMessage: string;
+
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  requestIp: string;
 
   @CreateDateColumn({ name: 'created_at', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;

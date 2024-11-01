@@ -16,6 +16,7 @@ import Redis from 'ioredis';
 import { SignInDto } from '../dto/signIn.dto';
 import { RolesService } from 'src/modules/role/providers/role.service';
 import { Role } from 'src/modules/role/entities/role.entity';
+import { LogService } from 'src/modules/log/providers/log.service';
 // import { JwtPayload } from './jwt-payload.interface';
 
 @Injectable()
@@ -26,6 +27,7 @@ export class AuthService {
     private rolesService: RolesService,
     private jwtService: JwtService,
     private mFAService: MFAService,
+    private readonly logService: LogService,
     @Inject('REDIS_CLIENT') private readonly redis: Redis,
   ) {}
 
@@ -121,7 +123,11 @@ export class AuthService {
       roles: user.roles.map((role: Role) => role.enName),
       permissions: userPermissionEnNames,
     };
-
+    this.logService.logData(
+      'signIn',
+      JSON.stringify({ userMobile }),
+      'Successfully logedIn',
+    );
     const accessToken: string = await this.jwtService.sign(payload);
     return { accessToken };
   }
