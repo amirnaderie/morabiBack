@@ -18,8 +18,6 @@ export class CreateRoleDto {
 export class AssignPermissionToRole {
   @IsNotEmpty()
   @IsString()
-  @MaxLength(36)
-  @MinLength(36)
   roleId: number;
 
   @IsArray()

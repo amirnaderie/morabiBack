@@ -20,7 +20,7 @@ export const createPermissionSeed = async (AppDataSource: DataSource) => {
         { name: 'ایجاد حرکت', enName: 'create-movement' },
         { name: 'ویرایش حرکت', enName: 'update-movement' },
         { name: 'حذف حرکت', enName: 'delete-movement' },
-        { name: 'مشاهده حرکت', enName: 'read-movement' },
+        { name: 'مشاهده حرکت', enName: 'movement' },
         { name: 'مشاهده لیست حرکات', enName: 'read-movements' },
         { name: 'ایجاد دسترسی', enName: 'create-permission' },
         { name: 'ویرایش دسترسی', enName: 'update-permission' },
@@ -37,7 +37,16 @@ export const createPermissionSeed = async (AppDataSource: DataSource) => {
         { name: 'ویرایش تسک', enName: 'update-task' },
         { name: 'حذف تسک', enName: 'delete-task' },
         { name: 'مشاهده لیست تسک', enName: 'read-tasks' },
-        { name: 'مشاهده تسک', enName: 'read-task' },
+        { name: 'مشاهده تسک', enName: 'task' },
+        { name: 'مشاهده منوی حرکات', enName: 'movements' },
+        { name: 'مشاهده حرکت', enName: 'movement' },
+        { name: 'مشاهده برنامه ها', enName: 'plans' },
+        { name: 'مشاهده برنامه', enName: 'plan' },
+        { name: 'مشاهده منوی ورزشکاران', enName: 'athletes' },
+        { name: 'مشاهده ورزشکار', enName: 'athlete' },
+        { name: 'مشاهده منوی پکیج ها', enName: 'packages' },
+        { name: 'مشاهده پکیج', enName: 'package' },
+        { name: 'مشاهده منوی فرم های ابتدایی', enName: 'elementary' },
       ])
       .execute();
   } catch (error) {

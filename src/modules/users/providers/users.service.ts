@@ -41,15 +41,10 @@ export class UsersService {
 
   async assginRole(assginUserRoleDto: AssginUserRoleDto): Promise<User> {
     try {
-      console.log('dddd');
-
       const { userId, roleId } = assginUserRoleDto;
-
       const user = await this.findOne(userId);
       const role = await this.rolesServise.findOne(roleId);
-      console.log(user.roles, 'user.roles');
       user.roles = [role];
-
       return await this.userRepository.save(user);
     } catch (error) {
       console.log(error, 'error');

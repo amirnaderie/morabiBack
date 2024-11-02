@@ -4,10 +4,10 @@ import { CreateRoleDto } from './create-role.dto';
 export class UpdateRoleDto extends CreateRoleDto {
   @IsArray()
   @IsString({ each: true })
-  @MaxLength(36, {
+  @MaxLength(3, {
     each: true,
   })
-  @MinLength(36, {
+  @MinLength(1, {
     each: true,
   })
   permissions: string[];

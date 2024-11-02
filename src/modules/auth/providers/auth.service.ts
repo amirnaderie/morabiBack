@@ -108,6 +108,11 @@ export class AuthService {
     });
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
+      this.logService.logData(
+        'signIn',
+        JSON.stringify({ userMobile }),
+        'login Failed',
+      );
       throw new UnauthorizedException('نام کاربری یا رمز عبور اشتباه است');
     }
 
