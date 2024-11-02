@@ -13,9 +13,10 @@ export class AsyncContextMiddleware implements NestMiddleware {
       correlationId:
         req.headers['x-correlation-id'] || req.headers['postman-token'],
       requestIp: req.headers['referer'] || '',
-      accessToken: req.headers['authorization']
-        ? req.headers['authorization'].toString().split(' ')[1]
-        : '',
+      // accessToken: req.headers['authorization']
+      //   ? req.headers['authorization'].toString().split(' ')[1]
+      //   : '',
+      accessToken: req.cookies['accessToken'],
     };
     this.als.run(store, () => {
       next(); // Continue to the next middleware or request handler

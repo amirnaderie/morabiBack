@@ -18,7 +18,6 @@ import { AsyncLocalStorage } from 'node:async_hooks';
 import { LogModule } from './modules/log/log.module';
 import { AsyncContextMiddleware } from './middleware/async-context.middleware';
 import { MovmentModule } from './modules/movment/movment.module';
-import * as cookieParser from 'cookie-parser';
 
 @Module({
   imports: [

@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  InternalServerErrorException,
   Post,
   Res,
   UnauthorizedException,
@@ -12,7 +11,6 @@ import { MFAService } from './providers/mfa.service';
 import { SendOtpDto } from './dto/sendOtp.dto';
 import { SignUpDto } from './dto/singnUp.dto';
 import { SignInDto } from './dto/signIn.dto';
-import { CookieOptions } from 'express';
 import { Response } from 'express';
 
 @Controller('auth')
@@ -57,40 +55,15 @@ export class AuthController {
     return { message: '2FA verified successfully' };
   }
 
-  @Post('sign-in_')
-  signIn_(@Body() signInDto: SignInDto): Promise<{ accessToken: string }> {
-    return this.authService.signIn(signInDto);
-  }
+  // @Post('sign-in_')
+  // signIn_(@Body() signInDto: SignInDto): Promise<{ accessToken: string }> {
+  //   return this.authService.signIn(signInDto);
+  // }
   @Post('sign-in')
   async signIn(
     @Body() signInDto: SignInDto,
     @Res({ passthrough: true }) response: Response,
   ) {
-    try {
-      const { accessToken } = await this.authService.signIn(signInDto);
-
-      if (!accessToken) {
-        throw new UnauthorizedException('Authentication failed');
-      }
-
-      const cookieOptions: CookieOptions = {
-        httpOnly: true,
-        sameSite: 'lax',
-        maxAge: 30 * 60 * 1000,
-        secure: false,
-        domain: 'localhost', // Add domain
-        path: '/', // Explicitly set path
-      };
-
-      response.cookie('accessToken', accessToken, cookieOptions);
-
-      return { message: 'Successfully signed in' };
-    } catch (error) {
-      // Log the error appropriately
-      if (error instanceof UnauthorizedException) {
-        throw error;
-      }
-      throw new InternalServerErrorException('Sign-in failed');
-    }
+    return await this.authService.signIn(signInDto, response);
   }
 }

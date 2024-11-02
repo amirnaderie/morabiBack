@@ -17,6 +17,7 @@ import { SignInDto } from '../dto/signIn.dto';
 import { RolesService } from 'src/modules/role/providers/role.service';
 import { Role } from 'src/modules/role/entities/role.entity';
 import { LogService } from 'src/modules/log/providers/log.service';
+import { CookieOptions, Response } from 'express';
 // import { JwtPayload } from './jwt-payload.interface';
 
 @Injectable()
@@ -100,7 +101,7 @@ export class AuthService {
     }
   }
 
-  async signIn(signInDto: SignInDto): Promise<{ accessToken: string }> {
+  async signIn(signInDto: SignInDto, response: Response) {
     const { userMobile, password } = signInDto;
     const user = await this.usresRepository.findOne({
       where: { userMobile: userMobile },
@@ -134,6 +135,21 @@ export class AuthService {
       'Successfully logedIn',
     );
     const accessToken: string = await this.jwtService.sign(payload);
-    return { accessToken };
+    if (!accessToken) {
+      throw new UnauthorizedException('Authentication failed');
+    }
+
+    const cookieOptions: CookieOptions = {
+      httpOnly: true,
+      sameSite: 'lax',
+      maxAge: 30 * 60 * 1000,
+      secure: false,
+      domain: 'localhost', // Add domain
+      path: '/', // Explicitly set path
+    };
+
+    response.cookie('accessToken', accessToken, cookieOptions);
+
+    return { message: 'Successfully signed in' };
   }
 }
