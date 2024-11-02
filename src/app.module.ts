@@ -18,6 +18,8 @@ import { AsyncLocalStorage } from 'node:async_hooks';
 import { LogModule } from './modules/log/log.module';
 import { AsyncContextMiddleware } from './middleware/async-context.middleware';
 import { MovmentModule } from './modules/movment/movment.module';
+import * as cookieParser from 'cookie-parser';
+
 @Module({
   imports: [
     AlsModule,
@@ -64,19 +66,20 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     // consumer.apply(CorrelationIdMiddleware).forRoutes('*');
     consumer.apply(AsyncContextMiddleware).forRoutes('*'); // Apply globally
-  //   consumer
-  //     .apply((req, res, next) => {
-  //       // populate the store with some default values
-  //       // based on the request,
-  //       const store = {
-  //         Correlationid: req.headers['x-correlation-id'],
-  //       };
+    consumer.apply(cookieParser()).forRoutes('*'); // Apply globally
+    //   consumer
+    //     .apply((req, res, next) => {
+    //       // populate the store with some default values
+    //       // based on the request,
+    //       const store = {
+    //         Correlationid: req.headers['x-correlation-id'],
+    //       };
 
-  //       // and pass the "next" function as callback
-  //       // to the "als.run" method together with the store.
-  //       this.als.run(store, () => next());
-  //     })
-  //     // and register it for all routes (in case of Fastify use '(.*)')
-  //     .forRoutes('*');
-   }
+    //       // and pass the "next" function as callback
+    //       // to the "als.run" method together with the store.
+    //       this.als.run(store, () => next());
+    //     })
+    //     // and register it for all routes (in case of Fastify use '(.*)')
+    //     .forRoutes('*');
+  }
 }

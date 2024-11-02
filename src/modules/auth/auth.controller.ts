@@ -1,10 +1,19 @@
-import { Body, Controller, Post, UnauthorizedException } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  InternalServerErrorException,
+  Post,
+  Res,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { VerifyOtp } from './dto/verifyOtp.dto';
 import { AuthService } from './providers/auth.service';
 import { MFAService } from './providers/mfa.service';
 import { SendOtpDto } from './dto/sendOtp.dto';
 import { SignUpDto } from './dto/singnUp.dto';
 import { SignInDto } from './dto/signIn.dto';
+import { CookieOptions } from 'express';
+import { Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -48,8 +57,43 @@ export class AuthController {
     return { message: '2FA verified successfully' };
   }
 
-  @Post('sign-in')
-  signIn(@Body() signInDto: SignInDto): Promise<{ accessToken: string }> {
+  @Post('sign-in_')
+  signIn_(@Body() signInDto: SignInDto): Promise<{ accessToken: string }> {
     return this.authService.signIn(signInDto);
+  }
+  @Post('sign-in')
+  async signIn(
+    @Body() signInDto: SignInDto,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    try {
+      const { accessToken } = await this.authService.signIn(signInDto);
+
+      if (!accessToken) {
+        throw new UnauthorizedException('Authentication failed');
+      }
+
+      const cookieOptions: CookieOptions = {
+        httpOnly: true,
+        sameSite: 'lax',
+        maxAge: 15 * 60 * 1000,
+        // expires: new Date(Date.now() + 24 * 60 * 60 ),
+        secure: false,
+        // domain:
+        //   process.env.NODE_ENV === 'production'
+        //     ? 'your-domain.com'
+        //     : 'localhost',
+      };
+
+      response.cookie('accessToken', accessToken, cookieOptions);
+
+      return { message: 'Successfully signed in' };
+    } catch (error) {
+      // Log the error appropriately
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Sign-in failed');
+    }
   }
 }

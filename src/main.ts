@@ -4,6 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { TransformInterceptor } from './transform.interceptor';
 import { Logger } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import * as cookieParser from 'cookie-parser';
 
 import { ConfigService } from '@nestjs/config';
 // import * as dotenv from 'dotenv';
@@ -16,11 +17,14 @@ async function bootstrap() {
   const appPort = config.get('APP_PORT');
 
   const corsOrigins = process.env.CORS_ORIGINS.split(',');
+
   app.enableCors({
     origin: corsOrigins, // Add more sites as needed
     methods: 'GET,POST,PUT,DELETE',
     // allowedHeaders: 'Content-Type, Authorization',
+    credentials: true,
   });
+  app.use(cookieParser()); // Use cookie-parser middleware
 
   app.useGlobalPipes(
     new ValidationPipe({
