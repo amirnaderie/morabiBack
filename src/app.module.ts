@@ -17,6 +17,7 @@ import { AlsModule } from './middleware/als.module';
 import { AsyncLocalStorage } from 'node:async_hooks';
 import { LogModule } from './modules/log/log.module';
 import { AsyncContextMiddleware } from './middleware/async-context.middleware';
+import { MovmentModule } from './modules/movment/movment.module';
 @Module({
   imports: [
     AlsModule,
@@ -51,6 +52,7 @@ import { AsyncContextMiddleware } from './middleware/async-context.middleware';
     FileModule,
     UtilityModule,
     LogModule,
+    MovmentModule,
   ],
   providers: [],
 })
