@@ -10,6 +10,9 @@ import {
 } from 'typeorm';
 import { Task } from 'src/modules/tasks/task.entity';
 import { Role } from 'src/modules/role/entities/role.entity';
+import { Movement } from 'src/modules/movement/entities/movement.entity';
+import { File } from 'src/modules/file/entities/file.entity';
+import { Tag } from 'src/modules/tag/entities/tag.entity';
 
 @Entity()
 export class User {
@@ -28,6 +31,12 @@ export class User {
   @Column({ unique: true, length: 12 })
   userMobile: string;
 
+  @CreateDateColumn({ name: 'created_at', default: () => 'CURRENT_TIMESTAMP' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ name: 'updated_at' })
+  updatedAt: Date;
+
   @ManyToMany(() => Role, (role) => role.users, {
     eager: true,
     onDelete: 'CASCADE',
@@ -38,9 +47,12 @@ export class User {
   @OneToMany(() => Task, (task) => task.user, { eager: true })
   tasks: Task[];
 
-  @CreateDateColumn({ name: 'created_at', default: () => 'CURRENT_TIMESTAMP' })
-  createdAt: Date;
+  @OneToMany(() => Movement, (movement) => movement.user, { eager: true })
+  movements: Movement[];
 
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
+  @OneToMany(() => Tag, (tag) => tag.user, { eager: true })
+  tags: Tag[];
+
+  @OneToMany(() => File, (file) => file.user, { eager: true })
+  files: File[];
 }
