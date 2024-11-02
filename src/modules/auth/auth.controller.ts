@@ -76,13 +76,10 @@ export class AuthController {
       const cookieOptions: CookieOptions = {
         httpOnly: true,
         sameSite: 'lax',
-        maxAge: 15 * 60 * 1000,
-        // expires: new Date(Date.now() + 24 * 60 * 60 ),
+        maxAge: 30 * 60 * 1000,
         secure: false,
-        // domain:
-        //   process.env.NODE_ENV === 'production'
-        //     ? 'your-domain.com'
-        //     : 'localhost',
+        domain: 'localhost', // Add domain
+        path: '/', // Explicitly set path
       };
 
       response.cookie('accessToken', accessToken, cookieOptions);

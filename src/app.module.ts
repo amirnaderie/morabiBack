@@ -66,7 +66,7 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     // consumer.apply(CorrelationIdMiddleware).forRoutes('*');
     consumer.apply(AsyncContextMiddleware).forRoutes('*'); // Apply globally
-    consumer.apply(cookieParser()).forRoutes('*'); // Apply globally
+    // consumer.apply(cookieParser()).forRoutes('*'); // Apply globally
     //   consumer
     //     .apply((req, res, next) => {
     //       // populate the store with some default values
