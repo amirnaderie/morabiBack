@@ -17,6 +17,8 @@ import {
   writeFileSync,
 } from 'fs';
 import { ConfigService } from '@nestjs/config';
+import { User } from 'src/modules/users/entities/user.entity';
+import { Movement } from 'src/modules/movement/entities/movement.entity';
 
 @Injectable()
 export class FileService {
@@ -27,7 +29,12 @@ export class FileService {
     private readonly configService: ConfigService,
   ) {}
 
-  async handleFileUpload(file: MulterFile, req): Promise<{ fileId: string }> {
+  async handleFileUpload(
+    file: MulterFile,
+    req: Request,
+    user: User,
+    movement?: Movement,
+  ): Promise<File> {
     if (!file) {
       const errorMessage = req['fileValidationError'] || 'File upload failed';
       throw new BadRequestException(errorMessage);
@@ -69,8 +76,10 @@ export class FileService {
     writeFileSync(filePath, file.buffer); // Save the file manually
 
     const newFile = this.usresRepository.create({ fileName: filename });
+    newFile.user = user;
+    if (movement) newFile.movement = movement;
     const savedFile = await this.usresRepository.save(newFile);
-    return { fileId: savedFile.id };
+    return savedFile;
   }
 
   async getFile(fileName: string): Promise<ReadStream> {

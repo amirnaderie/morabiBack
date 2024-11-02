@@ -38,6 +38,10 @@ export const createPermissionSeed = async (AppDataSource: DataSource) => {
         { name: 'حذف تسک', enName: 'delete-task' },
         { name: 'مشاهده لیست تسک', enName: 'read-tasks' },
         { name: 'مشاهده تسک', enName: 'read-task' },
+        {
+          name: 'توانایی ساخت حرکت پیش‌ فرض',
+          enName: 'create-movement-default',
+        },
       ])
       .execute();
   } catch (error) {

@@ -19,6 +19,7 @@ export class Tag {
   @Column({
     type: 'nvarchar',
     length: '100',
+    unique: true,
   })
   name: string;
 

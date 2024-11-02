@@ -1,8 +1,6 @@
 import {
   Controller,
   Get,
-  HttpCode,
-  NotFoundException,
   Param,
   ParseUUIDPipe,
   Post,
@@ -18,6 +16,9 @@ import { FileService } from './providers/file.service';
 import { MulterFile, multerOptions } from './fileOptions';
 import { FileInterceptor as MulterFileInterceptor } from '@nestjs/platform-express';
 import { AuthGuard } from '../auth/auth.guard';
+import { User } from '../users/entities/user.entity';
+import { GetUser } from '../auth/get-user.decorator';
+import { File } from './entities/file.entity';
 
 @Controller('file')
 @UseGuards(AuthGuard)
@@ -29,8 +30,9 @@ export class FileController {
   async uploadFile(
     @UploadedFile() file: MulterFile,
     @Req() req: Request,
-  ): Promise<{ fileId: string }> {
-    return await this.fileService.handleFileUpload(file, req);
+    @GetUser() user: User,
+  ): Promise<File> {
+    return await this.fileService.handleFileUpload(file, req, user);
   }
 
   @Get('download/:fileId') async downloadFile(

@@ -44,6 +44,9 @@ export class User {
   @JoinTable({ name: 'user_roles' })
   roles: Role[];
 
+  @ManyToMany(() => Role, (role) => role.permissions)
+  permissions?: string[];
+
   @OneToMany(() => Task, (task) => task.user, { eager: true })
   tasks: Task[];
 

@@ -9,8 +9,14 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  imports:[TypeOrmModule.forFeature([File]),UtilityModule, ConfigModule,AuthModule],
+  imports: [
+    TypeOrmModule.forFeature([File]),
+    UtilityModule,
+    ConfigModule,
+    AuthModule,
+  ],
   controllers: [FileController],
   providers: [FileService],
+  exports: [FileService],
 })
 export class FileModule {}

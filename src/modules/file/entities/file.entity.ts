@@ -15,17 +15,17 @@ export class File {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({
-    type: 'varchar',
-    length: 36,
-  })
-  creatorId: string;
+  // @Column({
+  //   type: 'varchar',
+  //   length: 36,
+  // })
+  // creatorId: string;
 
   @Column({ nullable: false, length: 100 })
   fileName: string;
 
   @CreateDateColumn({ name: 'created_at', default: () => 'CURRENT_TIMESTAMP' })
-  createdAt: Date;
+  createdAt?: Date;
 
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
