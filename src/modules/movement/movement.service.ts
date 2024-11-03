@@ -24,39 +24,51 @@ export class MovementService {
       video?: Express.Multer.File;
       poster?: Express.Multer.File;
     },
-    res: Request | any,
+    req: Request | any,
   ) {
     const { name, description, tags } = createMovementDto;
 
-    const movement = await this.movementRepository.create({
+    const movement = this.movementRepository.create({
       name: name,
       type: user.permissions.includes('create-movement-default') ? 1 : 0,
       description: description,
+      user: user,
     });
+
+    const createTags = await this.tagService.createMany(
+      {
+        names: tags,
+      },
+      user,
+    );
+
+    if (createTags) {
+      movement.tags = createTags;
+    }
 
     const createdMovement = await this.movementRepository.save(movement);
 
-    await this.fileService.handleFileUpload(
-      files?.video[0],
-      res,
-      user,
-      createdMovement,
-    );
+    if (files?.video?.[0])
+      await this.fileService.handleFileUpload(
+        files?.video?.[0],
+        req,
+        user,
+        createdMovement,
+      );
 
-    await this.fileService.handleFileUpload(
-      files?.poster[0],
-      res,
-      user,
-      createdMovement,
-    );
-    console.log(3333333);
-
-    await this.tagService.createMany({ names: ['test1', 'test2'] });
+    if (files?.poster?.[0])
+      await this.fileService.handleFileUpload(
+        files?.poster?.[0],
+        req,
+        user,
+        createdMovement,
+      );
 
     const result = await this.movementRepository.findOne({
       where: { id: createdMovement.id },
       relations: {
         files: true,
+        tags: true,
       },
     });
     return result;

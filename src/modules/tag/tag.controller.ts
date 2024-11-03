@@ -10,14 +10,16 @@ import {
 import { TagService } from './tag.service';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { UpdateTagDto } from './dto/update-tag.dto';
+import { GetUser } from '../auth/get-user.decorator';
+import { User } from '../users/entities/user.entity';
 
 @Controller('tag')
 export class TagController {
   constructor(private readonly tagService: TagService) {}
 
   @Post()
-  create(@Body() createTagDto: CreateTagDto) {
-    return this.tagService.createMany(createTagDto);
+  create(@GetUser() user: User, @Body() createTagDto: CreateTagDto) {
+    return this.tagService.createMany(createTagDto, user);
   }
 
   @Get()

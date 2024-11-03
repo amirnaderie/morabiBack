@@ -43,7 +43,7 @@ export class Movement {
   updatedAt: Date;
 
   @DeleteDateColumn()
-  deletedA: Date;
+  deletedAt: Date;
 
   @OneToMany(() => File, (file) => file.movement, { eager: true })
   files: File[];

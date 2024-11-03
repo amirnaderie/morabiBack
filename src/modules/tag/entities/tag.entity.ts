@@ -24,7 +24,7 @@ export class Tag {
   name: string;
 
   @ManyToMany(() => Movement, (movement) => movement.tags, {
-    eager: true,
+    // eager: true,
     onDelete: 'CASCADE',
   })
   @JoinTable({
