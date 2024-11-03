@@ -6,19 +6,22 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { TagService } from './providers/tag.service';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { UpdateTagDto } from './dto/update-tag.dto';
 import { GetUser } from '../auth/get-user.decorator';
 import { User } from '../users/entities/user.entity';
+import { AuthGuard } from '../auth/auth.guard';
 
-@Controller('tag')
+@Controller('tags')
+@UseGuards(AuthGuard)
 export class TagController {
   constructor(private readonly tagService: TagService) {}
 
   @Post()
-  create(@GetUser() user: User, @Body() createTagDto: CreateTagDto) {
+  create(@Body() createTagDto: CreateTagDto, @GetUser() user: User) {
     return this.tagService.createMany(createTagDto, user);
   }
 

@@ -15,6 +15,7 @@ import {
   UpdateDateColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class Movement {
@@ -40,13 +41,21 @@ export class Movement {
   createdA: Date;
 
   @UpdateDateColumn()
+  @Exclude({ toPlainOnly: true })
   updatedAt: Date;
 
   @DeleteDateColumn()
+  @Exclude({ toPlainOnly: true })
   deletedAt: Date;
 
   @OneToMany(() => File, (file) => file.movement, { eager: true })
   files: File[];
+
+  // @ManyToMany(() => File, (file) => file.movements)
+  // @JoinTable({
+  //   name: 'file-tag',
+  // })
+  // files: File[];
 
   @ManyToOne(() => User, (user) => user.movements, { eager: false })
   @JoinColumn({ name: 'creatorId', referencedColumnName: 'id' })

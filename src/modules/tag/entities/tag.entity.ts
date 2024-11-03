@@ -1,4 +1,5 @@
 import { User } from 'src/modules/users/entities/user.entity';
+import { Exclude } from 'class-transformer';
 import { Movement } from 'src/modules/movement/entities/movement.entity';
 
 import {
@@ -8,6 +9,9 @@ import {
   ManyToOne,
   JoinColumn,
   ManyToMany,
+  CreateDateColumn,
+  UpdateDateColumn,
+  DeleteDateColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -23,6 +27,17 @@ export class Tag {
   })
   name: string;
 
+  @CreateDateColumn()
+  createdA: Date;
+
+  @UpdateDateColumn()
+  @Exclude({ toPlainOnly: true })
+  updatedAt: Date;
+
+  @DeleteDateColumn()
+  @Exclude({ toPlainOnly: true })
+  deletedAt: Date;
+
   @ManyToMany(() => Movement, (movement) => movement.tags, {
     // eager: true,
     onDelete: 'CASCADE',
@@ -32,7 +47,7 @@ export class Tag {
   })
   movements: Movement[];
 
-  @ManyToOne(() => User, (user) => user.tags, { eager: false })
+  @ManyToOne(() => User, (user) => user.tags)
   @JoinColumn({ name: 'creatorId', referencedColumnName: 'id' })
   user: User;
 }

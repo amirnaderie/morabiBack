@@ -17,7 +17,7 @@ import { MovementService } from './providers/movement.service';
 import { CreateMovementDto } from './dto/create-movement.dto';
 import { UpdateMovementDto } from './dto/update-movement.dto';
 
-@Controller('movement')
+@Controller('movements')
 @UseGuards(AuthGuard)
 export class MovementController {
   constructor(private readonly movementService: MovementService) {}

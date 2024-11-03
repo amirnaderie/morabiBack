@@ -31,12 +31,12 @@ export class MovementService {
       description: description,
       isDefault: user.permissions.includes('create-movement-default') ? 1 : 0,
     });
-
+    delete movement.user;
     return await this.movementRepository.save(movement);
   }
 
-  findAll() {
-    return `This action returns all movement`;
+  async findAll() {
+    return await this.movementRepository.find();
   }
 
   findOne(id: number) {

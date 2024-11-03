@@ -26,6 +26,7 @@ export class TagService {
           user: user,
         });
         const saveTag = await this.tagRepository.save(newTag);
+        delete saveTag.user;
         if (saveTag) tags.push(saveTag);
       }
     }
