@@ -22,7 +22,7 @@ import { MovmentModule } from './modules/movment/movment.module';
 @Module({
   imports: [
     AlsModule,
-    ConfigModule.forRoot({ envFilePath: `.env.dev`, isGlobal: true }),
+    ConfigModule.forRoot({ envFilePath: `.env.${process.env.ENV}`, isGlobal: true }),
     TasksModule,
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],

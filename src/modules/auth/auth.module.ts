@@ -27,7 +27,7 @@ import { LogModule } from '../log/log.module';
           global: true,
           secret: configService.get<string>('JWT_SECRET'),
           signOptions: {
-            expiresIn: configService.get<string>('JWT_EXPIRESIN'),
+            expiresIn: parseInt(configService.get<string>('JWT_EXPIRESIN')),
           },
         };
       },

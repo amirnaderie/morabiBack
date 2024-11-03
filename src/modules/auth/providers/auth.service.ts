@@ -18,6 +18,7 @@ import { RolesService } from 'src/modules/role/providers/role.service';
 import { Role } from 'src/modules/role/entities/role.entity';
 import { LogService } from 'src/modules/log/providers/log.service';
 import { CookieOptions, Response } from 'express';
+import { ConfigService } from '@nestjs/config';
 // import { JwtPayload } from './jwt-payload.interface';
 
 @Injectable()
@@ -29,6 +30,7 @@ export class AuthService {
     private jwtService: JwtService,
     private mFAService: MFAService,
     private readonly logService: LogService,
+    private readonly configService: ConfigService,
     @Inject('REDIS_CLIENT') private readonly redis: Redis,
   ) {}
 
@@ -142,9 +144,9 @@ export class AuthService {
     const cookieOptions: CookieOptions = {
       httpOnly: true,
       sameSite: 'lax',
-      maxAge: 30 * 60 * 1000,
-      secure: false,
-      domain: 'localhost', // Add domain
+      maxAge: parseInt(this.configService.get<string>('JWT_EXPIRESIN')) * 1000,
+      secure: process.env.ENV === 'prod',
+      domain: this.configService.get<string>('COOKIE_DOMAIN'), // Add domain
       path: '/', // Explicitly set path
     };
 

@@ -1,6 +1,8 @@
 import {
   Body,
   Controller,
+  Get,
+  HttpCode,
   Post,
   Res,
   UnauthorizedException,
@@ -55,15 +57,24 @@ export class AuthController {
     return { message: '2FA verified successfully' };
   }
 
-  // @Post('sign-in_')
-  // signIn_(@Body() signInDto: SignInDto): Promise<{ accessToken: string }> {
-  //   return this.authService.signIn(signInDto);
-  // }
   @Post('sign-in')
+  @HttpCode(200)
   async signIn(
     @Body() signInDto: SignInDto,
     @Res({ passthrough: true }) response: Response,
   ) {
     return await this.authService.signIn(signInDto, response);
   }
+
+  @Get('sign-out')
+  async signOut(@Res({ passthrough: true }) res: Response) {
+    res.clearCookie('accessToken', {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'lax',
+      path: '/',
+    });
+    return { message: 'Signed out successfully' };
+  }
+
 }
