@@ -47,6 +47,11 @@ export const createPermissionSeed = async (AppDataSource: DataSource) => {
         { name: 'مشاهده منوی پکیج ها', enName: 'packages' },
         { name: 'مشاهده پکیج', enName: 'package' },
         { name: 'مشاهده منوی فرم های ابتدایی', enName: 'elementary' },
+        { name: 'مشاهده تسک', enName: 'read-task' },
+        {
+          name: 'توانایی ساخت حرکت پیش‌ فرض',
+          enName: 'create-movement-default',
+        },
       ])
       .execute();
   } catch (error) {

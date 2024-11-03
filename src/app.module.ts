@@ -17,12 +17,17 @@ import { AlsModule } from './middleware/als.module';
 import { AsyncLocalStorage } from 'node:async_hooks';
 import { LogModule } from './modules/log/log.module';
 import { AsyncContextMiddleware } from './middleware/async-context.middleware';
-import { MovmentModule } from './modules/movment/movment.module';
+
+import { TagModule } from './modules/tag/tag.module';
+import { MovementModule } from './modules/movement/movement.module';
 
 @Module({
   imports: [
     AlsModule,
-    ConfigModule.forRoot({ envFilePath: `.env.${process.env.ENV}`, isGlobal: true }),
+    ConfigModule.forRoot({
+      envFilePath: `.env.${process.env.ENV}`,
+      isGlobal: true,
+    }),
     TasksModule,
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -53,7 +58,8 @@ import { MovmentModule } from './modules/movment/movment.module';
     FileModule,
     UtilityModule,
     LogModule,
-    MovmentModule,
+    TagModule,
+    MovementModule,
   ],
   providers: [],
 })
