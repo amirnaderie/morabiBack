@@ -20,10 +20,11 @@ import { User } from '../users/entities/user.entity';
 import { GetUser } from '../auth/get-user.decorator';
 import { File } from './entities/file.entity';
 
-@Controller('file')
+@Controller('files')
 @UseGuards(AuthGuard)
 export class FileController {
   constructor(private readonly fileService: FileService) {}
+
   @Post('upload-image')
   @UseInterceptors(MulterFileInterceptor('file', multerOptions))
   // @HttpCode(200) // Change the status code here
@@ -51,5 +52,12 @@ export class FileController {
     } catch (error) {
       throw new Error(error);
     }
+  }
+
+  @Get('')
+  async findAll(): Promise<File[]> {
+    const files = await this.fileService.findAll();
+    console.log(files, 'filesfiles');
+    return files;
   }
 }

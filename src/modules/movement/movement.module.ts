@@ -1,5 +1,5 @@
 import { forwardRef, Module } from '@nestjs/common';
-import { MovementService } from './movement.service';
+import { MovementService } from './providers/movement.service';
 import { MovementController } from './movement.controller';
 import { FileModule } from '../file/file.module';
 import { AuthModule } from '../auth/auth.module';

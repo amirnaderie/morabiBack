@@ -11,4 +11,9 @@ export class CreateMovementDto {
   @IsString({ each: true })
   @ArrayMinSize(1, { message: 'حداقل یک تگ وارد کنید' })
   tags: string[];
+
+  @IsArray()
+  @IsString({ each: true })
+  @ArrayMinSize(1, { message: 'حداقل یک فایل وارد کنید' })
+  files: string[];
 }

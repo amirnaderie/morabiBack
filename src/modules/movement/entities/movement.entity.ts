@@ -27,8 +27,8 @@ export class Movement {
   })
   name: string;
 
-  @Column()
-  type: number;
+  @Column({ type: 'tinyint', default: 0 })
+  isDefault: number;
 
   @Column({
     type: 'nvarchar',

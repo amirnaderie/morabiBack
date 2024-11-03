@@ -6,7 +6,7 @@ import {
 import { MulterFile } from '../fileOptions';
 import { InjectRepository } from '@nestjs/typeorm';
 import { File } from '../entities/file.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { UtilityService } from 'src/utility/providers/utility.service';
 import { join } from 'path';
 import {
@@ -24,7 +24,7 @@ import { Movement } from 'src/modules/movement/entities/movement.entity';
 export class FileService {
   constructor(
     @InjectRepository(File)
-    private readonly usresRepository: Repository<File>,
+    private readonly fileRepository: Repository<File>,
     private readonly utilityService: UtilityService,
     private readonly configService: ConfigService,
   ) {}
@@ -75,10 +75,10 @@ export class FileService {
 
     writeFileSync(filePath, file.buffer); // Save the file manually
 
-    const newFile = this.usresRepository.create({ fileName: filename });
+    const newFile = this.fileRepository.create({ fileName: filename });
     newFile.user = user;
     if (movement) newFile.movement = movement;
-    const savedFile = await this.usresRepository.save(newFile);
+    const savedFile = await this.fileRepository.save(newFile);
     return savedFile;
   }
 
@@ -90,12 +90,22 @@ export class FileService {
     return createReadStream(filePath);
   }
 
+  async findById(ids: string[]): Promise<File[]> {
+    return await this.fileRepository.find({
+      where: { id: In([...ids]) },
+    });
+  }
+
   async getFileName(fileId: string): Promise<string> {
-    const foundFile: File = await this.usresRepository.findOneBy({
+    const foundFile: File = await this.fileRepository.findOneBy({
       id: fileId,
     });
 
     if (!foundFile) throw new NotFoundException(`فایلی با این شناسه یافت نشد`);
     return foundFile.fileName;
+  }
+
+  async findAll(): Promise<File[]> {
+    return await this.fileRepository.find();
   }
 }
