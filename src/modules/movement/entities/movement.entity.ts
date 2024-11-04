@@ -48,14 +48,14 @@ export class Movement {
   @Exclude({ toPlainOnly: true })
   deletedAt: Date;
 
-  @OneToMany(() => File, (file) => file.movement, { eager: true })
+  @OneToMany(() => File, (file) => file.movement, { onDelete: 'CASCADE' })
   files: File[];
 
-  @ManyToOne(() => User, (user) => user.movements, { eager: false })
+  @ManyToOne(() => User, (user) => user.movements)
   @JoinColumn({ name: 'creatorId', referencedColumnName: 'id' })
   user: User;
 
-  @ManyToMany(() => Tag, (tag) => tag.movements)
+  @ManyToMany(() => Tag, (tag) => tag.movements, { onDelete: 'CASCADE' })
   @JoinTable({
     name: 'movement-tag',
   })

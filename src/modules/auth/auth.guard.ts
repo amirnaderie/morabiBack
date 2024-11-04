@@ -21,7 +21,7 @@ export class AuthGuard implements CanActivate {
     const token = request.cookies['accessToken'];
 
     if (!token) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('لطفا وارد شوید');
     }
     try {
       const payload = await this.jwtService.verifyAsync(token, {
@@ -31,7 +31,7 @@ export class AuthGuard implements CanActivate {
       // so that we can access it in our route handlers
       request['user'] = payload;
     } catch {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('لطفا وارد شوید');
     }
     return true;
   }
