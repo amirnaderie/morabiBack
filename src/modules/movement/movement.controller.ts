@@ -7,6 +7,7 @@ import {
   Delete,
   UseGuards,
   Controller,
+  UseInterceptors,
 } from '@nestjs/common';
 
 import { User } from '../users/entities/user.entity';
@@ -16,9 +17,11 @@ import { AuthGuard } from '../auth/auth.guard';
 import { MovementService } from './providers/movement.service';
 import { CreateMovementDto } from './dto/create-movement.dto';
 import { UpdateMovementDto } from './dto/update-movement.dto';
+import { HttpResponseTransform } from 'src/interceptors/http-response-transform.interceptor';
 
 @Controller('movements')
 @UseGuards(AuthGuard)
+@UseInterceptors(HttpResponseTransform)
 export class MovementController {
   constructor(private readonly movementService: MovementService) {}
 
@@ -26,7 +29,7 @@ export class MovementController {
   async create(
     @GetUser() user: User,
     @Body() createMovementDto: CreateMovementDto,
-  ): Promise<Movement> {
+  ): Promise<{ data: Movement }> {
     return await this.movementService.create(createMovementDto, user);
   }
 
