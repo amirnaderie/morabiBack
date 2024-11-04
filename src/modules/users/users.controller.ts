@@ -51,7 +51,6 @@ export class UsersController {
 
   @Post('/assgin-role')
   assginRole(@Body() assginUserRoleDto: AssginUserRoleDto): any {
-    console.log(655, assginUserRoleDto);
     return this.usersService.assginRole(assginUserRoleDto);
   }
 }
