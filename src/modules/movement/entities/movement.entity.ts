@@ -25,6 +25,7 @@ export class Movement {
   @Column({
     type: 'nvarchar',
     length: 150,
+    unique: true,
   })
   name: string;
 
