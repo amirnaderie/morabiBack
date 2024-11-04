@@ -37,19 +37,19 @@ export class MovementController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.movementService.findOne(+id);
+    return this.movementService.findOne(id);
   }
 
   @Patch(':id')
-  update(
+  async update(
     @Param('id') id: string,
     @Body() updateMovementDto: UpdateMovementDto,
   ) {
-    return this.movementService.update(+id, updateMovementDto);
+    return await this.movementService.update(updateMovementDto, id);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.movementService.remove(+id);
+    return this.movementService.remove(id);
   }
 }

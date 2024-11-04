@@ -27,11 +27,11 @@ export class File {
   @Exclude({ toPlainOnly: true })
   updatedAt: Date;
 
-  @ManyToOne(() => Movement, (movement) => movement.files, { eager: false })
+  @ManyToOne(() => Movement, (movement) => movement.files)
   @JoinColumn({ name: 'movementId', referencedColumnName: 'id' })
   movement: Movement;
 
-  @ManyToOne(() => User, (user) => user.files, { eager: false })
+  @ManyToOne(() => User, (user) => user.files)
   @JoinColumn({ name: 'userId', referencedColumnName: 'id' })
   user: User;
 }

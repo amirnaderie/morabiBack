@@ -1,9 +1,7 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { Exclude } from 'class-transformer';
-import { User } from 'src/modules/users/entities/user.entity';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { TaskStatus } from './enum/task-status.enum';
 
-@Entity() 
+@Entity()
 export class Task {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -16,8 +14,4 @@ export class Task {
 
   @Column()
   status: TaskStatus;
-
-  @ManyToOne(() => User, (user) => user.tasks, { eager: false })
-  @Exclude({ toPlainOnly: true })
-  user: User;
 }

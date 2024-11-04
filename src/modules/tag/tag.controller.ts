@@ -1,5 +1,4 @@
 import {
-  Controller,
   Get,
   Post,
   Body,
@@ -7,13 +6,15 @@ import {
   Param,
   Delete,
   UseGuards,
+  Controller,
 } from '@nestjs/common';
+
+import { User } from '../users/entities/user.entity';
+import { GetUser } from '../auth/get-user.decorator';
+import { AuthGuard } from '../auth/auth.guard';
 import { TagService } from './providers/tag.service';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { UpdateTagDto } from './dto/update-tag.dto';
-import { GetUser } from '../auth/get-user.decorator';
-import { User } from '../users/entities/user.entity';
-import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('tags')
 @UseGuards(AuthGuard)
@@ -32,7 +33,7 @@ export class TagController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.tagService.findOne(+id);
+    return this.tagService.findOne(id);
   }
 
   @Patch(':id')
@@ -42,6 +43,6 @@ export class TagController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.tagService.remove(+id);
+    return this.tagService.remove(id);
   }
 }

@@ -55,9 +55,8 @@ export class TasksService {
     // const transactionId = this.als.getStore().get('userData');
     // console.log('userData', userData);
 
-    const localUser = { id: user.id };
     const found = await this.tasksRepository.findOne({
-      where: { id, user: localUser },
+      where: { id },
     });
     if (!found) throw new NotFoundException(`Task with Id ${id} not found`);
     return found;
@@ -69,21 +68,20 @@ export class TasksService {
   //   return found;
   // }
 
-  async createTask(createTaskDto: CreateTaskDto, user: User): Promise<Task> {
+  async createTask(createTaskDto: CreateTaskDto): Promise<Task> {
     const { title, description } = createTaskDto;
     const task = this.tasksRepository.create({
       title,
       description,
       status: TaskStatus.OPEN,
-      user,
+      // user,
     });
     const cretaedTask = await this.tasksRepository.save(task);
     return cretaedTask;
   }
 
-  async deleteTask(id: string, user: User): Promise<void> {
-    const localUser = { id: user.id };
-    const result = await this.tasksRepository.delete({ id, user: localUser });
+  async deleteTask(id: string): Promise<void> {
+    const result = await this.tasksRepository.delete({ id });
     if (result.affected === 0)
       throw new NotFoundException(`Task with Id ${id} not found`);
   }

@@ -107,6 +107,11 @@ export class AuthService {
     const { userMobile, password } = signInDto;
     const user = await this.usresRepository.findOne({
       where: { userMobile: userMobile },
+      select: {
+        id: true,
+        password: true,
+        userName: true,
+      },
       relations: ['roles', 'roles.permissions'],
     });
 

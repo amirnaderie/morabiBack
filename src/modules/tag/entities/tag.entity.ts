@@ -39,7 +39,6 @@ export class Tag {
   deletedAt: Date;
 
   @ManyToMany(() => Movement, (movement) => movement.tags, {
-    // eager: true,
     onDelete: 'CASCADE',
   })
   @JoinTable({

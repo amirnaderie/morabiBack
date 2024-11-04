@@ -31,23 +31,50 @@ export class MovementService {
       description: description,
       isDefault: user.permissions.includes('create-movement-default') ? 1 : 0,
     });
-    delete movement.user;
-    return await this.movementRepository.save(movement);
+    const result = await this.movementRepository.save(movement);
+    delete result.user.permissions;
+    delete result.user.roles;
+    return result;
   }
 
   async findAll() {
-    return await this.movementRepository.find();
+    return await this.movementRepository.find({
+      select: ['user'],
+      relations: ['tags', 'files', 'user'],
+      // loadRelationIds: true,
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} movement`;
+  async findOne(id: string) {
+    return await this.movementRepository.findOne({
+      where: { id: id },
+      relations: ['tags', 'files', 'user'],
+    });
   }
 
-  update(id: number, updateMovementDto: UpdateMovementDto) {
-    return `This action updates a #${id} ${updateMovementDto} movement`;
+  async update(updateMovementDto: UpdateMovementDto, id: string) {
+    const { name, description, tags, files } = updateMovementDto;
+    try {
+      const movement = await this.movementRepository.findOneBy({ id });
+      const tagsEntity = await this.tagService.findById(tags);
+      const fileEntity = await this.fileService.findById(files);
+
+      movement.name = name;
+      movement.tags = tagsEntity;
+      movement.files = fileEntity;
+      movement.description = description;
+
+      const savedMovement = await this.movementRepository.save(movement);
+
+      delete movement.user;
+      return savedMovement;
+    } catch (error) {
+      if (error.message) return error;
+      return ' ddd';
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} movement`;
+  async remove(id: string) {
+    return await this.movementRepository.softDelete(id);
   }
 }

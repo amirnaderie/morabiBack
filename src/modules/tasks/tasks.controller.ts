@@ -40,11 +40,8 @@ export class TasksController {
 
   @Post()
   @SetMetadata('permission', 'create-task')
-  createTask(
-    @Body() createTaskDto: CreateTaskDto,
-    @GetUser() user: User,
-  ): Promise<Task> {
-    return this.tasksService.createTask(createTaskDto, user);
+  createTask(@Body() createTaskDto: CreateTaskDto): Promise<Task> {
+    return this.tasksService.createTask(createTaskDto);
   }
 
   @Get('/:id')
@@ -54,8 +51,8 @@ export class TasksController {
   }
 
   @Delete('/:id')
-  delteTask(@Param('id') id: string, @GetUser() user: User): Promise<void> {
-    return this.tasksService.deleteTask(id, user);
+  delteTask(@Param('id') id: string): Promise<void> {
+    return this.tasksService.deleteTask(id);
   }
 
   @Patch('/:id/status')

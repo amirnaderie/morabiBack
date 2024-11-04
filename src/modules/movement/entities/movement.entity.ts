@@ -1,6 +1,7 @@
 import { Tag } from 'src/modules/tag/entities/tag.entity';
 import { File } from 'src/modules/file/entities/file.entity';
 import { User } from 'src/modules/users/entities/user.entity';
+import { Exclude } from 'class-transformer';
 
 import {
   Column,
@@ -15,7 +16,6 @@ import {
   UpdateDateColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Exclude } from 'class-transformer';
 
 @Entity()
 export class Movement {
@@ -37,25 +37,19 @@ export class Movement {
   })
   description: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ select: false })
   createdA: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ select: false })
   @Exclude({ toPlainOnly: true })
   updatedAt: Date;
 
-  @DeleteDateColumn()
+  @DeleteDateColumn({ select: false })
   @Exclude({ toPlainOnly: true })
   deletedAt: Date;
 
   @OneToMany(() => File, (file) => file.movement, { eager: true })
   files: File[];
-
-  // @ManyToMany(() => File, (file) => file.movements)
-  // @JoinTable({
-  //   name: 'file-tag',
-  // })
-  // files: File[];
 
   @ManyToOne(() => User, (user) => user.movements, { eager: false })
   @JoinColumn({ name: 'creatorId', referencedColumnName: 'id' })

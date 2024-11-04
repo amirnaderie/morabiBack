@@ -8,7 +8,12 @@ import { AlsModule } from 'src/middleware/als.module';
 import { LogModule } from '../log/log.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Task]), forwardRef(() => AuthModule),AlsModule,LogModule ], // Use forFeature here to register for this module
+  imports: [
+    TypeOrmModule.forFeature([Task]),
+    forwardRef(() => AuthModule),
+    AlsModule,
+    LogModule,
+  ], // Use forFeature here to register for this module
   controllers: [TasksController],
   providers: [TasksService],
 })

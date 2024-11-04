@@ -34,12 +34,12 @@ export class TagService {
     return tags;
   }
 
-  findAll() {
-    return `This action returns all tag`;
+  async findAll() {
+    return await this.tagRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} tag`;
+  async findOne(id: string) {
+    return await this.tagRepository.findOneBy({ id });
   }
 
   async findById(ids: string[]): Promise<Tag[]> {
@@ -61,7 +61,7 @@ export class TagService {
     return `This action updates a #${id} ${updateTagDto} tag`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} tag`;
+  async remove(id: string) {
+    return await this.tagRepository.softDelete(id);
   }
 }
