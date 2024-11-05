@@ -19,6 +19,12 @@ export class File {
   @Column({ nullable: false, length: 100 })
   fileName: string;
 
+  @Column({ nullable: true, length: 150 })
+  link: string;
+
+  @Column({ nullable: true, length: 10 })
+  mimetype: string;
+
   @CreateDateColumn({ name: 'created_at', default: () => 'CURRENT_TIMESTAMP' })
   @Exclude({ toPlainOnly: true })
   createdAt?: Date;

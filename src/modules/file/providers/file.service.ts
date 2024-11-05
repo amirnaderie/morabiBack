@@ -44,9 +44,13 @@ export class FileService {
       !this.configService
         .get<string>('IMAGE_ALLOWD_MIMETYPES')
         .split(',')
+        .includes(file.mimetype) &&
+      !this.configService
+        .get<string>('VIDEO_ALLOWD_MIMETYPES')
+        .split(',')
         .includes(file.mimetype)
     ) {
-      throw new BadRequestException('فرمت فایل صحیح  نمی باشد');
+      throw new BadRequestException('فرمت فایل صحیح نمی باشد');
     }
     if (
       file.originalname.length >
@@ -57,7 +61,17 @@ export class FileService {
       );
     }
     if (
-      file.size > parseFloat(this.configService.get<string>('FILE_SIZE_IMAGE'))
+      file.originalname.length >
+      parseFloat(this.configService.get<string>('FILE_SIZE_VIDEO'))
+    ) {
+      throw new BadRequestException(
+        `${parseFloat(this.configService.get<string>('FILE_SIZE_VIDEO')) / 1048576}MB حداکثر حجم قابل پذیریش برای این فایل برابر است با`,
+      );
+    }
+    if (
+      file.size >
+        parseFloat(this.configService.get<string>('FILE_SIZE_IMAGE')) ||
+      file.size > parseFloat(this.configService.get<string>('FILE_SIZE_VIDEO'))
     ) {
       throw new BadRequestException('نام فایل طولانی می باشد');
     }
@@ -67,6 +81,9 @@ export class FileService {
     }
 
     const filename = `${Date.now()}-${file.originalname}`;
+
+    const mimetype = file.mimetype;
+
     const filePath = join(__dirname, '..', '..', 'uploads', filename);
 
     if (!existsSync(join(__dirname, '..', '..', 'uploads'))) {
@@ -75,7 +92,10 @@ export class FileService {
 
     writeFileSync(filePath, file.buffer); // Save the file manually
 
-    const newFile = this.fileRepository.create({ fileName: filename });
+    const newFile = this.fileRepository.create({
+      fileName: filename,
+      mimetype: mimetype,
+    });
     newFile.user = user;
     if (movement) newFile.movement = movement;
     const savedFile = await this.fileRepository.save(newFile);
@@ -84,6 +104,7 @@ export class FileService {
 
   async getFile(fileName: string): Promise<ReadStream> {
     const filePath = join(__dirname, '..', '..', 'uploads', fileName);
+
     if (!existsSync(filePath)) {
       throw new NotFoundException(`فایلی با این شناسه یافت نشد`);
     }
@@ -96,9 +117,9 @@ export class FileService {
     });
   }
 
-  async getFileName(fileId: string): Promise<string> {
+  async getFileName(id: string): Promise<string> {
     const foundFile: File = await this.fileRepository.findOneBy({
-      id: fileId,
+      id,
     });
 
     if (!foundFile) throw new NotFoundException(`فایلی با این شناسه یافت نشد`);

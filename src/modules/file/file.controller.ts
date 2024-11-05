@@ -25,7 +25,7 @@ import { File } from './entities/file.entity';
 export class FileController {
   constructor(private readonly fileService: FileService) {}
 
-  @Post('upload-image')
+  @Post('upload')
   @UseInterceptors(MulterFileInterceptor('file', multerOptions))
   // @HttpCode(200) // Change the status code here
   async uploadFile(
