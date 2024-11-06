@@ -8,7 +8,6 @@ import {
   Entity,
   JoinTable,
   ManyToOne,
-  OneToMany,
   ManyToMany,
   JoinColumn,
   DeleteDateColumn,
@@ -49,7 +48,10 @@ export class Movement {
   @Exclude({ toPlainOnly: true })
   deletedAt: Date;
 
-  @OneToMany(() => File, (file) => file.movement, { onDelete: 'CASCADE' })
+  @ManyToMany(() => File, (file) => file.movements)
+  @JoinTable({
+    name: 'file-movement',
+  })
   files: File[];
 
   @ManyToOne(() => User, (user) => user.movements)

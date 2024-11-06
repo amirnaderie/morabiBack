@@ -42,6 +42,7 @@ export class MovementService {
         data: result,
       };
     } catch (error) {
+      console.error(error);
       this.logService.logData(
         'create-movement',
         JSON.stringify({ createMovementDto: createMovementDto, user: user }),
@@ -69,6 +70,7 @@ export class MovementService {
         'no input',
         error?.message ? error.message : 'error not have message!!',
       );
+      console.error(error, 'error');
       throw new InternalServerErrorException(
         'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
       );

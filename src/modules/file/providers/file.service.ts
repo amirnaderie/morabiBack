@@ -9,13 +9,7 @@ import { File } from '../entities/file.entity';
 import { In, Repository } from 'typeorm';
 import { UtilityService } from 'src/utility/providers/utility.service';
 import { join } from 'path';
-import {
-  createReadStream,
-  existsSync,
-  mkdirSync,
-  ReadStream,
-  writeFileSync,
-} from 'fs';
+import { createReadStream, existsSync, mkdirSync, ReadStream } from 'fs';
 import { ConfigService } from '@nestjs/config';
 import { User } from 'src/modules/users/entities/user.entity';
 import { Movement } from 'src/modules/movement/entities/movement.entity';
@@ -84,20 +78,20 @@ export class FileService {
 
     const mimetype = file.mimetype;
 
-    const filePath = join(__dirname, '..', '..', 'uploads', filename);
+    // const filePath = join(__dirname, '..', '..', 'uploads', filename);
 
     if (!existsSync(join(__dirname, '..', '..', 'uploads'))) {
       mkdirSync(join(__dirname, '..', '..', 'uploads'));
     }
-
-    writeFileSync(filePath, file.buffer); // Save the file manually
+    console.log(file, 'file7787');
+    // writeFileSync(filePath, file.buffer); // Save the file manually
 
     const newFile = this.fileRepository.create({
       fileName: filename,
       mimetype: mimetype,
     });
     newFile.user = user;
-    if (movement) newFile.movement = movement;
+    if (movement) newFile.movements = [movement];
     const savedFile = await this.fileRepository.save(newFile);
     return savedFile;
   }
@@ -117,13 +111,13 @@ export class FileService {
     });
   }
 
-  async getFileName(id: string): Promise<string> {
+  async getFileName(id: string): Promise<File> {
     const foundFile: File = await this.fileRepository.findOneBy({
       id,
     });
 
     if (!foundFile) throw new NotFoundException(`فایلی با این شناسه یافت نشد`);
-    return foundFile.fileName;
+    return foundFile;
   }
 
   async findAll(): Promise<File[]> {
