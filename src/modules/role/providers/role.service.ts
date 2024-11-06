@@ -25,7 +25,6 @@ export class RolesService {
   }
   async createRole(createRoleDto: CreateRoleDto): Promise<Role> {
     const { name, enName } = createRoleDto;
-    console.log(name, enName, 'name, enName ');
     const roles = this.rolesRepository.create({
       name: name,
       enName: enName,
@@ -56,19 +55,13 @@ export class RolesService {
   async updateRoles(id: number, updateRoleDto: UpdateRoleDto): Promise<Role> {
     const { name, enName, permissions } = updateRoleDto;
     const p = [];
-    // console.log('permissions => ', permissions);
-    // console.log('p => ', p);
     const uniquePermission = [...new Set(permissions)];
-    console.log('uniquePermission => ', uniquePermission);
     for (let i = 0; i < uniquePermission.length; i++) {
       const per = await this.permissionService.getPermissionRaw(
         parseInt(uniquePermission[i]),
       );
-      console.log(per, 'per');
       if (per) p.push(per);
     }
-
-    console.log(p);
 
     const role = await this.rolesRepository.findOne({
       where: { id: id },

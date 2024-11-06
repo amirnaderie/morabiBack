@@ -21,7 +21,8 @@ export class MovementService {
 
   async create(createMovementDto: CreateMovementDto, user: User) {
     try {
-      const { name, description, tags, files } = createMovementDto;
+      const { name, description, tags, files, screenSeconds } =
+        createMovementDto;
 
       const tagsEntity = await this.tagService.findById(tags);
       const fileEntity = await this.fileService.findById(files);
@@ -32,6 +33,7 @@ export class MovementService {
         tags: tagsEntity,
         files: fileEntity,
         description: description,
+        screenSeconds: screenSeconds,
         isDefault: user.permissions.includes('create-movement-default') ? 1 : 0,
       });
       const result = await this.movementRepository.save(movement);
@@ -101,7 +103,8 @@ export class MovementService {
 
   async update(updateMovementDto: UpdateMovementDto, id: string) {
     try {
-      const { name, description, tags, files } = updateMovementDto;
+      const { name, description, tags, files, screenSeconds } =
+        updateMovementDto;
 
       const movement = await this.movementRepository.findOneBy({ id });
 
@@ -112,6 +115,7 @@ export class MovementService {
       movement.tags = tagsEntity;
       movement.files = fileEntity;
       movement.description = description;
+      movement.screenSeconds = screenSeconds;
 
       const savedMovement = await this.movementRepository.save(movement);
 
@@ -122,7 +126,6 @@ export class MovementService {
         data: savedMovement,
       };
     } catch (error) {
-      console.log(error);
       this.logService.logData(
         'update-movement',
         JSON.stringify({ updateMovementDto: updateMovementDto, id: id }),

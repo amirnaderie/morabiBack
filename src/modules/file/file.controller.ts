@@ -35,7 +35,6 @@ export class FileController {
     @Req() req: Request,
     @GetUser() user: User,
   ): Promise<File> {
-    console.log(file, 'file');
     const storageDir = join(__dirname, 'storage');
     if (!existsSync(storageDir)) {
       mkdirSync(storageDir, { recursive: true }); // Create the directory recursively if needed
@@ -49,8 +48,9 @@ export class FileController {
     @Res() res: Response,
   ) {
     try {
-      const { fileName, mimetype } = await this.fileService.getFileName(fileId);
-      const fileStream = await this.fileService.getFile(fileName);
+      const { mimetype, storedName } =
+        await this.fileService.getFileName(fileId);
+      const fileStream = await this.fileService.getFile(storedName);
       // res.set({
       //   'Content-Type': 'application/octet-stream',
       //   'Content-Disposition': `attachment; filename="${fileName}"`,
@@ -66,7 +66,6 @@ export class FileController {
   @Get('')
   async findAll(): Promise<File[]> {
     const files = await this.fileService.findAll();
-    console.log(files, 'filesfiles');
     return files;
   }
 }

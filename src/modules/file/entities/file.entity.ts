@@ -21,6 +21,9 @@ export class File {
   @Column({ nullable: false, length: 100 })
   fileName: string;
 
+  @Column({ nullable: true, length: 100 })
+  storedName: string;
+
   @Column({ nullable: true, length: 150 })
   link: string;
 

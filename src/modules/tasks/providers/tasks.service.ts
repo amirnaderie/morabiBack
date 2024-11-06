@@ -53,7 +53,6 @@ export class TasksService {
     //   const aaaa = this.als.getStore().get('userData');
     // const userData = this.als.getStore()['userData'];
     // const transactionId = this.als.getStore().get('userData');
-    // console.log('userData', userData);
 
     const found = await this.tasksRepository.findOne({
       where: { id },

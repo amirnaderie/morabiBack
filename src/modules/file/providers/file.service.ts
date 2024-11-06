@@ -83,12 +83,12 @@ export class FileService {
     if (!existsSync(join(__dirname, '..', '..', 'uploads'))) {
       mkdirSync(join(__dirname, '..', '..', 'uploads'));
     }
-    console.log(file, 'file7787');
     // writeFileSync(filePath, file.buffer); // Save the file manually
 
     const newFile = this.fileRepository.create({
       fileName: filename,
       mimetype: mimetype,
+      storedName: file.filename,
     });
     newFile.user = user;
     if (movement) newFile.movements = [movement];
@@ -97,8 +97,7 @@ export class FileService {
   }
 
   async getFile(fileName: string): Promise<ReadStream> {
-    const filePath = join(__dirname, '..', '..', 'uploads', fileName);
-
+    const filePath = join(__dirname, '../../../../storage/', fileName);
     if (!existsSync(filePath)) {
       throw new NotFoundException(`فایلی با این شناسه یافت نشد`);
     }
@@ -115,7 +114,6 @@ export class FileService {
     const foundFile: File = await this.fileRepository.findOneBy({
       id,
     });
-
     if (!foundFile) throw new NotFoundException(`فایلی با این شناسه یافت نشد`);
     return foundFile;
   }

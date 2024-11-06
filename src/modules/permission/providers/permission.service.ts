@@ -17,7 +17,6 @@ export class PermissionService {
     createPermissionDto: CreatePermissionDto,
   ): Promise<Permission> {
     const { name, enName } = createPermissionDto;
-    console.log(name, enName, 'name, enName ');
     const permission = this.permissionRepository.create({
       name: name,
       enName: enName,

@@ -1,4 +1,10 @@
-import { ArrayMinSize, IsArray, IsNotEmpty, IsString } from 'class-validator';
+import {
+  ArrayMinSize,
+  IsArray,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+} from 'class-validator';
 // import { IsUnique } from 'src/validation/is-unique';
 
 export class CreateMovementDto {
@@ -12,6 +18,9 @@ export class CreateMovementDto {
 
   @IsNotEmpty({ message: 'توضیح حرکت را وارد کنید' })
   readonly description: string;
+
+  @IsNumber()
+  readonly screenSeconds?: number;
 
   @IsArray()
   @IsString({ each: true })

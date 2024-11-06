@@ -30,12 +30,19 @@ export class Movement {
 
   @Column({ type: 'tinyint', default: 0 })
   isDefault: number;
-
+  @Column({ nullable: true, length: 10 })
+  mimetype: string;
   @Column({
     type: 'nvarchar',
     length: 500,
   })
   description: string;
+
+  @Column({
+    type: 'int',
+    nullable: true,
+  })
+  screenSeconds: number;
 
   @CreateDateColumn({ select: false })
   createdA: Date;
