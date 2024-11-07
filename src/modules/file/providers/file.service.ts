@@ -15,6 +15,8 @@ import { User } from 'src/modules/users/entities/user.entity';
 import { Movement } from 'src/modules/movement/entities/movement.entity';
 import { FFmpegService } from './ffmpeg.service';
 import { UploadFileDto } from '../dto/upload-file.dto';
+import * as fs from 'fs';
+import * as mime from 'mime-types';
 
 @Injectable()
 export class FileService {
@@ -116,7 +118,7 @@ export class FileService {
     req: Request,
     user: User,
     uploadFileDto: UploadFileDto,
-  ): Promise<File> {
+  ): Promise<File | File[]> {
     console.log(uploadFileDto, 'uploadFileDto');
     if (!file) throw new BadRequestException();
     console.log(file.mimetype, 'file.mimetype');
@@ -144,32 +146,51 @@ export class FileService {
 
     const mimetype = file.mimetype;
 
-    const newFile = this.fileRepository.create({
+    const videoFileCreate = this.fileRepository.create({
       fileName: filename,
       mimetype: mimetype,
       storedName: file.filename,
     });
-    newFile.user = user;
+    videoFileCreate.user = user;
 
-    const savedFile = await this.fileRepository.save(newFile);
+    const videoFileSaved = await this.fileRepository.save(videoFileCreate);
 
     if (uploadFileDto?.screenSeconds) {
       const videoPath: string = join(
         __dirname,
         '../../../../storage/',
-        savedFile.storedName,
+        videoFileSaved.storedName,
       );
       const outputDir = join(__dirname, '../../../../storage/');
       const timestamp: number = uploadFileDto?.screenSeconds;
-      const outputName: string = savedFile.storedName.split('.')[0];
+      const outputName: string = videoFileSaved.storedName.split('.')[0];
 
-      await this.ffmpegService.generatePoster(
+      const thumbnail = await this.ffmpegService.generatePoster(
         videoPath,
         timestamp,
         outputDir,
         outputName,
       );
-    } else return savedFile;
+      let thumbnailFile;
+
+      const stat = fs.statSync(thumbnail);
+      const mimeType = mime.lookup(thumbnail) || 'application/octet-stream'; // Get MIME type based on file extension
+      console.log(stat, mimeType, 'stat');
+      // const thumbnailFile: any = await createReadStream(thumbnail);
+      console.log(thumbnailFile, 'thumbnailFile');
+      const thumbnailFileCreate = this.fileRepository.create({
+        fileName: thumbnail.split('/').at(-1),
+        mimetype: mimeType,
+        storedName: thumbnail.split('/').at(-1),
+      });
+      thumbnailFileCreate.user = user;
+
+      const thumbnailFileSaved =
+        await this.fileRepository.save(thumbnailFileCreate);
+      delete thumbnailFileSaved.user;
+      delete videoFileSaved.user;
+      return [thumbnailFileSaved, videoFileSaved];
+    } else return videoFileSaved;
   }
 
   async getFile(fileName: string): Promise<ReadStream> {

@@ -54,7 +54,7 @@ export class FileController {
     @Req() req: Request,
     @GetUser() user: User,
     @Body() uploadFileDto: UploadFileDto,
-  ): Promise<File> {
+  ): Promise<File | File[]> {
     const storageDir = join(__dirname, 'storage');
     if (!existsSync(storageDir)) {
       mkdirSync(storageDir, { recursive: true });
