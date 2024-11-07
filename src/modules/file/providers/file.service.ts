@@ -13,6 +13,8 @@ import { createReadStream, existsSync, mkdirSync, ReadStream } from 'fs';
 import { ConfigService } from '@nestjs/config';
 import { User } from 'src/modules/users/entities/user.entity';
 import { Movement } from 'src/modules/movement/entities/movement.entity';
+import { FFmpegService } from './ffmpeg.service';
+import { UploadFileDto } from '../dto/upload-file.dto';
 
 @Injectable()
 export class FileService {
@@ -21,6 +23,7 @@ export class FileService {
     private readonly fileRepository: Repository<File>,
     private readonly utilityService: UtilityService,
     private readonly configService: ConfigService,
+    private readonly ffmpegService: FFmpegService,
   ) {}
 
   async handleFileUpload(
@@ -33,17 +36,17 @@ export class FileService {
       const errorMessage = req['fileValidationError'] || 'File upload failed';
       throw new BadRequestException(errorMessage);
     }
+    const isVideo = this.configService
+      .get<string>('VIDEO_ALLOWD_MIMETYPES')
+      .split(',')
+      .includes(file.mimetype);
 
-    if (
-      !this.configService
-        .get<string>('IMAGE_ALLOWD_MIMETYPES')
-        .split(',')
-        .includes(file.mimetype) &&
-      !this.configService
-        .get<string>('VIDEO_ALLOWD_MIMETYPES')
-        .split(',')
-        .includes(file.mimetype)
-    ) {
+    const isImage = !this.configService
+      .get<string>('IMAGE_ALLOWD_MIMETYPES')
+      .split(',')
+      .includes(file.mimetype);
+
+    if (!isImage && !isVideo) {
       throw new BadRequestException('فرمت فایل صحیح نمی باشد');
     }
     if (
@@ -93,7 +96,80 @@ export class FileService {
     newFile.user = user;
     if (movement) newFile.movements = [movement];
     const savedFile = await this.fileRepository.save(newFile);
+
+    if (isVideo) {
+      // const videoPath: string = join(
+      //   __dirname,
+      //   '../../../../storage/',
+      //   savedFile.storedName,
+      // );
+      // const timestamp: number = '';
+      // const outputDir: string = '';
+      // const outputName: string = '';
+      // await this.ffmpegService.generatePoster(videoPath);
+    }
     return savedFile;
+  }
+
+  async uploadOneVideo(
+    file: MulterFile,
+    req: Request,
+    user: User,
+    uploadFileDto: UploadFileDto,
+  ): Promise<File> {
+    console.log(uploadFileDto, 'uploadFileDto');
+    if (!file) throw new BadRequestException();
+    console.log(file.mimetype, 'file.mimetype');
+    const isVideo = this.configService
+      .get<string>('VIDEO_ALLOWD_MIMETYPES')
+      .split(',')
+      .includes(file.mimetype);
+
+    if (!isVideo) throw new BadRequestException('فرمت فایل صحیح نمی باشد');
+    const fileSizeVideo: string =
+      this.configService.get<string>('FILE_SIZE_VIDEO');
+
+    if (file.originalname.length > parseFloat(fileSizeVideo))
+      throw new BadRequestException(
+        `${parseFloat(fileSizeVideo) / 1048576}MB حداکثر حجم قابل پذیریش برای این فایل برابر است با`,
+      );
+
+    if (file.size > parseFloat(fileSizeVideo))
+      throw new BadRequestException('نام فایل طولانی می باشد');
+
+    // if (!this.utilityService.onlyLettersAndNumbers(file.originalname))
+    //   throw new BadRequestException('نام فایل حاوی کاراکترهای غیر مجاز است');
+
+    const filename = `${Date.now()}-${file.originalname}`;
+
+    const mimetype = file.mimetype;
+
+    const newFile = this.fileRepository.create({
+      fileName: filename,
+      mimetype: mimetype,
+      storedName: file.filename,
+    });
+    newFile.user = user;
+
+    const savedFile = await this.fileRepository.save(newFile);
+
+    if (uploadFileDto?.screenSeconds) {
+      const videoPath: string = join(
+        __dirname,
+        '../../../../storage/',
+        savedFile.storedName,
+      );
+      const outputDir = join(__dirname, '../../../../storage/');
+      const timestamp: number = uploadFileDto?.screenSeconds;
+      const outputName: string = savedFile.storedName.split('.')[0];
+
+      await this.ffmpegService.generatePoster(
+        videoPath,
+        timestamp,
+        outputDir,
+        outputName,
+      );
+    } else return savedFile;
   }
 
   async getFile(fileName: string): Promise<ReadStream> {

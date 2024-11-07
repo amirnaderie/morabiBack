@@ -38,3 +38,33 @@ export const multerOptions = {
     fileSize: 5 * 1024 * 1024, // Limit file size to 5MB (optional)
   },
 };
+
+export const oneVideoMulterOptions = {
+  storage: diskStorage({
+    destination: (req, file, cb) => {
+      // Specify the destination directory where files will be stored
+      cb(null, './storage');
+    },
+    filename: (req, file, cb) => {
+      // Generate a unique filename to avoid name clashes
+      // const fileExtension = extname(file.originalname);
+      const uniqueName = `${uuidv4()}.mp4`;
+      cb(null, uniqueName);
+    },
+  }),
+  fileFilter: (req, file, cb) => {
+    // Accept only certain file types (optional) image/gif
+    console.log(file.mimetype, ' file.mimetype');
+    if (
+      file.mimetype.match(/^video\/(mp4|webm|ogg)$/) ||
+      file.mimetype.match(/^image\/(gif)$/)
+    ) {
+      cb(null, true); // Accept the file
+    } else {
+      cb(new Error('Invalid file type'), false); // Reject the file
+    }
+  },
+  limits: {
+    fileSize: 5 * 1024 * 1024, // Limit file size to 5MB (optional)
+  },
+};

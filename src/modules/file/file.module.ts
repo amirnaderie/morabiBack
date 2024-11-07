@@ -7,6 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UtilityModule } from 'src/utility/utility.module';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from '../auth/auth.module';
+import { FFmpegService } from './providers/ffmpeg.service';
 
 @Module({
   imports: [
@@ -16,7 +17,7 @@ import { AuthModule } from '../auth/auth.module';
     AuthModule,
   ],
   controllers: [FileController],
-  providers: [FileService],
+  providers: [FileService, FFmpegService],
   exports: [FileService],
 })
 export class FileModule {}
