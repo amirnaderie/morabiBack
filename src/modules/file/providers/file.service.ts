@@ -118,9 +118,7 @@ export class FileService {
     user: User,
     uploadFileDto: UploadFileDto,
   ): Promise<File | File[]> {
-    console.log(uploadFileDto, 'uploadFileDto');
     if (!file) throw new BadRequestException();
-    console.log(file.mimetype, 'file.mimetype');
     const isVideo = this.configService
       .get<string>('VIDEO_ALLOWD_MIMETYPES')
       .split(',')
@@ -155,6 +153,10 @@ export class FileService {
     const videoFileSaved = await this.fileRepository.save(videoFileCreate);
     delete videoFileSaved.user;
     if (uploadFileDto?.screenSeconds) {
+      if (!existsSync(join(__dirname, '..', '..', '..', '..', 'uploads'))) {
+        mkdirSync(join(__dirname, '..', '..', '..', '..', 'uploads'));
+      }
+
       const videoPath: string = join(
         __dirname,
         '../../../../storage/',
@@ -174,9 +176,9 @@ export class FileService {
       const mimeType = mime.lookup(thumbnail) || 'application/octet-stream'; // Get MIME type based on file extension
 
       const thumbnailFileCreate = this.fileRepository.create({
-        fileName: thumbnail.split('/').at(-1),
+        fileName: `${outputName}.jpeg`, //thumbnail.split('/').at(-1),
         mimetype: mimeType,
-        storedName: thumbnail.split('/').at(-1),
+        storedName: `${outputName}.jpeg`, // thumbnail.split('/').at(-1),
       });
       thumbnailFileCreate.user = user;
 

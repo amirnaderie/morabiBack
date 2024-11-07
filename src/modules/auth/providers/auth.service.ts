@@ -3,6 +3,7 @@ import {
   Inject,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -121,7 +122,7 @@ export class AuthService {
         JSON.stringify({ userMobile }),
         'login Failed',
       );
-      throw new UnauthorizedException('نام کاربری یا رمز عبور اشتباه است');
+      throw new NotFoundException('نام کاربری یا رمز عبور اشتباه است');
     }
 
     const userPermissionsObj = user.roles

@@ -1,7 +1,11 @@
 import { User } from '../../users/entities/user.entity';
 import { Movement } from '../entities/movement.entity';
 import { Repository } from 'typeorm';
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { TagService } from '../../tag/providers/tag.service';
 import { FileService } from '../../file/providers/file.service';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -50,9 +54,12 @@ export class MovementService {
         JSON.stringify({ createMovementDto: createMovementDto, user: user }),
         error?.message ? error.message : 'error not have message!!',
       );
-      throw new InternalServerErrorException(
-        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
-      );
+      if (error.message.includes('Violation of UNIQUE KEY constraint'))
+        throw new ConflictException('اطلاعات حرکت تکراری است');
+      else
+        throw new InternalServerErrorException(
+          'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
+        );
     }
   }
 
