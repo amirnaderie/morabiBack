@@ -15,7 +15,6 @@ import { User } from 'src/modules/users/entities/user.entity';
 import { Movement } from 'src/modules/movement/entities/movement.entity';
 import { FFmpegService } from './ffmpeg.service';
 import { UploadFileDto } from '../dto/upload-file.dto';
-import * as fs from 'fs';
 import * as mime from 'mime-types';
 
 @Injectable()
@@ -154,7 +153,7 @@ export class FileService {
     videoFileCreate.user = user;
 
     const videoFileSaved = await this.fileRepository.save(videoFileCreate);
-
+    delete videoFileSaved.user;
     if (uploadFileDto?.screenSeconds) {
       const videoPath: string = join(
         __dirname,
@@ -171,13 +170,9 @@ export class FileService {
         outputDir,
         outputName,
       );
-      let thumbnailFile;
 
-      const stat = fs.statSync(thumbnail);
       const mimeType = mime.lookup(thumbnail) || 'application/octet-stream'; // Get MIME type based on file extension
-      console.log(stat, mimeType, 'stat');
-      // const thumbnailFile: any = await createReadStream(thumbnail);
-      console.log(thumbnailFile, 'thumbnailFile');
+
       const thumbnailFileCreate = this.fileRepository.create({
         fileName: thumbnail.split('/').at(-1),
         mimetype: mimeType,
