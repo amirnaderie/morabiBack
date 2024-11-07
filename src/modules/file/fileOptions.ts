@@ -1,5 +1,6 @@
-import { memoryStorage } from 'multer';
-
+import { diskStorage } from 'multer';
+import { extname } from 'path'; // For file extension handling
+import { v4 as uuidv4 } from 'uuid';
 export interface MulterFile {
   fieldname: string;
   originalname: string;
@@ -13,8 +14,57 @@ export interface MulterFile {
 }
 
 export const multerOptions = {
-  storage: memoryStorage(), // Store files in memory temporarily
+  storage: diskStorage({
+    destination: (req, file, cb) => {
+      // Specify the destination directory where files will be stored
+      cb(null, './storage');
+    },
+    filename: (req, file, cb) => {
+      // Generate a unique filename to avoid name clashes
+      const fileExtension = extname(file.originalname);
+      const uniqueName = `${uuidv4()}${fileExtension}`;
+      cb(null, uniqueName);
+    },
+  }),
   fileFilter: (req, file, cb) => {
-    cb(null, true);
+    // Accept only certain file types (optional)
+    if (file.mimetype.match(/^image\/(png|jpeg|jpg)|video\/(mp4|webm|ogg)$/)) {
+      cb(null, true); // Accept the file
+    } else {
+      cb(new Error('Invalid file type'), false); // Reject the file
+    }
+  },
+  limits: {
+    fileSize: 5 * 1024 * 1024, // Limit file size to 5MB (optional)
+  },
+};
+
+export const oneVideoMulterOptions = {
+  storage: diskStorage({
+    destination: (req, file, cb) => {
+      // Specify the destination directory where files will be stored
+      cb(null, './storage');
+    },
+    filename: (req, file, cb) => {
+      // Generate a unique filename to avoid name clashes
+      // const fileExtension = extname(file.originalname);
+      const uniqueName = `${uuidv4()}.mp4`;
+      cb(null, uniqueName);
+    },
+  }),
+  fileFilter: (req, file, cb) => {
+    // Accept only certain file types (optional) image/gif
+    console.log(file.mimetype, ' file.mimetype');
+    if (
+      file.mimetype.match(/^video\/(mp4|webm|ogg)$/) ||
+      file.mimetype.match(/^image\/(gif)$/)
+    ) {
+      cb(null, true); // Accept the file
+    } else {
+      cb(new Error('Invalid file type'), false); // Reject the file
+    }
+  },
+  limits: {
+    fileSize: 5 * 1024 * 1024, // Limit file size to 5MB (optional)
   },
 };

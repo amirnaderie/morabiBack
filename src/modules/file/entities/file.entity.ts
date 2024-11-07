@@ -1,14 +1,16 @@
+import { User } from 'src/modules/users/entities/user.entity';
 import { Exclude } from 'class-transformer';
 import { Movement } from 'src/modules/movement/entities/movement.entity';
-import { User } from 'src/modules/users/entities/user.entity';
 import {
   Column,
-  CreateDateColumn,
   Entity,
-  JoinColumn,
   ManyToOne,
-  PrimaryGeneratedColumn,
+  JoinColumn,
+  ManyToMany,
+  CreateDateColumn,
   UpdateDateColumn,
+  PrimaryGeneratedColumn,
+  JoinTable,
 } from 'typeorm';
 
 @Entity()
@@ -19,6 +21,15 @@ export class File {
   @Column({ nullable: false, length: 100 })
   fileName: string;
 
+  @Column({ nullable: true, length: 100 })
+  storedName: string;
+
+  @Column({ nullable: true, length: 150 })
+  link: string;
+
+  @Column({ nullable: true, length: 10 })
+  mimetype: string;
+
   @CreateDateColumn({ name: 'created_at', default: () => 'CURRENT_TIMESTAMP' })
   @Exclude({ toPlainOnly: true })
   createdAt?: Date;
@@ -27,9 +38,11 @@ export class File {
   @Exclude({ toPlainOnly: true })
   updatedAt: Date;
 
-  @ManyToOne(() => Movement, (movement) => movement.files)
-  @JoinColumn({ name: 'movementId', referencedColumnName: 'id' })
-  movement: Movement;
+  @ManyToMany(() => Movement, (movement) => movement.files)
+  @JoinTable({
+    name: 'file-movement',
+  })
+  movements: Movement[];
 
   @ManyToOne(() => User, (user) => user.files)
   @JoinColumn({ name: 'userId', referencedColumnName: 'id' })

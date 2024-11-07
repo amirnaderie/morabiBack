@@ -22,6 +22,7 @@ export const createPermissionSeed = async (AppDataSource: DataSource) => {
         { name: 'حذف حرکت', enName: 'delete-movement' },
         { name: 'مشاهده حرکت', enName: 'movement' },
         { name: 'مشاهده لیست حرکات', enName: 'read-movements' },
+
         { name: 'ایجاد دسترسی', enName: 'create-permission' },
         { name: 'ویرایش دسترسی', enName: 'update-permission' },
         { name: 'حذف دسترسی', enName: 'delete-permission' },

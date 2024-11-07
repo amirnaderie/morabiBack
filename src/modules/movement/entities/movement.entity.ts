@@ -8,7 +8,6 @@ import {
   Entity,
   JoinTable,
   ManyToOne,
-  OneToMany,
   ManyToMany,
   JoinColumn,
   DeleteDateColumn,
@@ -25,17 +24,25 @@ export class Movement {
   @Column({
     type: 'nvarchar',
     length: 150,
+    unique: true,
   })
   name: string;
 
   @Column({ type: 'tinyint', default: 0 })
   isDefault: number;
-
+  @Column({ nullable: true, length: 10 })
+  mimetype: string;
   @Column({
     type: 'nvarchar',
     length: 500,
   })
   description: string;
+
+  @Column({
+    type: 'int',
+    nullable: true,
+  })
+  screenSeconds: number;
 
   @CreateDateColumn({ select: false })
   createdA: Date;
@@ -48,14 +55,17 @@ export class Movement {
   @Exclude({ toPlainOnly: true })
   deletedAt: Date;
 
-  @OneToMany(() => File, (file) => file.movement, { eager: true })
+  @ManyToMany(() => File, (file) => file.movements)
+  @JoinTable({
+    name: 'file-movement',
+  })
   files: File[];
 
-  @ManyToOne(() => User, (user) => user.movements, { eager: false })
+  @ManyToOne(() => User, (user) => user.movements)
   @JoinColumn({ name: 'creatorId', referencedColumnName: 'id' })
   user: User;
 
-  @ManyToMany(() => Tag, (tag) => tag.movements)
+  @ManyToMany(() => Tag, (tag) => tag.movements, { onDelete: 'CASCADE' })
   @JoinTable({
     name: 'movement-tag',
   })

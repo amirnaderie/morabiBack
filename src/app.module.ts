@@ -20,6 +20,7 @@ import { AsyncContextMiddleware } from './middleware/async-context.middleware';
 
 import { TagModule } from './modules/tag/tag.module';
 import { MovementModule } from './modules/movement/movement.module';
+import { IsUniqueConstraint } from './validation/is-unique-constraint';
 
 @Module({
   imports: [
@@ -61,7 +62,7 @@ import { MovementModule } from './modules/movement/movement.module';
     TagModule,
     MovementModule,
   ],
-  providers: [],
+  providers: [IsUniqueConstraint],
 })
 export class AppModule implements NestModule {
   constructor(

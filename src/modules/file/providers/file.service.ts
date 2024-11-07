@@ -9,16 +9,13 @@ import { File } from '../entities/file.entity';
 import { In, Repository } from 'typeorm';
 import { UtilityService } from 'src/utility/providers/utility.service';
 import { join } from 'path';
-import {
-  createReadStream,
-  existsSync,
-  mkdirSync,
-  ReadStream,
-  writeFileSync,
-} from 'fs';
+import { createReadStream, existsSync, mkdirSync, ReadStream } from 'fs';
 import { ConfigService } from '@nestjs/config';
 import { User } from 'src/modules/users/entities/user.entity';
 import { Movement } from 'src/modules/movement/entities/movement.entity';
+import { FFmpegService } from './ffmpeg.service';
+import { UploadFileDto } from '../dto/upload-file.dto';
+import * as mime from 'mime-types';
 
 @Injectable()
 export class FileService {
@@ -27,6 +24,7 @@ export class FileService {
     private readonly fileRepository: Repository<File>,
     private readonly utilityService: UtilityService,
     private readonly configService: ConfigService,
+    private readonly ffmpegService: FFmpegService,
   ) {}
 
   async handleFileUpload(
@@ -39,14 +37,18 @@ export class FileService {
       const errorMessage = req['fileValidationError'] || 'File upload failed';
       throw new BadRequestException(errorMessage);
     }
+    const isVideo = this.configService
+      .get<string>('VIDEO_ALLOWD_MIMETYPES')
+      .split(',')
+      .includes(file.mimetype);
 
-    if (
-      !this.configService
-        .get<string>('IMAGE_ALLOWD_MIMETYPES')
-        .split(',')
-        .includes(file.mimetype)
-    ) {
-      throw new BadRequestException('فرمت فایل صحیح  نمی باشد');
+    const isImage = !this.configService
+      .get<string>('IMAGE_ALLOWD_MIMETYPES')
+      .split(',')
+      .includes(file.mimetype);
+
+    if (!isImage && !isVideo) {
+      throw new BadRequestException('فرمت فایل صحیح نمی باشد');
     }
     if (
       file.originalname.length >
@@ -57,7 +59,17 @@ export class FileService {
       );
     }
     if (
-      file.size > parseFloat(this.configService.get<string>('FILE_SIZE_IMAGE'))
+      file.originalname.length >
+      parseFloat(this.configService.get<string>('FILE_SIZE_VIDEO'))
+    ) {
+      throw new BadRequestException(
+        `${parseFloat(this.configService.get<string>('FILE_SIZE_VIDEO')) / 1048576}MB حداکثر حجم قابل پذیریش برای این فایل برابر است با`,
+      );
+    }
+    if (
+      file.size >
+        parseFloat(this.configService.get<string>('FILE_SIZE_IMAGE')) ||
+      file.size > parseFloat(this.configService.get<string>('FILE_SIZE_VIDEO'))
     ) {
       throw new BadRequestException('نام فایل طولانی می باشد');
     }
@@ -67,23 +79,117 @@ export class FileService {
     }
 
     const filename = `${Date.now()}-${file.originalname}`;
-    const filePath = join(__dirname, '..', '..', 'uploads', filename);
+
+    const mimetype = file.mimetype;
+
+    // const filePath = join(__dirname, '..', '..', 'uploads', filename);
 
     if (!existsSync(join(__dirname, '..', '..', 'uploads'))) {
       mkdirSync(join(__dirname, '..', '..', 'uploads'));
     }
+    // writeFileSync(filePath, file.buffer); // Save the file manually
 
-    writeFileSync(filePath, file.buffer); // Save the file manually
-
-    const newFile = this.fileRepository.create({ fileName: filename });
+    const newFile = this.fileRepository.create({
+      fileName: filename,
+      mimetype: mimetype,
+      storedName: file.filename,
+    });
     newFile.user = user;
-    if (movement) newFile.movement = movement;
+    if (movement) newFile.movements = [movement];
     const savedFile = await this.fileRepository.save(newFile);
+
+    if (isVideo) {
+      // const videoPath: string = join(
+      //   __dirname,
+      //   '../../../../storage/',
+      //   savedFile.storedName,
+      // );
+      // const timestamp: number = '';
+      // const outputDir: string = '';
+      // const outputName: string = '';
+      // await this.ffmpegService.generatePoster(videoPath);
+    }
     return savedFile;
   }
 
+  async uploadOneVideo(
+    file: MulterFile,
+    req: Request,
+    user: User,
+    uploadFileDto: UploadFileDto,
+  ): Promise<File | File[]> {
+    console.log(uploadFileDto, 'uploadFileDto');
+    if (!file) throw new BadRequestException();
+    console.log(file.mimetype, 'file.mimetype');
+    const isVideo = this.configService
+      .get<string>('VIDEO_ALLOWD_MIMETYPES')
+      .split(',')
+      .includes(file.mimetype);
+
+    if (!isVideo) throw new BadRequestException('فرمت فایل صحیح نمی باشد');
+    const fileSizeVideo: string =
+      this.configService.get<string>('FILE_SIZE_VIDEO');
+
+    if (file.originalname.length > parseFloat(fileSizeVideo))
+      throw new BadRequestException(
+        `${parseFloat(fileSizeVideo) / 1048576}MB حداکثر حجم قابل پذیریش برای این فایل برابر است با`,
+      );
+
+    if (file.size > parseFloat(fileSizeVideo))
+      throw new BadRequestException('نام فایل طولانی می باشد');
+
+    // if (!this.utilityService.onlyLettersAndNumbers(file.originalname))
+    //   throw new BadRequestException('نام فایل حاوی کاراکترهای غیر مجاز است');
+
+    const filename = `${Date.now()}-${file.originalname}`;
+
+    const mimetype = file.mimetype;
+
+    const videoFileCreate = this.fileRepository.create({
+      fileName: filename,
+      mimetype: mimetype,
+      storedName: file.filename,
+    });
+    videoFileCreate.user = user;
+
+    const videoFileSaved = await this.fileRepository.save(videoFileCreate);
+    delete videoFileSaved.user;
+    if (uploadFileDto?.screenSeconds) {
+      const videoPath: string = join(
+        __dirname,
+        '../../../../storage/',
+        videoFileSaved.storedName,
+      );
+      const outputDir = join(__dirname, '../../../../storage/');
+      const timestamp: number = uploadFileDto?.screenSeconds;
+      const outputName: string = videoFileSaved.storedName.split('.')[0];
+
+      const thumbnail = await this.ffmpegService.generatePoster(
+        videoPath,
+        timestamp,
+        outputDir,
+        outputName,
+      );
+
+      const mimeType = mime.lookup(thumbnail) || 'application/octet-stream'; // Get MIME type based on file extension
+
+      const thumbnailFileCreate = this.fileRepository.create({
+        fileName: thumbnail.split('/').at(-1),
+        mimetype: mimeType,
+        storedName: thumbnail.split('/').at(-1),
+      });
+      thumbnailFileCreate.user = user;
+
+      const thumbnailFileSaved =
+        await this.fileRepository.save(thumbnailFileCreate);
+      delete thumbnailFileSaved.user;
+      delete videoFileSaved.user;
+      return [thumbnailFileSaved, videoFileSaved];
+    } else return videoFileSaved;
+  }
+
   async getFile(fileName: string): Promise<ReadStream> {
-    const filePath = join(__dirname, '..', '..', 'uploads', fileName);
+    const filePath = join(__dirname, '../../../../storage/', fileName);
     if (!existsSync(filePath)) {
       throw new NotFoundException(`فایلی با این شناسه یافت نشد`);
     }
@@ -96,13 +202,12 @@ export class FileService {
     });
   }
 
-  async getFileName(fileId: string): Promise<string> {
+  async getFileName(id: string): Promise<File> {
     const foundFile: File = await this.fileRepository.findOneBy({
-      id: fileId,
+      id,
     });
-
     if (!foundFile) throw new NotFoundException(`فایلی با این شناسه یافت نشد`);
-    return foundFile.fileName;
+    return foundFile;
   }
 
   async findAll(): Promise<File[]> {

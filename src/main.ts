@@ -7,6 +7,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
 
 import { ConfigService } from '@nestjs/config';
+import { useContainer } from 'class-validator';
 // import * as dotenv from 'dotenv';
 
 async function bootstrap() {
@@ -33,6 +34,8 @@ async function bootstrap() {
       transform: true,
     }),
   );
+
+  useContainer(app.select(AppModule), { fallbackOnErrors: true });
 
   app.useGlobalInterceptors(new TransformInterceptor());
 

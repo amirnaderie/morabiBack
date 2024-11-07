@@ -1,11 +1,26 @@
-import { ArrayMinSize, IsArray, IsNotEmpty, IsString } from 'class-validator';
+import {
+  ArrayMinSize,
+  IsArray,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+} from 'class-validator';
+// import { IsUnique } from 'src/validation/is-unique';
 
 export class CreateMovementDto {
   @IsNotEmpty({ message: 'نام حرکت را وارد کنید!' })
+  // @IsUnique({
+  //   tableName: 'movement',
+  //   column: 'name',
+  //   message: 'حرکتی با این نام موجود است',
+  // })
   readonly name: string;
 
   @IsNotEmpty({ message: 'توضیح حرکت را وارد کنید' })
   readonly description: string;
+
+  @IsNumber()
+  readonly screenSeconds?: number;
 
   @IsArray()
   @IsString({ each: true })
