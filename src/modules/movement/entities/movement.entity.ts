@@ -14,9 +14,11 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   PrimaryGeneratedColumn,
+  Unique,
 } from 'typeorm';
 
 @Entity()
+@Unique(['name', 'creatorId'])
 export class Movement {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -24,12 +26,11 @@ export class Movement {
   @Column({
     type: 'nvarchar',
     length: 150,
-    unique: true,
   })
   name: string;
 
-  @Column({ type: 'tinyint', default: 0 })
-  isDefault: number;
+  @Column({ type: 'bit', default: false })
+  isDefault: boolean;
   @Column({ nullable: true, length: 10 })
   mimetype: string;
   @Column({
@@ -64,6 +65,8 @@ export class Movement {
   @ManyToOne(() => User, (user) => user.movements)
   @JoinColumn({ name: 'creatorId', referencedColumnName: 'id' })
   user: User;
+
+  @Column() creatorId: string; // Add this line to define creatorId as a column
 
   @ManyToMany(() => Tag, (tag) => tag.movements, { onDelete: 'CASCADE' })
   @JoinTable({

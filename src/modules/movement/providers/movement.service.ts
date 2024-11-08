@@ -38,13 +38,15 @@ export class MovementService {
         files: fileEntity,
         description: description,
         screenSeconds: screenSeconds,
-        isDefault: user.permissions.includes('create-movement-default') ? 1 : 0,
+        isDefault: user.permissions.includes('create-movement-default')
+          ? true
+          : false,
       });
       const result = await this.movementRepository.save(movement);
       delete result.user.permissions;
       delete result.user.roles;
       return {
-        message: `با موفقیت ذخیره شد ${result.name} حرکت`,
+        message: `عملیات با موفقیت انجام پذیرفت`,
         data: result,
       };
     } catch (error) {
@@ -63,14 +65,22 @@ export class MovementService {
     }
   }
 
-  async findAll() {
+  async findAll(userId: string) {
     try {
       const movements = await this.movementRepository.find({
         select: ['user'],
         relations: ['tags', 'files', 'user'],
+        where: [
+          {
+            user: {
+              id: userId, // Ensure you have a variable named creatorId with the proper value
+            },
+          },
+          { isDefault: true },
+        ],
       });
       return {
-        message: `لیست حرکات با موفقیت دریافت شد`,
+        message: `عملیات با موفقیت انجام پذیرفت`,
         data: movements,
       };
     } catch (error) {
@@ -93,7 +103,7 @@ export class MovementService {
         relations: ['tags', 'files', 'user'],
       });
       return {
-        message: `با موفقیت دریافت شد ${movement.name} حرکت`,
+        message: `عملیات با موفقیت انجام پذیرفت`,
         data: movement,
       };
     } catch (error) {
@@ -108,12 +118,20 @@ export class MovementService {
     }
   }
 
-  async update(updateMovementDto: UpdateMovementDto, id: string) {
+  async update(updateMovementDto: UpdateMovementDto, id: string, user: User) {
     try {
       const { name, description, tags, files, screenSeconds } =
         updateMovementDto;
-
-      const movement = await this.movementRepository.findOneBy({ id });
+      let movement;
+      if (user.permissions.includes('create-movement-default'))
+        movement = await this.movementRepository.findOneBy({ id });
+      else
+        movement = await this.movementRepository.findOne({
+          where: {
+            user: { id: user.id },
+            id: id,
+          },
+        });
 
       const tagsEntity = await this.tagService.findById(tags);
       const fileEntity = await this.fileService.findById(files);
@@ -129,7 +147,7 @@ export class MovementService {
       delete movement.user;
 
       return {
-        message: `با موفقیت ویرایش شد ${savedMovement.name} حرکت`,
+        message: `عملیات با موفقیت انجام پذیرفت`,
         data: savedMovement,
       };
     } catch (error) {
@@ -144,11 +162,18 @@ export class MovementService {
     }
   }
 
-  async remove(id: string) {
+  async remove(id: string, user: User) {
     try {
-      await this.movementRepository.softDelete(id);
+      if (user.permissions.includes('create-movement-default'))
+        await this.movementRepository.delete({ id });
+      else
+        await this.movementRepository.delete({
+          id: id,
+          user: { id: user.id },
+        });
+
       return {
-        message: `حرکت با موفقیت حذف شد`,
+        message: `عملیات با موفقیت انجام پذیرفت`,
       };
     } catch (error) {
       this.logService.logData(

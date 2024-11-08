@@ -38,8 +38,8 @@ export class MovementController {
 
   @Get()
   @SetMetadata('permission', 'read-movements')
-  findAll() {
-    return this.movementService.findAll();
+  findAll(@GetUser() user: User) {
+    return this.movementService.findAll(user.id);
   }
 
   @Get(':id')
@@ -52,14 +52,15 @@ export class MovementController {
   @SetMetadata('permission', 'update-movement')
   async update(
     @Param('id') id: string,
+    @GetUser() user: User,
     @Body() updateMovementDto: UpdateMovementDto,
   ) {
-    return await this.movementService.update(updateMovementDto, id);
+    return await this.movementService.update(updateMovementDto, id, user);
   }
 
   @Delete(':id')
   @SetMetadata('permission', 'delete-movement')
-  remove(@Param('id') id: string) {
-    return this.movementService.remove(id);
+  remove(@Param('id') id: string, @GetUser() user: User) {
+    return this.movementService.remove(id, user);
   }
 }
