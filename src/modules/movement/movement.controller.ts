@@ -9,7 +9,6 @@ import {
   Controller,
   UseInterceptors,
   SetMetadata,
-  Req,
 } from '@nestjs/common';
 
 import { User } from '../users/entities/user.entity';
@@ -38,8 +37,8 @@ export class MovementController {
   }
 
   @Get()
-  @SetMetadata('permission', 'read-movements')
-  findAll(@GetUser() user: User, @Req() req: Request) {
+  @SetMetadata('permission', 'movements')
+  findAll(@GetUser() user: User) {
     return this.movementService.findAll(user.id);
   }
 
