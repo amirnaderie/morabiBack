@@ -10,11 +10,11 @@ import {
 } from '@nestjs/common';
 
 import { User } from '../users/entities/user.entity';
-import { GetUser } from '../auth/get-user.decorator';
 import { AuthGuard } from '../auth/auth.guard';
 import { TagService } from './providers/tag.service';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { UpdateTagDto } from './dto/update-tag.dto';
+import { GetUser } from 'src/decorators/get-user.decorator';
 
 @Controller('tags')
 @UseGuards(AuthGuard)

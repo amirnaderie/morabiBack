@@ -9,10 +9,10 @@ import {
   Controller,
   UseInterceptors,
   SetMetadata,
+  Req,
 } from '@nestjs/common';
 
 import { User } from '../users/entities/user.entity';
-import { GetUser } from '../auth/get-user.decorator';
 import { Movement } from './entities/movement.entity';
 import { AuthGuard } from '../auth/auth.guard';
 import { MovementService } from './providers/movement.service';
@@ -20,6 +20,7 @@ import { CreateMovementDto } from './dto/create-movement.dto';
 import { UpdateMovementDto } from './dto/update-movement.dto';
 import { HttpResponseTransform } from 'src/interceptors/http-response-transform.interceptor';
 import { RolesGuard } from 'src/guards/role.guard';
+import { GetUser } from 'src/decorators/get-user.decorator';
 
 @Controller('movements')
 @UseGuards(AuthGuard, RolesGuard)
@@ -38,7 +39,7 @@ export class MovementController {
 
   @Get()
   @SetMetadata('permission', 'read-movements')
-  findAll(@GetUser() user: User) {
+  findAll(@GetUser() user: User, @Req() req: Request) {
     return this.movementService.findAll(user.id);
   }
 
