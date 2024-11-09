@@ -17,10 +17,10 @@ import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
 import { UpdateTaskStatusDto } from './dto/update-task.dto';
 import { Task } from './task.entity';
 import { AuthGuard } from 'src/modules/auth/auth.guard';
-import { GetUser } from 'src/modules/auth/get-user.decorator';
 import { Logger } from '@nestjs/common';
 import { User } from 'src/modules/users/entities/user.entity';
 import { RolesGuard } from 'src/guards/role.guard';
+import { GetUser } from 'src/decorators/get-user.decorator';
 
 @Controller('tasks')
 @UseGuards(AuthGuard, RolesGuard)
