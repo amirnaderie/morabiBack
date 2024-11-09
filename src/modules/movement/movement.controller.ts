@@ -20,7 +20,7 @@ import { CreateMovementDto } from './dto/create-movement.dto';
 import { UpdateMovementDto } from './dto/update-movement.dto';
 import { HttpResponseTransform } from 'src/interceptors/http-response-transform.interceptor';
 import { RolesGuard } from 'src/guards/role.guard';
-import { GetUser } from 'src/decorators/get-user.decorator';
+import { GetUser } from '../auth/get-user.decorator';
 
 @Controller('movements')
 @UseGuards(AuthGuard, RolesGuard)

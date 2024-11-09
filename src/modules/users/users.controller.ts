@@ -5,7 +5,7 @@ import { AuthGuard } from 'src/modules/auth/auth.guard';
 // import { RolesGuard } from 'src/modules/auth/role.guard';
 import { AssginUserRoleDto } from './dto/assign-user-roles.dto';
 import { UsersService } from './providers/users.service';
-import { GetUser } from 'src/decorators/get-user.decorator';
+import { GetUser } from '../auth/get-user.decorator';
 
 @Controller('users')
 @UseGuards(AuthGuard)
