@@ -31,8 +31,7 @@ export class Movement {
 
   @Column({ type: 'bit', default: false })
   isDefault: boolean;
-  @Column({ nullable: true, length: 10 })
-  mimetype: string;
+
   @Column({
     type: 'nvarchar',
     length: 500,
