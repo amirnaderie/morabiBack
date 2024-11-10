@@ -10,7 +10,13 @@ import { File } from '../entities/file.entity';
 import { In, Repository } from 'typeorm';
 import { UtilityService } from 'src/utility/providers/utility.service';
 import { join } from 'path';
-import { createReadStream, existsSync, mkdirSync, ReadStream } from 'fs';
+import {
+  createReadStream,
+  existsSync,
+  mkdirSync,
+  ReadStream,
+  unlink,
+} from 'fs';
 import { ConfigService } from '@nestjs/config';
 import { User } from 'src/modules/users/entities/user.entity';
 import { Movement } from 'src/modules/movement/entities/movement.entity';
@@ -226,6 +232,8 @@ export class FileService {
       },
     });
 
+    if (!file) throw new NotFoundException();
+
     if (file.user.id !== user.id) {
       throw new UnauthorizedException('شما توانایی حذف این فایل را ندارید!');
     }
@@ -234,8 +242,11 @@ export class FileService {
       throw new BadRequestException('فایل دارای حرکت میباشد!');
     }
 
-    console.log(file, 'file');
+    await this.fileRepository.delete(id);
 
-    return file;
+    const filePath = join(__dirname, '../../../../storage/', file.storedName);
+    unlink(filePath, () => {});
+
+    return { data: 'فایل با موفقیت حذف شد' };
   }
 }
