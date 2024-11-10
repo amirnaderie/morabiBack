@@ -40,27 +40,21 @@ export class FileService {
     user: User,
     movement?: Movement,
   ): Promise<{ data: File | File[] }> {
-    // console.log(5555555);
     if (!file) {
       const errorMessage = req['fileValidationError'] || 'File upload failed';
       throw new BadRequestException(errorMessage);
     }
-    // console.log(file.mimetype, 'file.mimetype');
-    // if (file.mimetype === 'image/gif')
-    //   return await this.uploadOneGif(file, user);
+
     const isVideo = this.configService
       .get<string>('VIDEO_ALLOWD_MIMETYPES')
       .split(',')
       .includes(file.mimetype);
-    console.log(file.mimetype);
-    console.log(this.configService.get<string>('IMAGE_ALLOWD_MIMETYPES'));
     const isImage = this.configService
       .get<string>('IMAGE_ALLOWD_MIMETYPES')
       .split(',')
       .includes(file.mimetype);
 
     if (!isImage && !isVideo) {
-      console.log(!isImage && !isVideo, 'dfd');
       throw new BadRequestException('فرمت فایل صحیح نمی باشد');
     }
     if (
@@ -317,9 +311,9 @@ export class FileService {
       throw new UnauthorizedException('شما توانایی حذف این فایل را ندارید!');
     }
 
-    if (file.movements.length) {
-      throw new BadRequestException('فایل دارای حرکت میباشد!');
-    }
+    // if (file.movements.length > 0) {
+    //   throw new BadRequestException('فایل دارای حرکت میباشد!');
+    // }
 
     await this.fileRepository.delete(id);
 

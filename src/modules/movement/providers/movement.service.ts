@@ -41,7 +41,7 @@ export class MovementService {
         isDefault: user.permissions.includes('create-movement-default')
           ? true
           : false,
-        realmId: (req as any).subdomainId,
+        realmId: (req as any).subdomainId || 1,
       });
       const result = await this.movementRepository.save(movement);
       delete result.user.permissions;
@@ -51,7 +51,6 @@ export class MovementService {
         data: result,
       };
     } catch (error) {
-      console.error(error);
       this.logService.logData(
         'create-movement',
         JSON.stringify({ createMovementDto: createMovementDto, user: user }),
@@ -91,7 +90,6 @@ export class MovementService {
         'no input',
         error?.message ? error.message : 'error not have message!!',
       );
-      console.error(error, 'error');
       throw new InternalServerErrorException(
         'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
       );
@@ -175,18 +173,21 @@ export class MovementService {
 
   async remove(id: string, user: User, req: Request) {
     try {
-      if (user.permissions.includes('create-movement-default'))
-        await this.movementRepository.delete({
-          id: id,
-          realmId: (req as any).subdomainId,
-        });
-      else
-        await this.movementRepository.delete({
-          id: id,
-          user: { id: user.id },
-          realmId: (req as any).subdomainId,
-        });
+      const movement = await this.movementRepository.findOne({
+        where: { id: id },
+        relations: { files: true },
+      });
 
+      await this.movementRepository.delete({
+        id: id,
+        user: { id: user.id },
+        realmId: (req as any).subdomainId || 1,
+      });
+      if (movement.files.length) {
+        for (let i = 0; i < movement.files.length; i++) {
+          await this.fileService.delete(movement.files[i].id, user);
+        }
+      }
       return {
         message: `عملیات با موفقیت انجام پذیرفت`,
       };
