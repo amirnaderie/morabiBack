@@ -275,6 +275,7 @@ export class FileService {
     if (!existsSync(filePath)) {
       throw new NotFoundException(`فایلی با این شناسه یافت نشد`);
     }
+
     return createReadStream(filePath);
   }
 

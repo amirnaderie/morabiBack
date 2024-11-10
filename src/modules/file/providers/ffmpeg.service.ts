@@ -37,8 +37,6 @@ export class FFmpegService {
   }
 
   async convertGifToMp4(gifPath: string, outputPath: string): Promise<string> {
-    console.log(gifPath);
-    console.log(outputPath);
     return new Promise((resolve, reject) => {
       ffmpeg(gifPath)
         .output(outputPath)

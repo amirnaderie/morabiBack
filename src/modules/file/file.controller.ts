@@ -27,12 +27,12 @@ import { GetUser } from 'src/decorators/getUser.decorator';
 import { existsSync, mkdirSync } from 'fs';
 import { UploadFileDto } from './dto/upload-file.dto';
 import { FileInterceptor as MulterFileInterceptor } from '@nestjs/platform-express';
-import { HttpResponseTransform } from 'src/interceptors/http-response-transform.interceptor';
+// import { HttpResponseTransform } from 'src/interceptors/http-response-transform.interceptor';
 import { AuthGuard } from 'src/guards/auth.guard';
 
 @Controller('files')
 @UseGuards(AuthGuard)
-@UseInterceptors(HttpResponseTransform)
+// @UseInterceptors(HttpResponseTransform)
 export class FileController {
   constructor(private readonly fileService: FileService) {}
 
@@ -79,11 +79,14 @@ export class FileController {
       const { mimetype, storedName } =
         await this.fileService.getFileName(fileId);
       const fileStream = await this.fileService.getFile(storedName);
+      // console.log(fileStream, 'fileStream');
+
       // res.set({
       //   'Content-Type': 'application/octet-stream',
       //   'Content-Disposition': `attachment; filename="${fileName}"`,
       // });
       res.setHeader('Content-Type', mimetype);
+
       // fileStream.pipe(res);
       return res.sendFile(fileStream.path as string);
     } catch (error) {

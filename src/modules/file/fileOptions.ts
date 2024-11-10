@@ -56,7 +56,6 @@ export const oneVideoMulterOptions = {
   }),
   fileFilter: (req, file, cb) => {
     // Accept only certain file types (optional) image/gif
-    console.log(file.mimetype, ' file.mimetype');
     if (
       file.mimetype.match(/^video\/(mp4|webm|ogg)$/) ||
       file.mimetype.match(/^image\/(gif)$/)

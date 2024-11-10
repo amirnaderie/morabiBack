@@ -39,7 +39,7 @@ export class MovementController {
   }
 
   @Get()
-  @SetMetadata('permission', 'read-movements')
+  @SetMetadata('permission', 'movements')
   findAll(@GetUser() user: User, @Req() req: Request) {
     return this.movementService.findAll(user.id, req);
   }
