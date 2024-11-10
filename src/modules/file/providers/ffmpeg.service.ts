@@ -35,4 +35,22 @@ export class FFmpegService {
         });
     });
   }
+
+  async convertGifToMp4(gifPath: string, outputPath: string): Promise<string> {
+    console.log(gifPath);
+    console.log(outputPath);
+    return new Promise((resolve, reject) => {
+      ffmpeg(gifPath)
+        .output(outputPath)
+        .on('end', () => {
+          console.log('Conversion finished!');
+          resolve(outputPath);
+        })
+        .on('error', (err) => {
+          console.error('Error during conversion:', err);
+          reject(err);
+        })
+        .run();
+    });
+  }
 }

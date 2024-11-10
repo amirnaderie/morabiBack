@@ -42,14 +42,14 @@ export class FileController {
     @UploadedFile() file: MulterFile,
     @Req() req: Request,
     @GetUser() user: User,
-  ): Promise<File> {
+  ): Promise<{ data: File | File[] }> {
     const storageDir = join(__dirname, 'storage');
     if (!existsSync(storageDir)) {
       mkdirSync(storageDir, { recursive: true });
     }
     return await this.fileService.handleFileUpload(file, req, user);
   }
-
+  // uploadOneGif
   @Post('upload-video')
   @UseInterceptors(MulterFileInterceptor('file', oneVideoMulterOptions))
   async uploadOneVideo(
@@ -57,7 +57,7 @@ export class FileController {
     @Req() req: Request,
     @GetUser() user: User,
     @Body() uploadFileDto: UploadFileDto,
-  ): Promise<File | File[]> {
+  ): Promise<{ data: File | File[] }> {
     const storageDir = join(__dirname, 'storage');
     if (!existsSync(storageDir)) {
       mkdirSync(storageDir, { recursive: true });
