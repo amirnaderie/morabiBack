@@ -26,7 +26,7 @@ import { File } from './entities/file.entity';
 import { join } from 'path';
 import { existsSync, mkdirSync } from 'fs';
 import { UploadFileDto } from './dto/upload-file.dto';
-import { GetUser } from '../auth/get-user.decorator';
+import { GetUser } from 'src/decorators/getUser.decorator';
 
 @Controller('files')
 @UseGuards(AuthGuard)

@@ -1,4 +1,9 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { TasksModule } from './modules/tasks/tasks.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
@@ -21,6 +26,8 @@ import { AsyncContextMiddleware } from './middleware/async-context.middleware';
 import { TagModule } from './modules/tag/tag.module';
 import { MovementModule } from './modules/movement/movement.module';
 import { IsUniqueConstraint } from './validation/is-unique-constraint';
+import { RealmModule } from './modules/realm/realm.module';
+import { SubdomainMiddleware } from './middleware/subdomain.middleware';
 
 @Module({
   imports: [
@@ -61,6 +68,7 @@ import { IsUniqueConstraint } from './validation/is-unique-constraint';
     LogModule,
     TagModule,
     MovementModule,
+    RealmModule,
   ],
   providers: [IsUniqueConstraint],
 })
@@ -70,22 +78,9 @@ export class AppModule implements NestModule {
     private readonly als: AsyncLocalStorage<any>,
   ) {}
   configure(consumer: MiddlewareConsumer) {
-    // consumer.apply(CorrelationIdMiddleware).forRoutes('*');
     consumer.apply(AsyncContextMiddleware).forRoutes('*'); // Apply globally
-    // consumer.apply(cookieParser()).forRoutes('*'); // Apply globally
-    //   consumer
-    //     .apply((req, res, next) => {
-    //       // populate the store with some default values
-    //       // based on the request,
-    //       const store = {
-    //         Correlationid: req.headers['x-correlation-id'],
-    //       };
-
-    //       // and pass the "next" function as callback
-    //       // to the "als.run" method together with the store.
-    //       this.als.run(store, () => next());
-    //     })
-    //     // and register it for all routes (in case of Fastify use '(.*)')
-    //     .forRoutes('*');
+    consumer
+      .apply(SubdomainMiddleware)
+      .forRoutes({ path: '*', method: RequestMethod.ALL });
   }
 }

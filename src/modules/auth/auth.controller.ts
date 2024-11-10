@@ -4,6 +4,7 @@ import {
   Get,
   HttpCode,
   Post,
+  Req,
   Res,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -23,8 +24,8 @@ export class AuthController {
   ) {}
 
   @Post('sign-up')
-  signUp(@Body() signUpDto: SignUpDto): Promise<void> {
-    return this.authService.signUp(signUpDto);
+  signUp(@Body() signUpDto: SignUpDto, @Req() req: Request): Promise<void> {
+    return this.authService.signUp(signUpDto, req);
   }
 
   @Post('send-otp')
@@ -62,8 +63,9 @@ export class AuthController {
   async signIn(
     @Body() signInDto: SignInDto,
     @Res({ passthrough: true }) response: Response,
+    @Req() req: Request,
   ) {
-    return await this.authService.signIn(signInDto, response);
+    return await this.authService.signIn(signInDto, response, req);
   }
 
   @Get('sign-out')
@@ -76,5 +78,4 @@ export class AuthController {
     });
     return { message: 'Signed out successfully' };
   }
-
 }

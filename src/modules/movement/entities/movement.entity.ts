@@ -16,6 +16,7 @@ import {
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
+import { Realm } from 'src/modules/realm/entities/realm.entity';
 
 @Entity()
 @Unique(['name', 'creatorId'])
@@ -72,4 +73,10 @@ export class Movement {
     name: 'movement-tag',
   })
   tags: Tag[];
+
+  @ManyToOne(() => Realm, (realm) => realm.movements)
+  @JoinColumn({ name: 'realmId' })
+  realm: Realm;
+
+  @Column({ default: 1 }) realmId: number;
 }

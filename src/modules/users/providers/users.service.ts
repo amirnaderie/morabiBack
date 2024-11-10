@@ -39,11 +39,14 @@ export class UsersService {
     return user;
   }
 
-  async assginRole(assginUserRoleDto: AssginUserRoleDto): Promise<User> {
+  async assginRole(
+    assginUserRoleDto: AssginUserRoleDto,
+    req: Request,
+  ): Promise<User> {
     try {
       const { userId, roleId } = assginUserRoleDto;
       const user = await this.findOne(userId);
-      const role = await this.rolesServise.findOne(roleId);
+      const role = await this.rolesServise.findOne(roleId, req);
       user.roles = [role];
       return await this.userRepository.save(user);
     } catch (error) {

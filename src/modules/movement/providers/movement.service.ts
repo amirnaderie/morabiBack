@@ -23,7 +23,7 @@ export class MovementService {
     private readonly logService: LogService,
   ) {}
 
-  async create(createMovementDto: CreateMovementDto, user: User) {
+  async create(createMovementDto: CreateMovementDto, user: User, req: Request) {
     try {
       const { name, description, tags, files, screenSeconds } =
         createMovementDto;
@@ -41,6 +41,7 @@ export class MovementService {
         isDefault: user.permissions.includes('create-movement-default')
           ? true
           : false,
+        realmId: (req as any).subdomainId,
       });
       const result = await this.movementRepository.save(movement);
       delete result.user.permissions;
@@ -65,7 +66,7 @@ export class MovementService {
     }
   }
 
-  async findAll(userId: string) {
+  async findAll(userId: string, req: Request) {
     try {
       const movements = await this.movementRepository.find({
         select: ['user'],
@@ -75,8 +76,9 @@ export class MovementService {
             user: {
               id: userId, // Ensure you have a variable named creatorId with the proper value
             },
+            realmId: (req as any).subdomainId,
           },
-          { isDefault: true },
+          { isDefault: true, realmId: (req as any).subdomainId },
         ],
       });
       return {
@@ -96,10 +98,10 @@ export class MovementService {
     }
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, req: Request) {
     try {
       const movement = await this.movementRepository.findOne({
-        where: { id: id },
+        where: { id: id, realmId: (req as any).subdomainId },
         relations: ['tags', 'files', 'user'],
       });
       return {
@@ -118,18 +120,27 @@ export class MovementService {
     }
   }
 
-  async update(updateMovementDto: UpdateMovementDto, id: string, user: User) {
+  async update(
+    updateMovementDto: UpdateMovementDto,
+    id: string,
+    user: User,
+    req: Request,
+  ) {
     try {
       const { name, description, tags, files, screenSeconds } =
         updateMovementDto;
       let movement;
       if (user.permissions.includes('create-movement-default'))
-        movement = await this.movementRepository.findOneBy({ id });
+        movement = await this.movementRepository.findOneBy({
+          id: id,
+          realmId: (req as any).subdomainId,
+        });
       else
         movement = await this.movementRepository.findOne({
           where: {
             user: { id: user.id },
             id: id,
+            realmId: (req as any).subdomainId,
           },
         });
 
@@ -162,14 +173,18 @@ export class MovementService {
     }
   }
 
-  async remove(id: string, user: User) {
+  async remove(id: string, user: User, req: Request) {
     try {
       if (user.permissions.includes('create-movement-default'))
-        await this.movementRepository.delete({ id });
+        await this.movementRepository.delete({
+          id: id,
+          realmId: (req as any).subdomainId,
+        });
       else
         await this.movementRepository.delete({
           id: id,
           user: { id: user.id },
+          realmId: (req as any).subdomainId,
         });
 
       return {

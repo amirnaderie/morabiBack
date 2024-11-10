@@ -20,7 +20,7 @@ import { CreateMovementDto } from './dto/create-movement.dto';
 import { UpdateMovementDto } from './dto/update-movement.dto';
 import { HttpResponseTransform } from 'src/interceptors/http-response-transform.interceptor';
 import { RolesGuard } from 'src/guards/role.guard';
-import { GetUser } from '../auth/get-user.decorator';
+import { GetUser } from 'src/decorators/getUser.decorator';
 
 @Controller('movements')
 @UseGuards(AuthGuard, RolesGuard)
@@ -33,20 +33,21 @@ export class MovementController {
   async create(
     @GetUser() user: User,
     @Body() createMovementDto: CreateMovementDto,
+    @Req() req: Request,
   ): Promise<{ data: Movement }> {
-    return await this.movementService.create(createMovementDto, user);
+    return await this.movementService.create(createMovementDto, user, req);
   }
 
   @Get()
   @SetMetadata('permission', 'read-movements')
   findAll(@GetUser() user: User, @Req() req: Request) {
-    return this.movementService.findAll(user.id);
+    return this.movementService.findAll(user.id, req);
   }
 
   @Get(':id')
   @SetMetadata('permission', 'movement')
-  findOne(@Param('id') id: string) {
-    return this.movementService.findOne(id);
+  findOne(@Param('id') id: string, @Req() req: Request) {
+    return this.movementService.findOne(id, req);
   }
 
   @Patch(':id')
@@ -55,13 +56,14 @@ export class MovementController {
     @Param('id') id: string,
     @GetUser() user: User,
     @Body() updateMovementDto: UpdateMovementDto,
+    @Req() req: Request,
   ) {
-    return await this.movementService.update(updateMovementDto, id, user);
+    return await this.movementService.update(updateMovementDto, id, user, req);
   }
 
   @Delete(':id')
   @SetMetadata('permission', 'delete-movement')
-  remove(@Param('id') id: string, @GetUser() user: User) {
-    return this.movementService.remove(id, user);
+  remove(@Param('id') id: string, @GetUser() user: User, @Req() req: Request) {
+    return this.movementService.remove(id, user, req);
   }
 }

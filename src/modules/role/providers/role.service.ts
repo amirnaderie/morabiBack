@@ -15,19 +15,20 @@ export class RolesService {
     private permissionService: PermissionService,
   ) {}
 
-  async findOne(id: number) {
+  async findOne(id: number, req: Request) {
     return await this.rolesRepository.findOne({
-      where: { id: id },
+      where: { id: id, realmId: (req as any).subdomainId },
       relations: {
         permissions: true,
       },
     });
   }
-  async createRole(createRoleDto: CreateRoleDto): Promise<Role> {
+  async createRole(createRoleDto: CreateRoleDto, req: Request): Promise<Role> {
     const { name, enName } = createRoleDto;
     const roles = this.rolesRepository.create({
       name: name,
       enName: enName,
+      realmId: (req as any).subdomainId,
     });
     const cretaedRole = await this.rolesRepository.save(roles);
     return cretaedRole;
@@ -35,14 +36,17 @@ export class RolesService {
 
   async assignPermissionToRole(
     assignPermissionToRole: AssignPermissionToRole,
+    req: Request,
   ): Promise<any> {
     const { roleId, permissionIds } = assignPermissionToRole;
 
-    const permissions =
-      await this.permissionService.existPermissionIdsRaw(permissionIds);
+    const permissions = await this.permissionService.existPermissionIdsRaw(
+      permissionIds,
+      req,
+    );
 
     const role = await this.rolesRepository.findOne({
-      where: { id: roleId },
+      where: { id: roleId, realmId: (req as any).subdomainId },
     });
 
     role.permissions = permissions;
@@ -52,19 +56,24 @@ export class RolesService {
     return result;
   }
 
-  async updateRoles(id: number, updateRoleDto: UpdateRoleDto): Promise<Role> {
+  async updateRoles(
+    id: number,
+    updateRoleDto: UpdateRoleDto,
+    req: Request,
+  ): Promise<Role> {
     const { name, enName, permissions } = updateRoleDto;
     const p = [];
     const uniquePermission = [...new Set(permissions)];
     for (let i = 0; i < uniquePermission.length; i++) {
       const per = await this.permissionService.getPermissionRaw(
         parseInt(uniquePermission[i]),
+        req,
       );
       if (per) p.push(per);
     }
 
     const role = await this.rolesRepository.findOne({
-      where: { id: id },
+      where: { id: id, realmId: (req as any).subdomainId },
     });
 
     role.permissions = p;
@@ -78,8 +87,9 @@ export class RolesService {
     return roles;
   }
 
-  async getRoles(): Promise<Role[]> {
+  async getRoles(req: Request): Promise<Role[]> {
     const roles = await this.rolesRepository.find({
+      where: { realmId: (req as any).subdomainId },
       relations: {
         permissions: true,
       },
@@ -87,9 +97,10 @@ export class RolesService {
     return roles;
   }
 
-  async deleteRoles(id: number): Promise<void> {
+  async deleteRoles(id: number, req: Request): Promise<void> {
     const result = await this.rolesRepository.delete({
       id: id,
+      realmId: (req as any).subdomainId,
     });
 
     if (result.affected === 0)
