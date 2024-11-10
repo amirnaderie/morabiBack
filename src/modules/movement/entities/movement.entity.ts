@@ -56,7 +56,7 @@ export class Movement {
   @Exclude({ toPlainOnly: true })
   deletedAt: Date;
 
-  @ManyToMany(() => File, (file) => file.movements)
+  @ManyToMany(() => File, (file) => file.movements, { onDelete: 'CASCADE' })
   @JoinTable({
     name: 'file-movement',
   })
