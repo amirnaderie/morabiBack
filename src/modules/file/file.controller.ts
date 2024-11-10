@@ -1,15 +1,16 @@
 import {
-  Body,
-  Controller,
   Get,
-  Param,
-  ParseUUIDPipe,
-  Post,
   Req,
   Res,
-  UploadedFile,
+  Body,
+  Post,
+  Param,
   UseGuards,
+  Controller,
+  UploadedFile,
+  ParseUUIDPipe,
   UseInterceptors,
+  Delete,
 } from '@nestjs/common';
 import { Response } from 'express';
 
@@ -27,9 +28,11 @@ import { join } from 'path';
 import { existsSync, mkdirSync } from 'fs';
 import { UploadFileDto } from './dto/upload-file.dto';
 import { GetUser } from '../auth/get-user.decorator';
+import { HttpResponseTransform } from 'src/interceptors/http-response-transform.interceptor';
 
 @Controller('files')
 @UseGuards(AuthGuard)
+@UseInterceptors(HttpResponseTransform)
 export class FileController {
   constructor(private readonly fileService: FileService) {}
 
@@ -83,6 +86,19 @@ export class FileController {
       res.setHeader('Content-Type', mimetype);
       // fileStream.pipe(res);
       return res.sendFile(fileStream.path as string);
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+  @Delete('/:fileId') async delete(
+    @Param('fileId', ParseUUIDPipe)
+    @GetUser()
+    user: User,
+    fileId: string,
+  ) {
+    try {
+      return await this.fileService.delete(fileId, user);
     } catch (error) {
       throw new Error(error);
     }

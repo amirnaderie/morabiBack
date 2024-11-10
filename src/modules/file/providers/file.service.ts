@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { MulterFile } from '../fileOptions';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -214,5 +215,27 @@ export class FileService {
 
   async findAll(): Promise<File[]> {
     return await this.fileRepository.find();
+  }
+
+  async delete(id: string, user: User) {
+    const file = await this.fileRepository.findOne({
+      where: { id: id },
+      relations: {
+        user: true,
+        movements: true,
+      },
+    });
+
+    if (file.user.id !== user.id) {
+      throw new UnauthorizedException('شما توانایی حذف این فایل را ندارید!');
+    }
+
+    if (file.movements.length) {
+      throw new BadRequestException('فایل دارای حرکت میباشد!');
+    }
+
+    console.log(file, 'file');
+
+    return file;
   }
 }
