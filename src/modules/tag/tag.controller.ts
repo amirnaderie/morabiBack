@@ -14,7 +14,7 @@ import { AuthGuard } from '../auth/auth.guard';
 import { TagService } from './providers/tag.service';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { UpdateTagDto } from './dto/update-tag.dto';
-import { GetUser } from '../auth/get-user.decorator';
+import { GetUser } from 'src/decorators/getUser.decorator';
 
 @Controller('tags')
 @UseGuards(AuthGuard)

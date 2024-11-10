@@ -12,12 +12,14 @@ import { TokenService } from './providers/token.service';
 import { RolesModule } from '../role/role.module';
 import { Role } from '../role/entities/role.entity';
 import { LogModule } from '../log/log.module';
+import { RealmModule } from '../realm/realm.module';
 
 @Module({
   imports: [
     forwardRef(() => UsersModule),
     forwardRef(() => LogModule),
     ConfigModule,
+    RealmModule,
     TypeOrmModule.forFeature([User, Role]),
     JwtModule.registerAsync({
       imports: [ConfigModule],

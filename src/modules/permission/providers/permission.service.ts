@@ -65,7 +65,9 @@ export class PermissionService {
     });
   }
 
-  async existPermissionIdsRaw(ids: string[]): Promise<Permission[]> {
+  async existPermissionIdsRaw(
+    ids: string[],
+  ): Promise<Permission[]> {
     try {
       return await this.permissionRepository.find({
         where: { id: In([...ids]) },

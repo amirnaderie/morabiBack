@@ -35,7 +35,7 @@ export class AuthService {
     @Inject('REDIS_CLIENT') private readonly redis: Redis,
   ) {}
 
-  async signUp(signUpDto: SignUpDto): Promise<void> {
+  async signUp(signUpDto: SignUpDto, req: Request): Promise<void> {
     const { token, password, secret } = signUpDto;
 
     const isVerified: boolean = await this.mFAService.verify2FAToken({
@@ -57,12 +57,14 @@ export class AuthService {
 
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(password, salt);
-    const role = await this.rolesService.findOne(2);
+    const role = await this.rolesService.findOne(2, req);
+
     const user = this.usresRepository.create({
       userName,
       password: hashedPassword,
       userMobile,
       userFamily,
+      realmId: (req as any).subdomainId || 1,
     });
     try {
       user.roles = [role];
@@ -104,10 +106,13 @@ export class AuthService {
     }
   }
 
-  async signIn(signInDto: SignInDto, response: Response) {
+  async signIn(signInDto: SignInDto, response: Response, req: Request) {
     const { userMobile, password } = signInDto;
     const user = await this.usresRepository.findOne({
-      where: { userMobile: userMobile },
+      where: {
+        userMobile: userMobile,
+        realmId: (req as any).subdomainId,
+      },
       select: {
         id: true,
         password: true,

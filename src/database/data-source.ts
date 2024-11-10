@@ -6,6 +6,8 @@ import { PermissionSeed } from './seeds/entity/permission-seed.entity';
 import { createPermissionSeed } from './seeds/permission.seed';
 import * as dotenv from 'dotenv';
 import { addPermissionToRole } from './seeds/role-permission.seed';
+import { createRealmSeed } from './seeds/realm.seed';
+import { RealmSeed } from './seeds/entity/realm-seed.entity';
 const env = dotenv.config({ path: '.env.dev' }).parsed;
 const AppDataSource = new DataSource({
   type: 'mssql',
@@ -16,13 +18,14 @@ const AppDataSource = new DataSource({
   database: env.DB_NAME,
   options: { trustServerCertificate: true },
   synchronize: true,
-  entities: [RoleSeed, UserSeed, PermissionSeed],
+  entities: [RoleSeed, UserSeed, PermissionSeed, RealmSeed],
 });
 
 AppDataSource.initialize()
   .then(async () => {
     try {
       console.log('\x1b[36m%s\x1b[0m', 'seed started!');
+      await createRealmSeed(AppDataSource);
       await createRoleSeed(AppDataSource);
       await createPermissionSeed(AppDataSource);
       await addPermissionToRole(AppDataSource);

@@ -2,8 +2,10 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   JoinTable,
   ManyToMany,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -12,6 +14,7 @@ import { Role } from 'src/modules/role/entities/role.entity';
 import { Movement } from 'src/modules/movement/entities/movement.entity';
 import { File } from 'src/modules/file/entities/file.entity';
 import { Tag } from 'src/modules/tag/entities/tag.entity';
+import { Realm } from 'src/modules/realm/entities/realm.entity';
 
 @Entity()
 export class User {
@@ -57,4 +60,10 @@ export class User {
 
   @OneToMany(() => File, (file) => file.user)
   files: File[];
+
+  @ManyToOne(() => Realm, (realm) => realm.users)
+  @JoinColumn({ name: 'realmId' })
+  realm: Realm;
+
+  @Column({ default: 1 }) realmId: number;
 }

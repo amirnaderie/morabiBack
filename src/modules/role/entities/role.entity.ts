@@ -1,4 +1,5 @@
 import { Permission } from 'src/modules/permission/entities/permission.entity';
+import { Realm } from 'src/modules/realm/entities/realm.entity';
 import { User } from 'src/modules/users/entities/user.entity';
 
 import {
@@ -6,8 +7,10 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
   JoinTable,
   ManyToMany,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -31,6 +34,12 @@ export class Role {
 
   @DeleteDateColumn()
   deletedA: Date;
+
+  @ManyToOne(() => Realm, (realm) => realm.roles)
+  @JoinColumn({ name: 'realmId' })
+  realm: Realm;
+
+  @Column({ default: 1 }) realmId: number;
 
   @ManyToMany(() => User, (user) => user.roles, { onDelete: 'CASCADE' })
   users: User[];
