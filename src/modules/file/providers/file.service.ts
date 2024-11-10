@@ -39,22 +39,28 @@ export class FileService {
     req: Request,
     user: User,
     movement?: Movement,
-  ): Promise<File> {
+  ): Promise<{ data: File | File[] }> {
+    // console.log(5555555);
     if (!file) {
       const errorMessage = req['fileValidationError'] || 'File upload failed';
       throw new BadRequestException(errorMessage);
     }
+    // console.log(file.mimetype, 'file.mimetype');
+    // if (file.mimetype === 'image/gif')
+    //   return await this.uploadOneGif(file, user);
     const isVideo = this.configService
       .get<string>('VIDEO_ALLOWD_MIMETYPES')
       .split(',')
       .includes(file.mimetype);
-
-    const isImage = !this.configService
+    console.log(file.mimetype);
+    console.log(this.configService.get<string>('IMAGE_ALLOWD_MIMETYPES'));
+    const isImage = this.configService
       .get<string>('IMAGE_ALLOWD_MIMETYPES')
       .split(',')
       .includes(file.mimetype);
 
     if (!isImage && !isVideo) {
+      console.log(!isImage && !isVideo, 'dfd');
       throw new BadRequestException('فرمت فایل صحیح نمی باشد');
     }
     if (
@@ -105,18 +111,61 @@ export class FileService {
     if (movement) newFile.movements = [movement];
     const savedFile = await this.fileRepository.save(newFile);
 
-    if (isVideo) {
-      // const videoPath: string = join(
-      //   __dirname,
-      //   '../../../../storage/',
-      //   savedFile.storedName,
-      // );
-      // const timestamp: number = '';
-      // const outputDir: string = '';
-      // const outputName: string = '';
-      // await this.ffmpegService.generatePoster(videoPath);
-    }
-    return savedFile;
+    if (file.mimetype === 'image/gif') {
+      const gifPath: string = join(
+        __dirname,
+        '../../../../storage/',
+        savedFile.storedName,
+      );
+      const outPutPath = join(
+        __dirname,
+        '../../../../storage/',
+        `${savedFile.storedName.split('.')[0]}.mp4`,
+      );
+      await this.ffmpegService.convertGifToMp4(gifPath, outPutPath);
+      const mp4 = await this.fileRepository.findOne({
+        where: { id: savedFile.id },
+      });
+      mp4.storedName = `${savedFile.storedName.split('.')[0]}.mp4`;
+      mp4.mimetype = 'video/mp4';
+      const videoFileSaved = await this.fileRepository.save(mp4);
+      const filePath = join(
+        __dirname,
+        '../../../../storage/',
+        savedFile.storedName,
+      );
+      unlink(filePath, () => {});
+
+      const videoPath: string = join(
+        __dirname,
+        `../../../../storage/${savedFile.storedName.split('.')[0]}.mp4`,
+      );
+      const outputDir: string = join(__dirname, '../../../../storage/');
+      const timestamp: number = 1;
+      const outputName: string = savedFile.storedName.split('.')[0];
+
+      const thumbnail = await this.ffmpegService.generatePoster(
+        videoPath,
+        timestamp,
+        outputDir,
+        outputName,
+      );
+
+      const mimeType = mime.lookup(thumbnail) || 'application/octet-stream'; // Get MIME type based on file extension
+
+      const thumbnailFileCreate = this.fileRepository.create({
+        fileName: `${outputName}.jpeg`, //thumbnail.split('/').at(-1),
+        mimetype: mimeType,
+        storedName: `${outputName}.jpeg`, // thumbnail.split('/').at(-1),
+      });
+      thumbnailFileCreate.user = user;
+
+      const thumbnailFileSaved =
+        await this.fileRepository.save(thumbnailFileCreate);
+      delete thumbnailFileSaved.user;
+      delete videoFileSaved.user;
+      return { data: [thumbnailFileSaved, videoFileSaved] };
+    } else return { data: savedFile };
   }
 
   async uploadOneVideo(
@@ -124,7 +173,7 @@ export class FileService {
     req: Request,
     user: User,
     uploadFileDto: UploadFileDto,
-  ): Promise<File | File[]> {
+  ): Promise<{ data: File | File[] }> {
     if (!file) throw new BadRequestException();
     const isVideo = this.configService
       .get<string>('VIDEO_ALLOWD_MIMETYPES')
@@ -193,8 +242,38 @@ export class FileService {
         await this.fileRepository.save(thumbnailFileCreate);
       delete thumbnailFileSaved.user;
       delete videoFileSaved.user;
-      return [thumbnailFileSaved, videoFileSaved];
-    } else return videoFileSaved;
+      return {
+        data: [thumbnailFileSaved, videoFileSaved],
+      };
+    } else return { data: videoFileSaved };
+  }
+
+  async uploadOneGif(file: MulterFile, user: User): Promise<File> {
+    const fileSizeVideo: string =
+      this.configService.get<string>('FILE_SIZE_VIDEO');
+
+    if (file.originalname.length > parseFloat(fileSizeVideo))
+      throw new BadRequestException(
+        `${parseFloat(fileSizeVideo) / 1048576}MB حداکثر حجم قابل پذیریش برای این فایل برابر است با`,
+      );
+
+    if (file.size > parseFloat(fileSizeVideo))
+      throw new BadRequestException('نام فایل طولانی می باشد');
+
+    const filename = `${Date.now()}-${file.originalname}`;
+
+    const mimetype = file.mimetype;
+
+    const gifCreate = this.fileRepository.create({
+      fileName: filename,
+      mimetype: mimetype,
+      storedName: file.filename,
+    });
+    gifCreate.user = user;
+
+    const gifSaved = await this.fileRepository.save(gifCreate);
+    delete gifSaved.user;
+    return gifSaved;
   }
 
   async getFile(fileName: string): Promise<ReadStream> {

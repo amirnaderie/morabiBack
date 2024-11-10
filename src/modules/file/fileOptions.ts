@@ -28,7 +28,9 @@ export const multerOptions = {
   }),
   fileFilter: (req, file, cb) => {
     // Accept only certain file types (optional)
-    if (file.mimetype.match(/^image\/(png|jpeg|jpg)|video\/(mp4|webm|ogg)$/)) {
+    if (
+      file.mimetype.match(/^image\/(png|jpeg|jpg|gif)|video\/(mp4|webm|ogg)$/)
+    ) {
       cb(null, true); // Accept the file
     } else {
       cb(new Error('Invalid file type'), false); // Reject the file
