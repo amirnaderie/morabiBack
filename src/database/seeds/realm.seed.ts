@@ -1,8 +1,7 @@
 import { DataSource } from 'typeorm';
-import { RoleSeed } from './entity/role-seed.entity';
 import { RealmSeed } from './entity/realm-seed.entity';
 
-export const createRoleSeed = async (AppDataSource: DataSource) => {
+export const createRealmSeed = async (AppDataSource: DataSource) => {
   try {
     const queryRunner = AppDataSource.createQueryRunner();
     const queryBuilder = AppDataSource.createQueryBuilder();

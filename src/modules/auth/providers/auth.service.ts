@@ -64,7 +64,7 @@ export class AuthService {
       password: hashedPassword,
       userMobile,
       userFamily,
-      realmId: (req as any).subdomainId,
+      realmId: (req as any).subdomainId || 1,
     });
     try {
       user.roles = [role];
