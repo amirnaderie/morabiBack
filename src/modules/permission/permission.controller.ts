@@ -7,7 +7,6 @@ import {
   ParseIntPipe,
   Patch,
   Post,
-  Req,
 } from '@nestjs/common';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { Permission } from './entities/permission.entity';

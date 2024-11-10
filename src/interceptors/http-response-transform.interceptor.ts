@@ -3,9 +3,12 @@ import {
   NestInterceptor,
   ExecutionContext,
   CallHandler,
+  // RequestTimeoutException,
+  // UnauthorizedException,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+// import { catchError } from 'rxjs/operators';
 
 export interface Response<T> {
   data: T;
@@ -33,6 +36,26 @@ export class HttpResponseTransform<T>
           data: data.data,
         };
       }),
+
+      // catchError((err) => {
+      //   console.log(err.status, 'stack');
+      //   console.log(err.message, 'stack');
+      //   console.log(err?.detail, 'errrrrrrrrrrrrr');
+      //   const errorType = err.message.split(':')[0];
+      //   console.log(errorType, 'errorType');
+      //   if (err instanceof UnauthorizedException) {
+      //     console.log('77777777');
+
+      //     return throwError(
+      //       () =>
+      //         new UnauthorizedException({
+      //           statusCode: 403,
+      //         }),
+      //     );
+      //   }
+      //   err.message = 'rrr';
+      //   return throwError(() => new RequestTimeoutException());
+      // }),
     );
   }
 }

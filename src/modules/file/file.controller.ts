@@ -1,14 +1,15 @@
 import {
-  Body,
-  Controller,
   Get,
-  Param,
-  ParseUUIDPipe,
-  Post,
   Req,
   Res,
-  UploadedFile,
+  Body,
+  Post,
+  Param,
+  Delete,
   UseGuards,
+  Controller,
+  UploadedFile,
+  ParseUUIDPipe,
   UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
@@ -19,17 +20,19 @@ import {
   multerOptions,
   oneVideoMulterOptions,
 } from './fileOptions';
-import { FileInterceptor as MulterFileInterceptor } from '@nestjs/platform-express';
-import { User } from '../users/entities/user.entity';
-import { File } from './entities/file.entity';
 import { join } from 'path';
+import { File } from './entities/file.entity';
+import { User } from '../users/entities/user.entity';
+import { GetUser } from 'src/decorators/getUser.decorator';
 import { existsSync, mkdirSync } from 'fs';
 import { UploadFileDto } from './dto/upload-file.dto';
-import { GetUser } from 'src/decorators/getUser.decorator';
+import { FileInterceptor as MulterFileInterceptor } from '@nestjs/platform-express';
+import { HttpResponseTransform } from 'src/interceptors/http-response-transform.interceptor';
 import { AuthGuard } from 'src/guards/auth.guard';
 
 @Controller('files')
 @UseGuards(AuthGuard)
+@UseInterceptors(HttpResponseTransform)
 export class FileController {
   constructor(private readonly fileService: FileService) {}
 
@@ -86,6 +89,16 @@ export class FileController {
     } catch (error) {
       throw new Error(error);
     }
+  }
+
+  @Delete('/:fileId') async delete(
+    @Param('fileId', ParseUUIDPipe) fileId: string,
+    @GetUser()
+    user: User,
+  ) {
+    console.log(user, 'ddd user');
+
+    return await this.fileService.delete(fileId, user);
   }
 
   @Get('')
