@@ -13,6 +13,9 @@ export class Log {
   @Column({ type: 'uuid', nullable: true })
   userId: string;
 
+  @Column({ type: 'int', nullable: true })
+  realmId: number;
+
   @Column({ type: 'uuid', nullable: true })
   correlationId: string;
 

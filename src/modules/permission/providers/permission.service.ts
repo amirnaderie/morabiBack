@@ -15,13 +15,11 @@ export class PermissionService {
 
   async createPermission(
     createPermissionDto: CreatePermissionDto,
-    req: Request,
   ): Promise<Permission> {
     const { name, enName } = createPermissionDto;
     const permission = this.permissionRepository.create({
       name: name,
       enName: enName,
-      realmId: (req as any).subdomainId,
     });
     const cretaedPermission = await this.permissionRepository.save(permission);
     return cretaedPermission;
@@ -30,56 +28,49 @@ export class PermissionService {
   async updatePermission(
     id: number,
     updatePermissionDto: CreatePermissionDto,
-    req: Request,
   ): Promise<Permission> {
     const { name, enName } = updatePermissionDto;
 
     const permission = await this.permissionRepository.findOne({
-      where: { id: id, realmId: (req as any).subdomainId },
+      where: { id: id },
     });
 
     const result = await this.permissionRepository.save({
       ...permission,
       name: name,
       enName: enName,
-      realmId: (req as any).subdomainId,
     });
 
     return result;
   }
 
-  async getPermission(req: Request): Promise<Permission[]> {
-    return await this.permissionRepository.find({
-      where: { realmId: (req as any).subdomainId },
-    });
+  async getPermission(): Promise<Permission[]> {
+    return await this.permissionRepository.find();
   }
 
-  async deletePermission(id: number, req: Request): Promise<void> {
+  async deletePermission(id: number): Promise<void> {
     const result = await this.permissionRepository.delete({
       id: id,
-      realmId: (req as any).subdomainId,
     });
 
     if (result.affected === 0)
       throw new NotFoundException(`Permission with Id : ${id} not found`);
   }
 
-  async getPermissionRaw(id: number, req: Request): Promise<Permission> {
+  async getPermissionRaw(id: number): Promise<Permission> {
     return await this.permissionRepository.findOne({
       where: {
         id: id,
-        realmId: (req as any).subdomainId,
       },
     });
   }
 
   async existPermissionIdsRaw(
     ids: string[],
-    req: Request,
   ): Promise<Permission[]> {
     try {
       return await this.permissionRepository.find({
-        where: { id: In([...ids]), realmId: (req as any).subdomainId },
+        where: { id: In([...ids]) },
       });
     } catch (error) {
       throw new NotFoundException('permission not found', error);

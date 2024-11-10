@@ -38,10 +38,4 @@ export class Permission {
     name: 'role-permission',
   })
   roles: Role[];
-
-  @ManyToOne(() => Realm, (realm) => realm.permissions)
-  @JoinColumn({ name: 'realmId' })
-  realm: Realm;
-
-  @Column({ default: 1 }) realmId: number;
 }

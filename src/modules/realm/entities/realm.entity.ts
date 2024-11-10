@@ -22,15 +22,12 @@ export class Realm {
     length: 150,
   })
   name: string;
-  
+
   @OneToMany(() => User, (user) => user.realm)
   users: User[];
 
   @OneToMany(() => Role, (role) => role.realm)
   roles: Role[];
-
-  @OneToMany(() => Permission, (permission) => permission.realm)
-  permissions: Permission[];
 
   @OneToMany(() => Movement, (movement) => movement.realm)
   movements: Movement[];

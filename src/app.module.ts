@@ -78,9 +78,9 @@ export class AppModule implements NestModule {
     private readonly als: AsyncLocalStorage<any>,
   ) {}
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(AsyncContextMiddleware).forRoutes('*'); // Apply globally
     consumer
       .apply(SubdomainMiddleware)
       .forRoutes({ path: '*', method: RequestMethod.ALL });
+    consumer.apply(AsyncContextMiddleware).forRoutes('*'); // Apply globally
   }
 }

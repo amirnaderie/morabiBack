@@ -22,6 +22,7 @@ export class LogService {
     const correlationId: string = this.als.getStore()['correlationId'] || null;
     const accessToken: string = this.als.getStore()['accessToken'];
     const requestIp: string = this.als.getStore()['requestIp'];
+    const realmId: number = this.als.getStore()['subdomainId'];
     let userId: string | null = '';
     if (accessToken) {
       const decodedAccessToken = this.tokenService.decodeToken(accessToken);
@@ -34,6 +35,7 @@ export class LogService {
       logMessage,
       correlationId,
       requestIp,
+      realmId,
     });
     await this.LogsRepository.save(log);
   }

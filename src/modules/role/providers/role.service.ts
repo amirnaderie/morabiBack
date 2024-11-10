@@ -40,10 +40,8 @@ export class RolesService {
   ): Promise<any> {
     const { roleId, permissionIds } = assignPermissionToRole;
 
-    const permissions = await this.permissionService.existPermissionIdsRaw(
-      permissionIds,
-      req,
-    );
+    const permissions =
+      await this.permissionService.existPermissionIdsRaw(permissionIds);
 
     const role = await this.rolesRepository.findOne({
       where: { id: roleId, realmId: (req as any).subdomainId },
@@ -67,7 +65,6 @@ export class RolesService {
     for (let i = 0; i < uniquePermission.length; i++) {
       const per = await this.permissionService.getPermissionRaw(
         parseInt(uniquePermission[i]),
-        req,
       );
       if (per) p.push(per);
     }

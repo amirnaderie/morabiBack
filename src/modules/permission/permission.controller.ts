@@ -18,32 +18,27 @@ export class PermissionController {
   constructor(private PermissionService: PermissionService) {}
 
   @Get()
-  getPermission(@Req() req: Request): Promise<Permission[]> {
-    return this.PermissionService.getPermission(req);
+  getPermission(): Promise<Permission[]> {
+    return this.PermissionService.getPermission();
   }
 
   @Post()
   createPermission(
     @Body() createPermissionDto: CreatePermissionDto,
-    @Req() req: Request,
   ): Promise<Permission> {
-    return this.PermissionService.createPermission(createPermissionDto,req);
+    return this.PermissionService.createPermission(createPermissionDto);
   }
 
   @Patch('/:id')
   updatePermission(
     @Param('id', ParseIntPipe) id: number,
     @Body() updatePermissionDto: CreatePermissionDto,
-    @Req() req: Request,
   ): Promise<Permission> {
-    return this.PermissionService.updatePermission(id, updatePermissionDto,req);
+    return this.PermissionService.updatePermission(id, updatePermissionDto);
   }
 
   @Delete('/:id')
-  deletePermission(
-    @Param('id', ParseIntPipe) id: number,
-    @Req() req: Request,
-  ): Promise<void> {
-    return this.PermissionService.deletePermission(id,req);
+  deletePermission(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    return this.PermissionService.deletePermission(id);
   }
 }
