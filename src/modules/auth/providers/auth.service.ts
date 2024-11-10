@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  ForbiddenException,
   Inject,
   Injectable,
   InternalServerErrorException,
@@ -20,6 +21,8 @@ import { Role } from 'src/modules/role/entities/role.entity';
 import { LogService } from 'src/modules/log/providers/log.service';
 import { CookieOptions, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
+import { UtilityService } from 'src/utility/providers/utility.service';
+import { AsyncLocalStorage } from 'async_hooks';
 // import { JwtPayload } from './jwt-payload.interface';
 
 @Injectable()
@@ -32,6 +35,8 @@ export class AuthService {
     private mFAService: MFAService,
     private readonly logService: LogService,
     private readonly configService: ConfigService,
+    private readonly utilityService: UtilityService,
+    private readonly als: AsyncLocalStorage<any>,
     @Inject('REDIS_CLIENT') private readonly redis: Redis,
   ) {}
 
@@ -106,6 +111,18 @@ export class AuthService {
     }
   }
 
+  async refreshToken(response: Response, req: Request) {
+    const refreshToken: string = this.als.getStore()['refreshToken'];
+    if (!refreshToken) throw new ForbiddenException();
+    const payload = await this.redis.get(refreshToken);
+    if (!payload) throw new ForbiddenException();
+    const { accessToken, cookieOptions } = await this.createAccessToken(
+      JSON.parse(payload),
+    );
+
+    response.cookie('accessToken', accessToken, cookieOptions);
+    return { message: 'token Refreshed' };
+  }
   async signIn(signInDto: SignInDto, response: Response, req: Request) {
     const { userMobile, password } = signInDto;
     const user = await this.usresRepository.findOne({
@@ -147,6 +164,36 @@ export class AuthService {
       JSON.stringify({ userMobile }),
       'Successfully logedIn',
     );
+
+    const { accessToken, cookieOptions } =
+      await this.createAccessToken(payload);
+
+    const refreshTokencookieOptions: CookieOptions = {
+      httpOnly: true,
+      sameSite: 'lax',
+      maxAge:
+        parseInt(this.configService.get<string>('REFRESH_TOKEN_EXPIRESIN')) *
+        1000,
+      secure: process.env.ENV === 'prod',
+      domain: this.configService.get<string>('COOKIE_DOMAIN'), // Add domain
+      path: '/', // Explicitly set path
+    };
+
+    const refreshToken = this.utilityService.randomString(32);
+    await this.redis.set(
+      refreshToken,
+      JSON.stringify(payload),
+      'EX',
+      parseInt(this.configService.get<string>('REFRESH_TOKEN_EXPIRESIN')),
+    );
+
+    response.cookie('accessToken', accessToken, cookieOptions);
+    response.cookie('refreshToken', refreshToken, refreshTokencookieOptions);
+
+    return { message: 'Successfully signed in' };
+  }
+
+  createAccessToken = async (payload: any) => {
     const accessToken: string = await this.jwtService.sign(payload);
     if (!accessToken) {
       throw new UnauthorizedException('Authentication failed');
@@ -160,9 +207,6 @@ export class AuthService {
       domain: this.configService.get<string>('COOKIE_DOMAIN'), // Add domain
       path: '/', // Explicitly set path
     };
-
-    response.cookie('accessToken', accessToken, cookieOptions);
-
-    return { message: 'Successfully signed in' };
-  }
+    return { accessToken, cookieOptions };
+  };
 }

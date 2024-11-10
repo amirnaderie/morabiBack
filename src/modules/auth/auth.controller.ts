@@ -78,4 +78,11 @@ export class AuthController {
     });
     return { message: 'Signed out successfully' };
   }
+  @Get('refresh-token')
+  async refreshToken(
+    @Res({ passthrough: true }) res: Response,
+    @Req() req: Request,
+  ) {
+    return await this.authService.refreshToken(res, req);
+  }
 }

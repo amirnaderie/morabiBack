@@ -13,6 +13,8 @@ import { RolesModule } from '../role/role.module';
 import { Role } from '../role/entities/role.entity';
 import { LogModule } from '../log/log.module';
 import { RealmModule } from '../realm/realm.module';
+import { UtilityModule } from 'src/utility/utility.module';
+import { AlsModule } from 'src/middleware/als.module';
 
 @Module({
   imports: [
@@ -20,6 +22,8 @@ import { RealmModule } from '../realm/realm.module';
     forwardRef(() => LogModule),
     ConfigModule,
     RealmModule,
+    UtilityModule,
+    AlsModule,
     TypeOrmModule.forFeature([User, Role]),
     JwtModule.registerAsync({
       imports: [ConfigModule],

@@ -14,13 +14,13 @@ import {
 
 import { User } from '../users/entities/user.entity';
 import { Movement } from './entities/movement.entity';
-import { AuthGuard } from '../auth/auth.guard';
 import { MovementService } from './providers/movement.service';
 import { CreateMovementDto } from './dto/create-movement.dto';
 import { UpdateMovementDto } from './dto/update-movement.dto';
 import { HttpResponseTransform } from 'src/interceptors/http-response-transform.interceptor';
 import { RolesGuard } from 'src/guards/role.guard';
 import { GetUser } from 'src/decorators/getUser.decorator';
+import { AuthGuard } from 'src/guards/auth.guard';
 
 @Controller('movements')
 @UseGuards(AuthGuard, RolesGuard)

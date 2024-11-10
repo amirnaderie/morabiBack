@@ -16,11 +16,11 @@ import { CreateTaskDto } from './dto/create-task.dto';
 import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
 import { UpdateTaskStatusDto } from './dto/update-task.dto';
 import { Task } from './task.entity';
-import { AuthGuard } from 'src/modules/auth/auth.guard';
 import { Logger } from '@nestjs/common';
 import { User } from 'src/modules/users/entities/user.entity';
 import { RolesGuard } from 'src/guards/role.guard';
 import { GetUser } from 'src/decorators/getUser.decorator';
+import { AuthGuard } from 'src/guards/auth.guard';
 
 @Controller('tasks')
 @UseGuards(AuthGuard, RolesGuard)
