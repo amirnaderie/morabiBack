@@ -127,20 +127,22 @@ export class MovementService {
     try {
       const { name, description, tags, files, screenSeconds } =
         updateMovementDto;
-      let movement;
-      if (user.permissions.includes('create-movement-default'))
-        movement = await this.movementRepository.findOneBy({
+      const movement = await this.movementRepository.findOne({
+        where: {
+          user: { id: user.id },
           id: id,
           realmId: (req as any).subdomainId,
-        });
-      else
-        movement = await this.movementRepository.findOne({
-          where: {
-            user: { id: user.id },
-            id: id,
-            realmId: (req as any).subdomainId,
-          },
-        });
+        },
+        relations: {
+          files: true,
+        },
+      });
+
+      if (movement.files && movement.files.length > 0) {
+        for (let i = 0; i < movement.files.length; i++) {
+          await this.fileService.delete(movement.files[i].id, user);
+        }
+      }
 
       const tagsEntity = await this.tagService.findById(tags);
       const fileEntity = await this.fileService.findById(files);

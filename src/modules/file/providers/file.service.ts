@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -23,6 +24,7 @@ import { Movement } from 'src/modules/movement/entities/movement.entity';
 import { FFmpegService } from './ffmpeg.service';
 import { UploadFileDto } from '../dto/upload-file.dto';
 import * as mime from 'mime-types';
+import { LogService } from 'src/modules/log/providers/log.service';
 
 @Injectable()
 export class FileService {
@@ -32,6 +34,7 @@ export class FileService {
     private readonly utilityService: UtilityService,
     private readonly configService: ConfigService,
     private readonly ffmpegService: FFmpegService,
+    private readonly logService: LogService,
   ) {}
 
   async handleFileUpload(
@@ -168,78 +171,98 @@ export class FileService {
     user: User,
     uploadFileDto: UploadFileDto,
   ): Promise<{ data: File | File[] }> {
-    if (!file) throw new BadRequestException();
-    const isVideo = this.configService
-      .get<string>('VIDEO_ALLOWD_MIMETYPES')
-      .split(',')
-      .includes(file.mimetype);
+    try {
+      if (!file) throw new BadRequestException();
+      const isVideo = this.configService
+        .get<string>('VIDEO_ALLOWD_MIMETYPES')
+        .split(',')
+        .includes(file.mimetype);
 
-    if (!isVideo) throw new BadRequestException('فرمت فایل صحیح نمی باشد');
-    const fileSizeVideo: string =
-      this.configService.get<string>('FILE_SIZE_VIDEO');
+      if (!isVideo) throw new BadRequestException('فرمت فایل صحیح نمی باشد');
+      const fileSizeVideo: string =
+        this.configService.get<string>('FILE_SIZE_VIDEO');
 
-    if (file.originalname.length > parseFloat(fileSizeVideo))
-      throw new BadRequestException(
-        `${parseFloat(fileSizeVideo) / 1048576}MB حداکثر حجم قابل پذیریش برای این فایل برابر است با`,
+      if (file.originalname.length > parseFloat(fileSizeVideo))
+        throw new BadRequestException(
+          `${parseFloat(fileSizeVideo) / 1048576}MB حداکثر حجم قابل پذیریش برای این فایل برابر است با`,
+        );
+
+      if (file.size > parseFloat(fileSizeVideo))
+        throw new BadRequestException('نام فایل طولانی می باشد');
+
+      // if (!this.utilityService.onlyLettersAndNumbers(file.originalname))
+      //   throw new BadRequestException('نام فایل حاوی کاراکترهای غیر مجاز است');
+
+      const filename = `${Date.now()}-${file.originalname}`;
+
+      const mimetype = file.mimetype;
+
+      const videoFileCreate = this.fileRepository.create({
+        fileName: filename,
+        mimetype: mimetype,
+        storedName: file.filename,
+      });
+      videoFileCreate.user = user;
+
+      const videoFileSaved = await this.fileRepository.save(videoFileCreate);
+      delete videoFileSaved.user;
+      if (uploadFileDto?.screenSeconds) {
+        if (!existsSync(join(__dirname, '..', '..', '..', '..', 'uploads'))) {
+          mkdirSync(join(__dirname, '..', '..', '..', '..', 'uploads'));
+        }
+
+        const videoPath: string = join(
+          __dirname,
+          '../../../../storage/',
+          videoFileSaved.storedName,
+        );
+        const outputDir = join(__dirname, '../../../../storage/');
+        const timestamp: number = uploadFileDto?.screenSeconds;
+        const outputName: string = videoFileSaved.storedName.split('.')[0];
+
+        const thumbnail = await this.ffmpegService.generatePoster(
+          videoPath,
+          timestamp,
+          outputDir,
+          outputName,
+        );
+
+        const mimeType = mime.lookup(thumbnail) || 'application/octet-stream'; // Get MIME type based on file extension
+
+        const thumbnailFileCreate = this.fileRepository.create({
+          fileName: `${outputName}.jpeg`, //thumbnail.split('/').at(-1),
+          mimetype: mimeType,
+          storedName: `${outputName}.jpeg`, // thumbnail.split('/').at(-1),
+        });
+        thumbnailFileCreate.user = user;
+
+        const thumbnailFileSaved =
+          await this.fileRepository.save(thumbnailFileCreate);
+        delete thumbnailFileSaved.user;
+        delete videoFileSaved.user;
+        return {
+          data: [thumbnailFileSaved, videoFileSaved],
+        };
+      } else return { data: videoFileSaved };
+    } catch (error) {
+      console.log(error);
+      this.logService.logData(
+        'update-movement',
+        JSON.stringify({
+          uploadFileDto: uploadFileDto,
+          file: file,
+          user: user,
+        }),
+        error?.message ? error.message : 'error not have message!!',
       );
-
-    if (file.size > parseFloat(fileSizeVideo))
-      throw new BadRequestException('نام فایل طولانی می باشد');
-
-    // if (!this.utilityService.onlyLettersAndNumbers(file.originalname))
-    //   throw new BadRequestException('نام فایل حاوی کاراکترهای غیر مجاز است');
-
-    const filename = `${Date.now()}-${file.originalname}`;
-
-    const mimetype = file.mimetype;
-
-    const videoFileCreate = this.fileRepository.create({
-      fileName: filename,
-      mimetype: mimetype,
-      storedName: file.filename,
-    });
-    videoFileCreate.user = user;
-
-    const videoFileSaved = await this.fileRepository.save(videoFileCreate);
-    delete videoFileSaved.user;
-    if (uploadFileDto?.screenSeconds) {
-      if (!existsSync(join(__dirname, '..', '..', '..', '..', 'uploads'))) {
-        mkdirSync(join(__dirname, '..', '..', '..', '..', 'uploads'));
+      if (error.message) {
+        throw new BadRequestException(error.message);
       }
 
-      const videoPath: string = join(
-        __dirname,
-        '../../../../storage/',
-        videoFileSaved.storedName,
+      throw new InternalServerErrorException(
+        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
       );
-      const outputDir = join(__dirname, '../../../../storage/');
-      const timestamp: number = uploadFileDto?.screenSeconds;
-      const outputName: string = videoFileSaved.storedName.split('.')[0];
-
-      const thumbnail = await this.ffmpegService.generatePoster(
-        videoPath,
-        timestamp,
-        outputDir,
-        outputName,
-      );
-
-      const mimeType = mime.lookup(thumbnail) || 'application/octet-stream'; // Get MIME type based on file extension
-
-      const thumbnailFileCreate = this.fileRepository.create({
-        fileName: `${outputName}.jpeg`, //thumbnail.split('/').at(-1),
-        mimetype: mimeType,
-        storedName: `${outputName}.jpeg`, // thumbnail.split('/').at(-1),
-      });
-      thumbnailFileCreate.user = user;
-
-      const thumbnailFileSaved =
-        await this.fileRepository.save(thumbnailFileCreate);
-      delete thumbnailFileSaved.user;
-      delete videoFileSaved.user;
-      return {
-        data: [thumbnailFileSaved, videoFileSaved],
-      };
-    } else return { data: videoFileSaved };
+    }
   }
 
   async uploadOneGif(file: MulterFile, user: User): Promise<File> {

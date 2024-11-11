@@ -8,6 +8,7 @@ import { UtilityModule } from 'src/utility/utility.module';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from '../auth/auth.module';
 import { FFmpegService } from './providers/ffmpeg.service';
+import { LogModule } from '../log/log.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { FFmpegService } from './providers/ffmpeg.service';
     UtilityModule,
     ConfigModule,
     AuthModule,
+    LogModule,
   ],
   controllers: [FileController],
   providers: [FileService, FFmpegService],
