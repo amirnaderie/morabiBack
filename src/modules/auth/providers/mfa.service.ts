@@ -55,39 +55,56 @@ export class MFAService {
     }
   }
 
-  async generate2FAForgetPassword(userMobile: string): Promise<string> {
+  async generate2FAForgetPassword(
+    userMobile: string,
+    req: Request,
+  ): Promise<string> {
     const user: User = await this.usersService.getUserByMobile(userMobile);
 
     if (!user)
       throw new ConflictException('این شماره همراه پیش از این ثبت نشده است');
 
-    return this.sendSMS({
-      userFamily: user.userFamily,
-      userMobile: user.userMobile,
-      userName: user.userName,
-    });
+    return this.sendSMS(
+      {
+        userFamily: user.userFamily,
+        userMobile: user.userMobile,
+        userName: user.userName,
+      },
+      req,
+    );
   }
 
   // Send SMS using Twilio
-  async send2FAToken(sendOtpDto: SendOtpDto): Promise<string> {
+  async send2FAToken(sendOtpDto: SendOtpDto, req: Request): Promise<string> {
     const { userMobile } = sendOtpDto;
+
     const user: User = await this.usersService.getUserByMobile(userMobile);
 
     if (user)
       throw new ConflictException('این شماره همراه پیش از این ثبت شده است');
 
-    return this.sendSMS(sendOtpDto);
+    return this.sendSMS(sendOtpDto, req);
   }
 
-  private sendSMS = async (sendOtpDto: SendOtpDto) => {
+  private sendSMS = async (sendOtpDto: SendOtpDto, req: Request) => {
     const { userMobile, userFamily, userName } = sendOtpDto;
+    const requestIp: string =
+      (req as any).ip || (req as any).connection.remodeAddress;
+
+    const ipExists = await this.redis.get(requestIp);
+
+    if (ipExists)
+      throw new ConflictException('جهت ارسال پیامک اندکی صبر فرمایید');
+    const mobileIsExists = await this.redis.get(userMobile);
+
+    if (mobileIsExists)
+      throw new ConflictException('جهت ارسال پیامک اندکی صبر فرمایید');
+
     const secret = this.generate2FASecret(); // Save this secret in your user record in DB
     const token = this.generate2FAToken(secret);
-    const mockSmsUrl = `${this.configService.get<string>('PROVIDER_URL')}&receptor=${userMobile}&token=${token}`;
+    const smsUrl = `${this.configService.get<string>('PROVIDER_URL')}&receptor=${userMobile}&token=${token}`;
 
-    const response = await lastValueFrom(
-      this.httpService.post(mockSmsUrl, null),
-    );
+    const response = await lastValueFrom(this.httpService.post(smsUrl, null));
 
     if (response.status === 200) {
       await this.redis.set(
@@ -103,6 +120,21 @@ export class MFAService {
         'EX',
         parseInt(this.configService.get<string>('OTP_EXPIRESIN')),
       );
+
+      await this.redis.set(
+        userMobile,
+        'true',
+        'EX',
+        parseInt(this.configService.get<string>('OTP_EXPIRESIN')),
+      );
+
+      await this.redis.set(
+        requestIp,
+        'true',
+        'EX',
+        parseInt(this.configService.get<string>('OTP_EXPIRESIN')),
+      );
+
       return secret;
       //console.log('SMS sent successfully:', response.data);
       //return response.data;

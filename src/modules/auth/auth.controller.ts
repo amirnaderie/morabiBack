@@ -29,17 +29,21 @@ export class AuthController {
   }
 
   @Post('send-otp')
-  async generate2FA(@Body() sendOtpDto: SendOtpDto): Promise<string> {
+  async generate2FA(
+    @Body() sendOtpDto: SendOtpDto,
+    @Req() req: Request,
+  ): Promise<string> {
     // Send the token via SMS
-    return await this.mfaService.send2FAToken(sendOtpDto);
+    return await this.mfaService.send2FAToken(sendOtpDto, req);
   }
 
   @Post('send-otp-forget-password')
   async generate2FAForgetPassword(
     @Body('userMobile') userMobile: string,
+    @Req() req: Request,
   ): Promise<string> {
     // Send the token via SMS
-    return await this.mfaService.generate2FAForgetPassword(userMobile);
+    return await this.mfaService.generate2FAForgetPassword(userMobile, req);
   }
 
   @Post('change-forgot-password')
