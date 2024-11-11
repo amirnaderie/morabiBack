@@ -49,7 +49,10 @@ import { SubdomainMiddleware } from './middleware/subdomain.middleware';
           password: configService.get<string>('DB_PASSWORD'),
           database: configService.get<string>('DB_NAME'),
           entities: [join(__dirname, '**/*.entity.{ts,js}')],
-          synchronize: true,
+          synchronize:
+            configService.get<string>('DB_ALLOW_SYNC_WITH_TYPEORM') === 'true'
+              ? true
+              : false,
           autoLoadEntities: true,
           options: {
             encrypt: true,
