@@ -54,7 +54,7 @@ export class MovementService {
       this.logService.logData(
         'create-movement',
         JSON.stringify({ createMovementDto: createMovementDto, user: user }),
-        error?.message ? error.message : 'error not have message!!',
+        error?.stack ? error.stack : 'error not have message!!',
       );
       if (error.message.includes('Violation of UNIQUE KEY constraint'))
         throw new ConflictException('اطلاعات حرکت تکراری است');
@@ -88,7 +88,7 @@ export class MovementService {
       this.logService.logData(
         'findAll-movement',
         'no input',
-        error?.message ? error.message : 'error not have message!!',
+        error?.stack ? error.stack : 'error not have message!!',
       );
       throw new InternalServerErrorException(
         'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
@@ -110,7 +110,7 @@ export class MovementService {
       this.logService.logData(
         'findOne-movement',
         JSON.stringify({ id: id }),
-        error?.message ? error.message : 'error not have message!!',
+        error?.stack ? error.stack : 'error not have message!!',
       );
       throw new InternalServerErrorException(
         'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
@@ -165,7 +165,7 @@ export class MovementService {
       this.logService.logData(
         'update-movement',
         JSON.stringify({ updateMovementDto: updateMovementDto, id: id }),
-        error?.message ? error.message : 'error not have message!!',
+        error?.stack ? error.stack : 'error not have message!!',
       );
       throw new InternalServerErrorException(
         'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
@@ -197,7 +197,7 @@ export class MovementService {
       this.logService.logData(
         'remove-movement',
         JSON.stringify({ id: id }),
-        error?.message ? error.message : 'error not have message!!',
+        error?.stack ? error.stack : 'error not have message!!',
       );
       throw new InternalServerErrorException(
         'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',

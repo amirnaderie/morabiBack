@@ -43,126 +43,147 @@ export class FileService {
     user: User,
     movement?: Movement,
   ): Promise<{ data: File | File[] }> {
-    if (!file) {
-      const errorMessage = req['fileValidationError'] || 'File upload failed';
-      throw new BadRequestException(errorMessage);
-    }
+    try {
+      if (!file) {
+        const errorMessage = req['fileValidationError'] || 'File upload failed';
+        throw new BadRequestException(errorMessage);
+      }
 
-    const isVideo = this.configService
-      .get<string>('VIDEO_ALLOWD_MIMETYPES')
-      .split(',')
-      .includes(file.mimetype);
-    const isImage = this.configService
-      .get<string>('IMAGE_ALLOWD_MIMETYPES')
-      .split(',')
-      .includes(file.mimetype);
+      const isVideo = this.configService
+        .get<string>('VIDEO_ALLOWD_MIMETYPES')
+        .split(',')
+        .includes(file.mimetype);
+      const isImage = this.configService
+        .get<string>('IMAGE_ALLOWD_MIMETYPES')
+        .split(',')
+        .includes(file.mimetype);
 
-    if (!isImage && !isVideo) {
-      throw new BadRequestException('فرمت فایل صحیح نمی باشد');
-    }
-    if (
-      file.originalname.length >
-      parseFloat(this.configService.get<string>('FILE_SIZE_IMAGE'))
-    ) {
-      throw new BadRequestException(
-        `${parseFloat(this.configService.get<string>('FILE_SIZE_IMAGE')) / 1048576}MB حداکثر حجم قابل پذیریش برای این فایل برابر است با`,
-      );
-    }
-    if (
-      file.originalname.length >
-      parseFloat(this.configService.get<string>('FILE_SIZE_VIDEO'))
-    ) {
-      throw new BadRequestException(
-        `${parseFloat(this.configService.get<string>('FILE_SIZE_VIDEO')) / 1048576}MB حداکثر حجم قابل پذیریش برای این فایل برابر است با`,
-      );
-    }
-    if (
-      file.size >
-        parseFloat(this.configService.get<string>('FILE_SIZE_IMAGE')) ||
-      file.size > parseFloat(this.configService.get<string>('FILE_SIZE_VIDEO'))
-    ) {
-      throw new BadRequestException('نام فایل طولانی می باشد');
-    }
+      if (!isImage && !isVideo) {
+        throw new BadRequestException('فرمت فایل صحیح نمی باشد');
+      }
+      if (
+        file.originalname.length >
+        parseFloat(this.configService.get<string>('FILE_SIZE_IMAGE'))
+      ) {
+        throw new BadRequestException(
+          `${parseFloat(this.configService.get<string>('FILE_SIZE_IMAGE')) / 1048576}MB حداکثر حجم قابل پذیریش برای این فایل برابر است با`,
+        );
+      }
+      if (
+        file.originalname.length >
+        parseFloat(this.configService.get<string>('FILE_SIZE_VIDEO'))
+      ) {
+        throw new BadRequestException(
+          `${parseFloat(this.configService.get<string>('FILE_SIZE_VIDEO')) / 1048576}MB حداکثر حجم قابل پذیریش برای این فایل برابر است با`,
+        );
+      }
+      if (
+        file.size >
+          parseFloat(this.configService.get<string>('FILE_SIZE_IMAGE')) ||
+        file.size >
+          parseFloat(this.configService.get<string>('FILE_SIZE_VIDEO'))
+      ) {
+        throw new BadRequestException('نام فایل طولانی می باشد');
+      }
 
-    if (!this.utilityService.onlyLettersAndNumbers(file.originalname)) {
-      throw new BadRequestException('نام فایل حاوی کاراکترهای غیر مجاز است');
-    }
+      if (!this.utilityService.onlyLettersAndNumbers(file.originalname)) {
+        throw new BadRequestException('نام فایل حاوی کاراکترهای غیر مجاز است');
+      }
 
-    const filename = `${Date.now()}-${file.originalname}`;
+      const filename = `${Date.now()}-${file.originalname}`;
 
-    const mimetype = file.mimetype;
+      const mimetype = file.mimetype;
 
-    // const filePath = join(__dirname, '..', '..', 'uploads', filename);
+      // const filePath = join(__dirname, '..', '..', 'uploads', filename);
 
-    if (!existsSync(join(__dirname, '..', '..', 'uploads'))) {
-      mkdirSync(join(__dirname, '..', '..', 'uploads'));
-    }
-    // writeFileSync(filePath, file.buffer); // Save the file manually
+      if (!existsSync(join(__dirname, '..', '..', 'uploads'))) {
+        mkdirSync(join(__dirname, '..', '..', 'uploads'));
+      }
+      // writeFileSync(filePath, file.buffer); // Save the file manually
 
-    const newFile = this.fileRepository.create({
-      fileName: filename,
-      mimetype: mimetype,
-      storedName: file.filename,
-    });
-    newFile.user = user;
-    if (movement) newFile.movements = [movement];
-    const savedFile = await this.fileRepository.save(newFile);
-
-    if (file.mimetype === 'image/gif') {
-      const gifPath: string = join(
-        __dirname,
-        '../../../../storage/',
-        savedFile.storedName,
-      );
-      const outPutPath = join(
-        __dirname,
-        '../../../../storage/',
-        `${savedFile.storedName.split('.')[0]}.mp4`,
-      );
-      await this.ffmpegService.convertGifToMp4(gifPath, outPutPath);
-      const mp4 = await this.fileRepository.findOne({
-        where: { id: savedFile.id },
+      const newFile = this.fileRepository.create({
+        fileName: filename,
+        mimetype: mimetype,
+        storedName: file.filename,
       });
-      mp4.storedName = `${savedFile.storedName.split('.')[0]}.mp4`;
-      mp4.mimetype = 'video/mp4';
-      const videoFileSaved = await this.fileRepository.save(mp4);
-      const filePath = join(
-        __dirname,
-        '../../../../storage/',
-        savedFile.storedName,
+      newFile.user = user;
+      if (movement) newFile.movements = [movement];
+      const savedFile = await this.fileRepository.save(newFile);
+
+      if (file.mimetype === 'image/gif') {
+        const gifPath: string = join(
+          __dirname,
+          '../../../../storage/',
+          savedFile.storedName,
+        );
+        const outPutPath = join(
+          __dirname,
+          '../../../../storage/',
+          `${savedFile.storedName.split('.')[0]}.mp4`,
+        );
+        await this.ffmpegService.convertGifToMp4(gifPath, outPutPath);
+        const mp4 = await this.fileRepository.findOne({
+          where: { id: savedFile.id },
+        });
+        mp4.storedName = `${savedFile.storedName.split('.')[0]}.mp4`;
+        mp4.mimetype = 'video/mp4';
+        const videoFileSaved = await this.fileRepository.save(mp4);
+        const filePath = join(
+          __dirname,
+          '../../../../storage/',
+          savedFile.storedName,
+        );
+        unlink(filePath, () => {});
+
+        const videoPath: string = join(
+          __dirname,
+          `../../../../storage/${savedFile.storedName.split('.')[0]}.mp4`,
+        );
+        const outputDir: string = join(__dirname, '../../../../storage/');
+        const timestamp: number = 1;
+        const outputName: string = savedFile.storedName.split('.')[0];
+
+        const thumbnail = await this.ffmpegService.generatePoster(
+          videoPath,
+          timestamp,
+          outputDir,
+          outputName,
+        );
+
+        const mimeType = mime.lookup(thumbnail) || 'application/octet-stream'; // Get MIME type based on file extension
+
+        const thumbnailFileCreate = this.fileRepository.create({
+          fileName: `${outputName}.jpeg`, //thumbnail.split('/').at(-1),
+          mimetype: mimeType,
+          storedName: `${outputName}.jpeg`, // thumbnail.split('/').at(-1),
+        });
+        thumbnailFileCreate.user = user;
+
+        const thumbnailFileSaved =
+          await this.fileRepository.save(thumbnailFileCreate);
+        delete thumbnailFileSaved.user;
+        delete videoFileSaved.user;
+        return { data: [thumbnailFileSaved, videoFileSaved] };
+      } else return { data: savedFile };
+    } catch (error) {
+      this.logService.logData(
+        'upload-file',
+        JSON.stringify({
+          file,
+          req,
+          user,
+          movement,
+        }),
+        error?.stack ? error.stack : 'error not have message!!',
       );
-      unlink(filePath, () => {});
+      if (error.message) {
+        throw new BadRequestException(error.message);
+      }
 
-      const videoPath: string = join(
-        __dirname,
-        `../../../../storage/${savedFile.storedName.split('.')[0]}.mp4`,
+      throw new InternalServerErrorException(
+        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
       );
-      const outputDir: string = join(__dirname, '../../../../storage/');
-      const timestamp: number = 1;
-      const outputName: string = savedFile.storedName.split('.')[0];
-
-      const thumbnail = await this.ffmpegService.generatePoster(
-        videoPath,
-        timestamp,
-        outputDir,
-        outputName,
-      );
-
-      const mimeType = mime.lookup(thumbnail) || 'application/octet-stream'; // Get MIME type based on file extension
-
-      const thumbnailFileCreate = this.fileRepository.create({
-        fileName: `${outputName}.jpeg`, //thumbnail.split('/').at(-1),
-        mimetype: mimeType,
-        storedName: `${outputName}.jpeg`, // thumbnail.split('/').at(-1),
-      });
-      thumbnailFileCreate.user = user;
-
-      const thumbnailFileSaved =
-        await this.fileRepository.save(thumbnailFileCreate);
-      delete thumbnailFileSaved.user;
-      delete videoFileSaved.user;
-      return { data: [thumbnailFileSaved, videoFileSaved] };
-    } else return { data: savedFile };
+    }
   }
 
   async uploadOneVideo(
@@ -245,15 +266,14 @@ export class FileService {
         };
       } else return { data: videoFileSaved };
     } catch (error) {
-      console.log(error);
       this.logService.logData(
-        'update-movement',
+        'uploadOneVideo-file',
         JSON.stringify({
           uploadFileDto: uploadFileDto,
           file: file,
           user: user,
         }),
-        error?.message ? error.message : 'error not have message!!',
+        error?.stack ? error.stack : 'error not have message!!',
       );
       if (error.message) {
         throw new BadRequestException(error.message);
@@ -265,59 +285,76 @@ export class FileService {
     }
   }
 
-  async uploadOneGif(file: MulterFile, user: User): Promise<File> {
-    const fileSizeVideo: string =
-      this.configService.get<string>('FILE_SIZE_VIDEO');
-
-    if (file.originalname.length > parseFloat(fileSizeVideo))
-      throw new BadRequestException(
-        `${parseFloat(fileSizeVideo) / 1048576}MB حداکثر حجم قابل پذیریش برای این فایل برابر است با`,
-      );
-
-    if (file.size > parseFloat(fileSizeVideo))
-      throw new BadRequestException('نام فایل طولانی می باشد');
-
-    const filename = `${Date.now()}-${file.originalname}`;
-
-    const mimetype = file.mimetype;
-
-    const gifCreate = this.fileRepository.create({
-      fileName: filename,
-      mimetype: mimetype,
-      storedName: file.filename,
-    });
-    gifCreate.user = user;
-
-    const gifSaved = await this.fileRepository.save(gifCreate);
-    delete gifSaved.user;
-    return gifSaved;
-  }
-
   async getFile(fileName: string): Promise<ReadStream> {
-    const filePath = join(__dirname, '../../../../storage/', fileName);
-    if (!existsSync(filePath)) {
-      throw new NotFoundException(`فایلی با این شناسه یافت نشد`);
-    }
+    try {
+      const filePath = join(__dirname, '../../../../storage/', fileName);
+      if (!existsSync(filePath)) {
+        throw new NotFoundException(`فایلی با این شناسه یافت نشد`);
+      }
 
-    return createReadStream(filePath);
+      return createReadStream(filePath);
+    } catch (error) {
+      this.logService.logData(
+        'getFile-file',
+        JSON.stringify({}),
+        error?.stack ? error.stack : 'error not have message!!',
+      );
+      if (error.message) {
+        throw new BadRequestException(error.message);
+      }
+    }
   }
 
   async findById(ids: string[]): Promise<File[]> {
-    return await this.fileRepository.find({
-      where: { id: In([...ids]) },
-    });
+    try {
+      return await this.fileRepository.find({
+        where: { id: In([...ids]) },
+      });
+    } catch (error) {
+      this.logService.logData(
+        'findById-file',
+        JSON.stringify({}),
+        error?.stack ? error.stack : 'error not have message!!',
+      );
+      if (error.message) {
+        throw new BadRequestException(error.message);
+      }
+    }
   }
 
   async getFileName(id: string): Promise<File> {
-    const foundFile: File = await this.fileRepository.findOneBy({
-      id,
-    });
-    if (!foundFile) throw new NotFoundException(`فایلی با این شناسه یافت نشد`);
-    return foundFile;
+    try {
+      const foundFile: File = await this.fileRepository.findOneBy({
+        id,
+      });
+      if (!foundFile)
+        throw new NotFoundException(`فایلی با این شناسه یافت نشد`);
+      return foundFile;
+    } catch (error) {
+      this.logService.logData(
+        'getFileName-file',
+        JSON.stringify({}),
+        error?.stack ? error.stack : 'error not have message!!',
+      );
+      if (error.message) {
+        throw new BadRequestException(error.message);
+      }
+    }
   }
 
   async findAll(): Promise<File[]> {
-    return await this.fileRepository.find();
+    try {
+      return await this.fileRepository.find();
+    } catch (error) {
+      this.logService.logData(
+        'findAll-file',
+        JSON.stringify({}),
+        error?.stack ? error.stack : 'error not have message!!',
+      );
+      if (error.message) {
+        throw new BadRequestException(error.message);
+      }
+    }
   }
 
   async delete(id: string, user: User) {
@@ -341,9 +378,22 @@ export class FileService {
 
     await this.fileRepository.delete(id);
 
-    const filePath = join(__dirname, '../../../../storage/', file.storedName);
-    unlink(filePath, () => {});
-
-    return { data: 'فایل با موفقیت حذف شد' };
+    try {
+      const filePath = join(__dirname, '../../../../storage/', file.storedName);
+      unlink(filePath, () => {});
+      return { data: 'فایل با موفقیت حذف شد' };
+    } catch (error) {
+      this.logService.logData(
+        'delete-file',
+        JSON.stringify({
+          id: id,
+          user: user,
+        }),
+        error?.stack ? error.stack : 'error not have message!!',
+      );
+      if (error.message) {
+        throw new BadRequestException(error.message);
+      }
+    }
   }
 }

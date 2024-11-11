@@ -49,7 +49,7 @@ export class FileController {
     }
     return await this.fileService.handleFileUpload(file, req, user);
   }
-  // uploadOneGif
+
   @Post('upload-video')
   @UseInterceptors(MulterFileInterceptor('file', oneVideoMulterOptions))
   async uploadOneVideo(
