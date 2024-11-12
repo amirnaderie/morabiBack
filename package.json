@@ -6,9 +6,9 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "nest build",
+    "build": "cross-env ENV=prod nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nest start",
+    "start": "cross-env ENV=prod nest start",
     "dev": "cross-env ENV=dev nest start --watch",
     "debug": "cross-env ENV=dev nest start --debug --watch",
     "prod": "cross-env ENV=prod node dist/main",
