@@ -205,7 +205,7 @@ export class AuthService {
       maxAge: parseInt(this.configService.get<string>('JWT_EXPIRESIN')) * 1000,
       secure: process.env.ENV === 'prod',
       domain: this.configService.get<string>('COOKIE_DOMAIN'), // Add domain
-      path: '.', // Explicitly set path
+      path: '/', // Explicitly set path
     };
     return { accessToken, cookieOptions };
   };
