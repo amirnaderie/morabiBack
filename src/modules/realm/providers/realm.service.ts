@@ -15,6 +15,7 @@ export class RealmService {
       where: { name },
     });
     if (!realm) {
+      console.log('err : name', name);
       throw new NotFoundException(`خطا در واکشی اطلاعات`);
     }
 
@@ -25,6 +26,8 @@ export class RealmService {
       where: { id },
     });
     if (!realm) {
+      console.log('err : id', id);
+
       throw new NotFoundException(`خطا در واکشی اطلاعات`);
     }
 
