@@ -21,9 +21,10 @@ export class SubdomainMiddleware implements NestMiddleware {
       hostname === 'localhost'
         ? 'panel'
         : this.getSubdomainFromHostname(hostname);
-
-    if (subdomain) {
-      const subdomainId: number = await this.realmService.getRealmIdByName(subdomain);
+    console.log(subdomain, 'subdomain');
+    if (!!subdomain) {
+      const subdomainId: number =
+        await this.realmService.getRealmIdByName(subdomain);
       req.subdomainId = subdomainId;
     } else {
       req.subdomainId = null;
@@ -33,6 +34,7 @@ export class SubdomainMiddleware implements NestMiddleware {
   }
 
   private getSubdomainFromHostname(hostname: string): string | null {
+    console.log(hostname, 'hostname');
     const parts = hostname.split('.');
     if (parts.length > 2) {
       return parts.slice(0, -2).join('.');
