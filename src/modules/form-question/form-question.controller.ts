@@ -17,19 +17,19 @@ import { GetUser } from 'src/decorators/getUser.decorator';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { RolesGuard } from 'src/guards/role.guard';
 import { FormQuestion } from './entities/form-question.entity';
+import { FormQuestionService } from './providers/form-question.service';
 import { CreateFormQuestionDto } from './dto/create-form-question.dto';
 import { UpdateFormQuestionDto } from './dto/update-form-question.dto';
 import { HttpResponseTransform } from 'src/interceptors/http-response-transform.interceptor';
-import { FormQuestionService } from './providers/form-question.service';
 
-@Controller('form')
+@Controller('form-question')
 @UseGuards(AuthGuard, RolesGuard)
 @UseInterceptors(HttpResponseTransform)
 export class FormController {
   constructor(private readonly formQuestionService: FormQuestionService) {}
 
   @Post()
-  @SetMetadata('permission', 'create-form')
+  @SetMetadata('permission', 'create-formQuestion')
   async create(
     @Req() req: Request,
     @GetUser() user: User,
@@ -43,7 +43,7 @@ export class FormController {
   }
 
   @Get()
-  @SetMetadata('permission', 'forms')
+  @SetMetadata('permission', 'form-questions')
   async findAll(
     @Req() req: Request,
     @GetUser() user: User,
@@ -52,7 +52,7 @@ export class FormController {
   }
 
   @Get(':id')
-  @SetMetadata('permission', 'read-form')
+  @SetMetadata('permission', 'read-formQuestion')
   findOne(
     @Param('id') id: string,
     @Req() req: Request,
@@ -62,7 +62,7 @@ export class FormController {
   }
 
   @Patch(':id')
-  @SetMetadata('permission', 'update-form')
+  @SetMetadata('permission', 'update-formQuestion')
   update(
     @Req() req: Request,
     @GetUser() user: User,
@@ -78,7 +78,7 @@ export class FormController {
   }
 
   @Delete(':id')
-  @SetMetadata('permission', 'delete-form')
+  @SetMetadata('permission', 'delete-formQuestion')
   remove(
     @Param('id') id: string,
     @Req() req: Request,

@@ -1,18 +1,18 @@
-import { Permission } from 'src/modules/permission/entities/permission.entity';
-import { Realm } from 'src/modules/realm/entities/realm.entity';
 import { User } from 'src/modules/users/entities/user.entity';
+import { Realm } from 'src/modules/realm/entities/realm.entity';
+import { Permission } from 'src/modules/permission/entities/permission.entity';
 
 import {
   Column,
+  Entity,
+  JoinTable,
+  ManyToOne,
+  JoinColumn,
+  ManyToMany,
+  UpdateDateColumn,
   CreateDateColumn,
   DeleteDateColumn,
-  Entity,
-  JoinColumn,
-  JoinTable,
-  ManyToMany,
-  ManyToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity()
