@@ -8,7 +8,4 @@ export class CreateFormQuestionDto {
   @IsNotEmpty({ message: ' !فرم سوال را وارد کنید' })
   @IsString()
   readonly formId: string;
-
-  @IsString()
-  readonly description: string;
 }

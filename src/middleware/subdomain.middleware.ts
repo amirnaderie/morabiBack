@@ -9,7 +9,6 @@ export class SubdomainMiddleware implements NestMiddleware {
 
   async use(req: Request, res: Response, next: NextFunction) {
     const referer = req.headers.referer;
-    console.log(req.headers, '25145353');
 
     if (!referer) {
       req.subdomainId = null;

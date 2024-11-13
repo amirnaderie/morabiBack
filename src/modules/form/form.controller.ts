@@ -54,6 +54,16 @@ export class FormController {
     return this.formService.findOne(id, req, user);
   }
 
+  @Get('/:id/question')
+  @SetMetadata('permission', 'form-questions')
+  findQuestions(
+    @Param('id') id: string,
+    @Req() req: Request,
+    @GetUser() user: User,
+  ): Promise<Form> {
+    return this.formService.findQuestions(id, req, user);
+  }
+
   @Patch(':id')
   @SetMetadata('permission', 'update-form')
   update(

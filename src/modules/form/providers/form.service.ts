@@ -85,6 +85,28 @@ export class FormService {
     }
   }
 
+  async findQuestions(id: string, req: Request, user: User): Promise<Form> {
+    try {
+      return await this.formRepository.findOne({
+        where: {
+          id: id,
+          creatorId: user.id,
+          realmId: (req as any).subdomainId || 1,
+        },
+        relations: {
+          questions: true,
+        },
+      });
+    } catch (error) {
+      this.logService.logData(
+        'findOne-form',
+        JSON.stringify({ user: user, req: req }),
+        error?.stack ? error.stack : 'error not have message!!',
+      );
+      throw new Error(error);
+    }
+  }
+
   async update(
     id: string,
     req: Request,

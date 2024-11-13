@@ -21,6 +21,8 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Column({ default: 1 }) realmId: number;
+
   @Column({ nullable: false, length: 20 })
   userName: string;
 
@@ -64,6 +66,4 @@ export class User {
   @ManyToOne(() => Realm, (realm) => realm.users)
   @JoinColumn({ name: 'realmId' })
   realm: Realm;
-
-  @Column({ default: 1 }) realmId: number;
 }

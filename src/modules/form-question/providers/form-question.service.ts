@@ -21,10 +21,13 @@ export class FormQuestionService {
     user: User,
   ): Promise<FormQuestion> {
     try {
-      const { text } = createFormQuestionDto;
+      const { text, formId } = createFormQuestionDto;
 
       const formQuestion = this.formQuestionRepository.create({
         text: text,
+        formId: formId,
+        creatorId: user.id,
+        realmId: (req as any).subdomainId || 1,
       });
 
       return await this.formQuestionRepository.save(formQuestion);
