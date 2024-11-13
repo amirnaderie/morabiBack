@@ -12,6 +12,7 @@ export const createRealmSeed = async (AppDataSource: DataSource) => {
     await AppDataSource.query(
       `DELETE FROM [role] DBCC CHECKIDENT ([role], RESEED, 0)`,
     );
+    await AppDataSource.query(`DELETE FROM [form-question]`);
     await AppDataSource.query(`DELETE FROM [form]`);
     await AppDataSource.query(
       `DELETE FROM [realm] DBCC CHECKIDENT ([realm], RESEED, 0)`,

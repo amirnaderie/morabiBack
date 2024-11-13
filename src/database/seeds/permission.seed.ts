@@ -63,6 +63,18 @@ export const createPermissionSeed = async (AppDataSource: DataSource) => {
         { name: 'ویرایش سوال فرم‌ها', enName: 'update-formQuestion' },
         { name: 'حذف سوال فرم‌ها', enName: 'delete-formQuestion' },
         { name: 'مشاهده لیست سوالات فرم‌ها', enName: 'form-questions' },
+
+        { name: 'ایجاد پاسخ سوال فرم‌ها', enName: 'create-formQuestionAnswer' },
+        { name: 'مشاهده پاسخ سوال فرم‌ها', enName: 'read-formQuestionAnswer' },
+        {
+          name: 'ویرایش پاسخ سوال فرم‌ها',
+          enName: 'update-formQuestionAnswer',
+        },
+        { name: 'حذف پاسخ سوال فرم‌ها', enName: 'delete-formQuestionAnswer' },
+        {
+          name: 'مشاهده لیست پاسخ سوالات فرم‌ها',
+          enName: 'form-questions-answer',
+        },
       ])
       .execute();
   } catch (error) {

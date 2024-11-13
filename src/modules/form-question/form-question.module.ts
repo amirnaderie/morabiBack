@@ -2,9 +2,9 @@ import { LogModule } from '../log/log.module';
 import { AuthModule } from '../auth/auth.module';
 import { FormQuestion } from './entities/form-question.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { FormController } from './form-question.controller';
 import { FormQuestionService } from './providers/form-question.service';
 import { forwardRef, Module } from '@nestjs/common';
+import { FormQuestionController } from './form-question.controller';
 
 @Module({
   imports: [
@@ -12,7 +12,7 @@ import { forwardRef, Module } from '@nestjs/common';
     forwardRef(() => LogModule),
     forwardRef(() => AuthModule),
   ],
-  controllers: [FormController],
+  controllers: [FormQuestionController],
   providers: [FormQuestionService],
   exports: [FormQuestionService],
 })

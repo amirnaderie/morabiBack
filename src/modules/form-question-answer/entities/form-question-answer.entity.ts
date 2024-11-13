@@ -1,13 +1,12 @@
 import { User } from 'src/modules/users/entities/user.entity';
-import { Form } from 'src/modules/form/entities/form.entity';
 import { Realm } from 'src/modules/realm/entities/realm.entity';
 import { Exclude } from 'class-transformer';
-import { FormQuestionAnswer } from 'src/modules/form-question-answer/entities/form-question-answer.entity';
+import { FormQuestion } from 'src/modules/form-question/entities/form-question.entity';
+
 import {
   Column,
   Entity,
   ManyToOne,
-  OneToMany,
   JoinColumn,
   DeleteDateColumn,
   CreateDateColumn,
@@ -15,19 +14,19 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-@Entity('form-question')
-export class FormQuestion {
+@Entity('form-question-answer')
+export class FormQuestionAnswer {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column()
   creatorId: string;
 
+  @Column()
+  questionId: string;
+
   @Column({ default: 1 })
   realmId: number;
-
-  @Column()
-  formId: string;
 
   @Column()
   text: string;
@@ -47,17 +46,11 @@ export class FormQuestion {
   @JoinColumn({ name: 'realmId' })
   realm: Realm;
 
-  @ManyToOne(() => Form, (form) => form.questions)
-  @JoinColumn({ name: 'formId' })
-  form: Form;
+  @ManyToOne(() => FormQuestion, (formQuestion) => formQuestion.answers)
+  @JoinColumn({ name: 'questionId', referencedColumnName: 'id' })
+  question: FormQuestion;
 
   @ManyToOne(() => User, (user) => user.movements)
   @JoinColumn({ name: 'creatorId', referencedColumnName: 'id' })
   user: User;
-
-  @OneToMany(
-    () => FormQuestionAnswer,
-    (formQuestionAnswer) => formQuestionAnswer.question,
-  )
-  answers: FormQuestionAnswer[];
 }

@@ -25,7 +25,7 @@ import { HttpResponseTransform } from 'src/interceptors/http-response-transform.
 @Controller('form-question')
 @UseGuards(AuthGuard, RolesGuard)
 @UseInterceptors(HttpResponseTransform)
-export class FormController {
+export class FormQuestionController {
   constructor(private readonly formQuestionService: FormQuestionService) {}
 
   @Post()
