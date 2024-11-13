@@ -10,7 +10,6 @@ import {
   OneToMany,
 } from 'typeorm';
 import { Role } from 'src/modules/role/entities/role.entity';
-import { Permission } from 'src/modules/permission/entities/permission.entity';
 import { Movement } from 'src/modules/movement/entities/movement.entity';
 
 @Entity()
@@ -29,7 +28,9 @@ export class Realm {
   @OneToMany(() => Role, (role) => role.realm)
   roles: Role[];
 
-  @OneToMany(() => Movement, (movement) => movement.realm)
+  @OneToMany(() => Movement, (movement) => movement.realm, {
+    onDelete: 'CASCADE',
+  })
   movements: Movement[];
 
   @CreateDateColumn({ select: false })

@@ -25,6 +25,7 @@ export class HttpResponseTransform<T>
     const statusCode = context.switchToHttp().getResponse().statusCode;
     return next.handle().pipe(
       map((data) => {
+        console.log(data, 'data');
         const message = data?.message
           ? data.message
           : 'عملیات با موفقیت انجام شد';
@@ -33,7 +34,7 @@ export class HttpResponseTransform<T>
         return {
           statusCode: code,
           message: message,
-          data: data.data,
+          data: data.data || data,
         };
       }),
 

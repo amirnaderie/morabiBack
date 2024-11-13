@@ -1,33 +1,32 @@
+import { join } from 'path';
+import { TagModule } from './modules/tag/tag.module';
+import { LogModule } from './modules/log/log.module';
+import { AlsModule } from './middleware/als.module';
+import { FileModule } from './modules/file/file.module';
+import { FormModule } from './modules/form/form.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { TasksModule } from './modules/tasks/tasks.module';
+import { RedisModule } from './modules/redis/redis.module';
+import { UsersModule } from './modules/users/users.module';
+import { RolesModule } from './modules/role/role.module';
+import { RealmModule } from './modules/realm/realm.module';
+import { UtilityModule } from './utility/utility.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { MovementModule } from './modules/movement/movement.module';
+import { PermissionModule } from './modules/permission/permission.module';
+import { AsyncLocalStorage } from 'node:async_hooks';
+import { IsUniqueConstraint } from './validation/is-unique-constraint';
+import { FormQuestionModule } from './modules/form-question/form-question.module';
+import { SubdomainMiddleware } from './middleware/subdomain.middleware';
+import { AsyncContextMiddleware } from './middleware/async-context.middleware';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+
 import {
-  MiddlewareConsumer,
   Module,
   NestModule,
   RequestMethod,
+  MiddlewareConsumer,
 } from '@nestjs/common';
-import { TasksModule } from './modules/tasks/tasks.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { join } from 'path';
-import { AuthModule } from './modules/auth/auth.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { RedisModule } from './modules/redis/redis.module';
-import { UsersModule } from './modules/users/users.module';
-
-import { RolesModule } from './modules/role/role.module';
-import { PermissionModule } from './modules/permission/permission.module';
-
-import { FileModule } from './modules/file/file.module';
-import { UtilityModule } from './utility/utility.module';
-
-import { AlsModule } from './middleware/als.module';
-import { AsyncLocalStorage } from 'node:async_hooks';
-import { LogModule } from './modules/log/log.module';
-import { AsyncContextMiddleware } from './middleware/async-context.middleware';
-
-import { TagModule } from './modules/tag/tag.module';
-import { MovementModule } from './modules/movement/movement.module';
-import { IsUniqueConstraint } from './validation/is-unique-constraint';
-import { RealmModule } from './modules/realm/realm.module';
-import { SubdomainMiddleware } from './middleware/subdomain.middleware';
 
 @Module({
   imports: [
@@ -72,6 +71,8 @@ import { SubdomainMiddleware } from './middleware/subdomain.middleware';
     TagModule,
     MovementModule,
     RealmModule,
+    FormModule,
+    FormQuestionModule,
   ],
   providers: [IsUniqueConstraint],
 })

@@ -78,5 +78,6 @@ export class Movement {
   @JoinColumn({ name: 'realmId' })
   realm: Realm;
 
-  @Column({ default: 1 }) realmId: number;
+  @Column({ default: 1 })
+  realmId: number;
 }
