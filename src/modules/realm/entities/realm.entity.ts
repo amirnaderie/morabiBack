@@ -13,6 +13,7 @@ import {
   UpdateDateColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { File } from 'src/modules/file/entities/file.entity';
 
 @Entity()
 export class Realm {
@@ -42,6 +43,11 @@ export class Realm {
     onDelete: 'CASCADE',
   })
   movements: Movement[];
+
+  @OneToMany(() => File, (file) => file.realm, {
+    onDelete: 'CASCADE',
+  })
+  files: File[];
 
   @CreateDateColumn({ select: false })
   createdA: Date;

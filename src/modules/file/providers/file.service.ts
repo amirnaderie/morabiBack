@@ -25,6 +25,7 @@ import { FFmpegService } from './ffmpeg.service';
 import { UploadFileDto } from '../dto/upload-file.dto';
 import * as mime from 'mime-types';
 import { LogService } from 'src/modules/log/providers/log.service';
+import { s3Service } from './s3.service';
 
 @Injectable()
 export class FileService {
@@ -35,6 +36,7 @@ export class FileService {
     private readonly configService: ConfigService,
     private readonly ffmpegService: FFmpegService,
     private readonly logService: LogService,
+    private readonly s3Service: s3Service,
   ) {}
 
   async handleFileUpload(
@@ -105,6 +107,7 @@ export class FileService {
         fileName: filename,
         mimetype: mimetype,
         storedName: file.filename,
+        realmId: (req as any).subdomainId,
       });
       newFile.user = user;
       if (movement) newFile.movements = [movement];
@@ -156,6 +159,7 @@ export class FileService {
           fileName: `${outputName}.jpeg`, //thumbnail.split('/').at(-1),
           mimetype: mimeType,
           storedName: `${outputName}.jpeg`, // thumbnail.split('/').at(-1),
+          realmId: (req as any).subdomainId,
         });
         thumbnailFileCreate.user = user;
 
@@ -163,8 +167,34 @@ export class FileService {
           await this.fileRepository.save(thumbnailFileCreate);
         delete thumbnailFileSaved.user;
         delete videoFileSaved.user;
+
+        const getVideoFileSaved: ReadStream = await this.getFile(
+          videoFileSaved.storedName,
+        );
+        await this.s3Service.storeObject(
+          getVideoFileSaved,
+          `${videoFileSaved.realmId}/${videoFileSaved.storedName}`,
+        );
+
+        const getThumbnailFileSaved: ReadStream = await this.getFile(
+          thumbnailFileSaved.storedName,
+        );
+        await this.s3Service.storeObject(
+          getThumbnailFileSaved,
+          `${thumbnailFileSaved.realmId}/${thumbnailFileSaved.storedName}`,
+        );
+
         return { data: [thumbnailFileSaved, videoFileSaved] };
-      } else return { data: savedFile };
+      } else {
+        const getSavedFile: ReadStream = await this.getFile(
+          savedFile.storedName,
+        );
+        await this.s3Service.storeObject(
+          getSavedFile,
+          `${savedFile.realmId}/${savedFile.storedName}`,
+        );
+        return { data: savedFile };
+      }
     } catch (error) {
       this.logService.logData(
         'upload-file',
@@ -222,6 +252,7 @@ export class FileService {
         fileName: filename,
         mimetype: mimetype,
         storedName: file.filename,
+        realmId: (req as any).subdomainId || 1,
       });
       videoFileCreate.user = user;
 
@@ -254,6 +285,7 @@ export class FileService {
           fileName: `${outputName}.jpeg`, //thumbnail.split('/').at(-1),
           mimetype: mimeType,
           storedName: `${outputName}.jpeg`, // thumbnail.split('/').at(-1),
+          realmId: (req as any).subdomainId,
         });
         thumbnailFileCreate.user = user;
 
@@ -261,11 +293,35 @@ export class FileService {
           await this.fileRepository.save(thumbnailFileCreate);
         delete thumbnailFileSaved.user;
         delete videoFileSaved.user;
+
+        const getVideoFileSaved: ReadStream = await this.getFile(
+          videoFileSaved.storedName,
+        );
+        const getThumbnailFileSaved: ReadStream = await this.getFile(
+          thumbnailFileSaved.storedName,
+        );
+        await this.s3Service.storeObject(
+          getVideoFileSaved,
+          `${videoFileSaved.realmId}/${videoFileSaved.storedName}`,
+        );
+        await this.s3Service.storeObject(
+          getThumbnailFileSaved,
+          `${thumbnailFileSaved.realmId}/${thumbnailFileSaved.storedName}`,
+        );
         return {
           data: [thumbnailFileSaved, videoFileSaved],
         };
-      } else return { data: videoFileSaved };
+      } else {
+        const file: ReadStream = await this.getFile(videoFileSaved.storedName);
+        await this.s3Service.storeObject(
+          file,
+          `${videoFileSaved.realmId}/${videoFileSaved.storedName}`,
+        );
+
+        return { data: videoFileSaved };
+      }
     } catch (error) {
+      console.log(error);
       this.logService.logData(
         'uploadOneVideo-file',
         JSON.stringify({
