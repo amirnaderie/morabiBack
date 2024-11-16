@@ -9,6 +9,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from '../auth/auth.module';
 import { FFmpegService } from './providers/ffmpeg.service';
 import { LogModule } from '../log/log.module';
+import { s3Service } from './providers/s3.service';
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { LogModule } from '../log/log.module';
     LogModule,
   ],
   controllers: [FileController],
-  providers: [FileService, FFmpegService],
+  providers: [FileService, FFmpegService, s3Service],
   exports: [FileService],
 })
 export class FileModule {}

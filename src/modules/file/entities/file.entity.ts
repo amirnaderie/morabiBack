@@ -5,18 +5,21 @@ import {
   Column,
   Entity,
   ManyToOne,
+  JoinTable,
   JoinColumn,
   ManyToMany,
   CreateDateColumn,
   UpdateDateColumn,
   PrimaryGeneratedColumn,
-  JoinTable,
 } from 'typeorm';
+import { Realm } from 'src/modules/realm/entities/realm.entity';
 
 @Entity()
 export class File {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  @Column({ default: 1 }) realmId: number;
 
   @Column({ nullable: false, length: 100 })
   fileName: string;
@@ -47,4 +50,8 @@ export class File {
   @ManyToOne(() => User, (user) => user.files)
   @JoinColumn({ name: 'userId', referencedColumnName: 'id' })
   user: User;
+
+  @ManyToOne(() => Realm, (realm) => realm.files)
+  @JoinColumn({ name: 'realmId' })
+  realm: Realm;
 }
