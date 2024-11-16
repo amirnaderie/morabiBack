@@ -107,7 +107,7 @@ export class FileService {
         fileName: filename,
         mimetype: mimetype,
         storedName: file.filename,
-        realmId: (req as any).subdomainId,
+        realmId: (req as any).subdomainId || 1,
       });
       newFile.user = user;
       if (movement) newFile.movements = [movement];
@@ -159,7 +159,7 @@ export class FileService {
           fileName: `${outputName}.jpeg`, //thumbnail.split('/').at(-1),
           mimetype: mimeType,
           storedName: `${outputName}.jpeg`, // thumbnail.split('/').at(-1),
-          realmId: (req as any).subdomainId,
+          realmId: (req as any).subdomainId || 1,
         });
         thumbnailFileCreate.user = user;
 
@@ -285,7 +285,7 @@ export class FileService {
           fileName: `${outputName}.jpeg`, //thumbnail.split('/').at(-1),
           mimetype: mimeType,
           storedName: `${outputName}.jpeg`, // thumbnail.split('/').at(-1),
-          realmId: (req as any).subdomainId,
+          realmId: (req as any).subdomainId || 1,
         });
         thumbnailFileCreate.user = user;
 

@@ -28,7 +28,7 @@ export class RolesService {
     const roles = this.rolesRepository.create({
       name: name,
       enName: enName,
-      realmId: (req as any).subdomainId,
+      realmId: (req as any).subdomainId || 1,
     });
     const cretaedRole = await this.rolesRepository.save(roles);
     return cretaedRole;
