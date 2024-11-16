@@ -41,9 +41,6 @@ export class Tag {
   @ManyToMany(() => Movement, (movement) => movement.tags, {
     onDelete: 'CASCADE',
   })
-  @JoinTable({
-    name: 'movement-tag',
-  })
   movements: Movement[];
 
   @ManyToOne(() => User, (user) => user.tags)
