@@ -138,7 +138,7 @@ export class MovementService {
         },
       });
 
-      if (movement.files && movement.files.length > 0) {
+      if (movement.files && movement.files.length > 0 && files.length === 0) {
         for (let i = 0; i < movement.files.length; i++) {
           await this.fileService.delete(movement.files[i].id, user);
         }
@@ -147,7 +147,6 @@ export class MovementService {
       const tagsEntity = await this.tagService.findById(tags);
       const fileEntity = await this.fileService.findById(files);
 
-      movement.name = name;
       movement.tags = tagsEntity;
       movement.files = fileEntity;
       movement.description = description;

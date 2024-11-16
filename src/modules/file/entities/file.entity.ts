@@ -5,7 +5,6 @@ import {
   Column,
   Entity,
   ManyToOne,
-  JoinTable,
   JoinColumn,
   ManyToMany,
   CreateDateColumn,
@@ -41,10 +40,12 @@ export class File {
   @Exclude({ toPlainOnly: true })
   updatedAt: Date;
 
-  @ManyToMany(() => Movement, (movement) => movement.files)
-  @JoinTable({
-    name: 'file-movement',
+  @ManyToMany(() => Movement, (movement) => movement.files, {
+    onDelete: 'CASCADE',
   })
+  // @JoinTable({
+  //   name: 'file-movement',
+  // })
   movements: Movement[];
 
   @ManyToOne(() => User, (user) => user.files)
