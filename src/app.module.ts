@@ -27,6 +27,7 @@ import {
   RequestMethod,
   MiddlewareConsumer,
 } from '@nestjs/common';
+import { PlanModule } from './modules/plan/plan.module';
 
 @Module({
   imports: [
@@ -73,6 +74,7 @@ import {
     RealmModule,
     FormModule,
     FormQuestionModule,
+    PlanModule,
   ],
   providers: [IsUniqueConstraint],
 })
