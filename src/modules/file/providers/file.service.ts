@@ -1,31 +1,34 @@
 import {
-  BadRequestException,
   Injectable,
-  InternalServerErrorException,
   NotFoundException,
+  BadRequestException,
   UnauthorizedException,
+  InternalServerErrorException,
 } from '@nestjs/common';
-import { MulterFile } from '../fileOptions';
-import { InjectRepository } from '@nestjs/typeorm';
+
+import { join } from 'path';
 import { File } from '../entities/file.entity';
+import { MulterFile } from '../fileOptions';
 import { In, Repository } from 'typeorm';
 import { UtilityService } from 'src/utility/providers/utility.service';
-import { join } from 'path';
+import { InjectRepository } from '@nestjs/typeorm';
+
 import {
-  createReadStream,
-  existsSync,
-  mkdirSync,
-  ReadStream,
   unlink,
+  mkdirSync,
+  existsSync,
+  ReadStream,
+  createReadStream,
 } from 'fs';
-import { ConfigService } from '@nestjs/config';
+
+import * as mime from 'mime-types';
 import { User } from 'src/modules/users/entities/user.entity';
 import { Movement } from 'src/modules/movement/entities/movement.entity';
+import { s3Service } from './s3.service';
+import { LogService } from 'src/modules/log/providers/log.service';
+import { ConfigService } from '@nestjs/config';
 import { FFmpegService } from './ffmpeg.service';
 import { UploadFileDto } from '../dto/upload-file.dto';
-import * as mime from 'mime-types';
-import { LogService } from 'src/modules/log/providers/log.service';
-import { s3Service } from './s3.service';
 
 @Injectable()
 export class FileService {
@@ -216,42 +219,29 @@ export class FileService {
     }
   }
 
+  // private storeFile = (file: File) => {
+  //   try {
+  //     writeFile();
+  //   } catch (error) {
+  //     console.error(error, 'error');
+  //   }
+  // };
+
   async uploadOneVideo(
-    file: MulterFile,
+    file: Express.Multer.File,
     req: Request,
     user: User,
     uploadFileDto: UploadFileDto,
   ): Promise<{ data: File | File[] }> {
     try {
       if (!file) throw new BadRequestException();
-      const isVideo = this.configService
-        .get<string>('VIDEO_ALLOWD_MIMETYPES')
-        .split(',')
-        .includes(file.mimetype);
-
-      if (!isVideo) throw new BadRequestException('فرمت فایل صحیح نمی باشد');
-      const fileSizeVideo: string =
-        this.configService.get<string>('FILE_SIZE_VIDEO');
-
-      if (file.originalname.length > parseFloat(fileSizeVideo))
-        throw new BadRequestException(
-          `${parseFloat(fileSizeVideo) / 1048576}MB حداکثر حجم قابل پذیریش برای این فایل برابر است با`,
-        );
-
-      if (file.size > parseFloat(fileSizeVideo))
-        throw new BadRequestException('نام فایل طولانی می باشد');
-
-      // if (!this.utilityService.onlyLettersAndNumbers(file.originalname))
-      //   throw new BadRequestException('نام فایل حاوی کاراکترهای غیر مجاز است');
-
-      const filename = `${Date.now()}-${file.originalname}`;
-
+      const storedFile = await this.ffmpegService.storeConvertVideoToMp4(file);
+      console.log(storedFile, 'storedFile');
       const mimetype = file.mimetype;
 
       const videoFileCreate = this.fileRepository.create({
-        fileName: filename,
         mimetype: mimetype,
-        storedName: file.filename,
+        // storedName: file.filename,
         realmId: (req as any).subdomainId || 1,
       });
       videoFileCreate.user = user;
