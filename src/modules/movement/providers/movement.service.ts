@@ -125,8 +125,7 @@ export class MovementService {
     req: Request,
   ) {
     try {
-      const { name, description, tags, files, screenSeconds } =
-        updateMovementDto;
+      const { description, tags, files, screenSeconds } = updateMovementDto;
       const movement = await this.movementRepository.findOne({
         where: {
           user: { id: user.id },

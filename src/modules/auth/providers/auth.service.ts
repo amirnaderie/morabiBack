@@ -111,7 +111,7 @@ export class AuthService {
     }
   }
 
-  async refreshToken(response: Response, req: Request) {
+  async refreshToken(response: Response) {
     const refreshToken: string = this.als.getStore()['refreshToken'];
     if (!refreshToken) throw new ForbiddenException();
     const payload = await this.redis.get(refreshToken);
