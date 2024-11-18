@@ -68,7 +68,7 @@ export class Movement {
 
   @Column() creatorId: string; // Add this line to define creatorId as a column
 
-  @ManyToMany(() => Tag, (tag) => tag.movements, { onDelete: 'CASCADE' })
+  @ManyToMany(() => Tag, (tag) => tag.movements, { cascade: true })
   @JoinTable({
     name: 'movement-tag',
   })

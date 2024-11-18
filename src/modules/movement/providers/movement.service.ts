@@ -57,7 +57,7 @@ export class MovementService {
         error?.stack ? error.stack : 'error not have message!!',
       );
       if (error.message.includes('Violation of UNIQUE KEY constraint'))
-        throw new ConflictException('اطلاعات حرکت تکراری است');
+        throw new ConflictException('اطلاعات تکراری است');
       else
         throw new InternalServerErrorException(
           'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',

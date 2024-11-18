@@ -15,6 +15,7 @@ import {
   UpdateDateColumn,
   PrimaryGeneratedColumn,
   Unique,
+  OneToOne,
 } from 'typeorm';
 import { Realm } from 'src/modules/realm/entities/realm.entity';
 
@@ -30,15 +31,54 @@ export class Plan {
   })
   planName: string;
 
-  @Column({ type: 'bit', default: false })
-  isDefault: boolean;
-
   @Column({
     type: 'nvarchar',
     length: 500,
   })
   planDescription: string;
 
+  @Column({
+    type: 'tinyint',
+    nullable: true,
+  })
+  gender: number;
+
+  @Column({
+    type: 'tinyint',
+    nullable: true,
+  })
+  weight: number;
+  
+  @Column({
+    type: 'tinyint',
+    nullable: true,
+  })
+  place: number;
+  
+  @Column({
+    type: 'tinyint',
+    nullable: true,
+  })
+  level: number;
+  
+  @Column({
+    type: 'tinyint',
+    nullable: true,
+  })
+  planTime: number;
+
+  @Column({
+    type: 'tinyint',
+    default: 0,
+  })
+  state: number;
+
+  @Column({
+    type: 'nvarchar',
+    length: 'MAX',
+    nullable: true,
+  })
+  weekDays: string;
 
   @CreateDateColumn({ select: false })
   createdA: Date;
@@ -51,27 +91,25 @@ export class Plan {
   @Exclude({ toPlainOnly: true })
   deletedAt: Date;
 
-//   @ManyToMany(() => File, (file) => file.movements, { onDelete: 'CASCADE' })
-//   @JoinTable({
-//     name: 'file-movement',
-//   })
-//   files: File[];
+  @OneToOne(() => File)
+  @JoinColumn()
+  logo: File;
 
-//   @ManyToOne(() => User, (user) => user.movements)
-//   @JoinColumn({ name: 'creatorId', referencedColumnName: 'id' })
-//   user: User;
+  @ManyToOne(() => User, (user) => user.movements)
+  @JoinColumn({ name: 'creatorId', referencedColumnName: 'id' })
+  user: User;
 
   @Column() creatorId: string; // Add this line to define creatorId as a column
 
-//   @ManyToMany(() => Tag, (tag) => tag.plans, { onDelete: 'CASCADE' })
-//   @JoinTable({
-//     name: 'plan-tag',
-//   })
-//   tags: Tag[];
+  @ManyToMany(() => Tag, (tag) => tag.plans, { cascade: true })
+  @JoinTable({
+    name: 'plan-tag',
+  })
+  tags: Tag[];
 
-//   @ManyToOne(() => Realm, (realm) => realm.movements)
-//   @JoinColumn({ name: 'realmId' })
-//   realm: Realm;
+  @ManyToOne(() => Realm, (realm) => realm.movements)
+  @JoinColumn({ name: 'realmId' })
+  realm: Realm;
 
   @Column({ default: 1 })
   realmId: number;

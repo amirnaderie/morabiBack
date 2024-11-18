@@ -14,6 +14,7 @@ import {
   DeleteDateColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Plan } from 'src/modules/plan/entities/plan.entity';
 
 @Entity()
 export class Tag {
@@ -42,6 +43,11 @@ export class Tag {
     onDelete: 'CASCADE',
   })
   movements: Movement[];
+
+  @ManyToMany(() => Plan, (plan) => plan.tags, {
+    onDelete: 'CASCADE',
+  })
+  plans: Movement[];
 
   @ManyToOne(() => User, (user) => user.tags)
   @JoinColumn({ name: 'creatorId', referencedColumnName: 'id' })

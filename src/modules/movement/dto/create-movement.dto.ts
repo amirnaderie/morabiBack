@@ -8,7 +8,7 @@ import {
 // import { IsUnique } from 'src/validation/is-unique';
 
 export class CreateMovementDto {
-  @IsNotEmpty({ message: 'نام حرکت را وارد کنید!' })
+  @IsNotEmpty({ message: 'نام حرکت را وارد نمایید!' })
   // @IsUnique({
   //   tableName: 'movement',
   //   column: 'name',
@@ -16,7 +16,7 @@ export class CreateMovementDto {
   // })
   readonly name: string;
 
-  @IsNotEmpty({ message: 'توضیح حرکت را وارد کنید' })
+  @IsNotEmpty({ message: 'توضیح حرکت را وارد نمایید' })
   readonly description: string;
 
   @IsNumber()
@@ -24,11 +24,11 @@ export class CreateMovementDto {
 
   @IsArray()
   @IsString({ each: true })
-  @ArrayMinSize(1, { message: 'حداقل یک تگ وارد کنید' })
+  @ArrayMinSize(1, { message: 'حداقل یک تگ وارد نمایید' })
   tags: string[];
 
   @IsArray()
   @IsString({ each: true })
-  @ArrayMinSize(1, { message: 'حداقل یک فایل وارد کنید' })
+  @ArrayMinSize(1, { message: 'حداقل یک فایل وارد نمایید' })
   files: string[];
 }
