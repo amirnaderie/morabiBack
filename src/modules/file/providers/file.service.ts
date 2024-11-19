@@ -49,66 +49,11 @@ export class FileService {
     movement?: Movement,
   ): Promise<{ data: File | File[] }> {
     try {
-      if (!file) {
-        const errorMessage = req['fileValidationError'] || 'File upload failed';
-        throw new BadRequestException(errorMessage);
-      }
-
-      const isVideo = this.configService
-        .get<string>('VIDEO_ALLOWD_MIMETYPES')
-        .split(',')
-        .includes(file.mimetype);
-      const isImage = this.configService
-        .get<string>('IMAGE_ALLOWD_MIMETYPES')
-        .split(',')
-        .includes(file.mimetype);
-
-      if (!isImage && !isVideo) {
-        throw new BadRequestException('فرمت فایل صحیح نمی باشد');
-      }
-      if (
-        file.originalname.length >
-        parseFloat(this.configService.get<string>('FILE_SIZE_IMAGE'))
-      ) {
-        throw new BadRequestException(
-          `${parseFloat(this.configService.get<string>('FILE_SIZE_IMAGE')) / 1048576}MB حداکثر حجم قابل پذیریش برای این فایل برابر است با`,
-        );
-      }
-      if (
-        file.originalname.length >
-        parseFloat(this.configService.get<string>('FILE_SIZE_VIDEO'))
-      ) {
-        throw new BadRequestException(
-          `${parseFloat(this.configService.get<string>('FILE_SIZE_VIDEO')) / 1048576}MB حداکثر حجم قابل پذیریش برای این فایل برابر است با`,
-        );
-      }
-      if (
-        file.size >
-          parseFloat(this.configService.get<string>('FILE_SIZE_IMAGE')) ||
-        file.size >
-          parseFloat(this.configService.get<string>('FILE_SIZE_VIDEO'))
-      ) {
-        throw new BadRequestException('نام فایل طولانی می باشد');
-      }
-
-      if (!this.utilityService.onlyLettersAndNumbers(file.originalname)) {
-        throw new BadRequestException('نام فایل حاوی کاراکترهای غیر مجاز است');
-      }
-
       const filename = `${Date.now()}-${file.originalname}`;
 
-      const mimetype = file.mimetype;
-
-      // const filePath = join(__dirname, '..', '..', 'uploads', filename);
-
-      if (!existsSync(join(__dirname, '..', '..', 'uploads'))) {
-        mkdirSync(join(__dirname, '..', '..', 'uploads'));
-      }
-      // writeFileSync(filePath, file.buffer); // Save the file manually
-
       const newFile = this.fileRepository.create({
-        fileName: filename,
-        mimetype: mimetype,
+        orginalName: filename,
+        mimetype: file.mimetype,
         storedName: file.filename,
         realmId: (req as any).subdomainId || 1,
       });
@@ -159,7 +104,7 @@ export class FileService {
         const mimeType = mime.lookup(thumbnail) || 'application/octet-stream'; // Get MIME type based on file extension
 
         const thumbnailFileCreate = this.fileRepository.create({
-          fileName: `${outputName}.jpeg`, //thumbnail.split('/').at(-1),
+          orginalName: `${outputName}.jpeg`, //thumbnail.split('/').at(-1),
           mimetype: mimeType,
           storedName: `${outputName}.jpeg`, // thumbnail.split('/').at(-1),
           realmId: (req as any).subdomainId || 1,
@@ -186,7 +131,12 @@ export class FileService {
           getThumbnailFileSaved,
           `${thumbnailFileSaved.realmId}/${thumbnailFileSaved.storedName}`,
         );
-
+        const thumbnailPath: string = join(
+          __dirname,
+          '../../../../storage/',
+          thumbnailFileSaved.storedName,
+        );
+        unlink(thumbnailPath, () => {});
         return { data: [thumbnailFileSaved, videoFileSaved] };
       } else {
         const getSavedFile: ReadStream = await this.getFile(
@@ -196,6 +146,12 @@ export class FileService {
           getSavedFile,
           `${savedFile.realmId}/${savedFile.storedName}`,
         );
+        const savedFilePath: string = join(
+          __dirname,
+          '../../../../storage/',
+          savedFile.storedName,
+        );
+        unlink(savedFilePath, () => {});
         return { data: savedFile };
       }
     } catch (error) {
@@ -219,14 +175,6 @@ export class FileService {
     }
   }
 
-  // private storeFile = (file: File) => {
-  //   try {
-  //     writeFile();
-  //   } catch (error) {
-  //     console.error(error, 'error');
-  //   }
-  // };
-
   async uploadOneVideo(
     file: Express.Multer.File,
     req: Request,
@@ -235,24 +183,23 @@ export class FileService {
   ): Promise<{ data: File | File[] }> {
     try {
       if (!file) throw new BadRequestException();
-      const storedFile = await this.ffmpegService.storeConvertVideoToMp4(file);
-      console.log(storedFile, 'storedFile');
-      const mimetype = file.mimetype;
+      if (!existsSync(join(__dirname, '..', '..', '..', '..', 'storage'))) {
+        mkdirSync(join(__dirname, '..', '..', '..', '..', 'storage'));
+      }
+      const storedFile =
+        await this.ffmpegService.storeAndConvertVideoToMp4(file);
 
-      const videoFileCreate = this.fileRepository.create({
-        mimetype: mimetype,
-        // storedName: file.filename,
+      const newVideo = this.fileRepository.create({
+        mimetype: file.mimetype,
+        orginalName: file.originalname,
         realmId: (req as any).subdomainId || 1,
+        storedName: storedFile.filePath.split('/').at(-1),
       });
-      videoFileCreate.user = user;
-
-      const videoFileSaved = await this.fileRepository.save(videoFileCreate);
+      newVideo.user = user;
+      const videoFileSaved = await this.fileRepository.save(newVideo);
       delete videoFileSaved.user;
-      if (uploadFileDto?.screenSeconds) {
-        if (!existsSync(join(__dirname, '..', '..', '..', '..', 'uploads'))) {
-          mkdirSync(join(__dirname, '..', '..', '..', '..', 'uploads'));
-        }
 
+      if (uploadFileDto?.screenSeconds) {
         const videoPath: string = join(
           __dirname,
           '../../../../storage/',
@@ -272,7 +219,7 @@ export class FileService {
         const mimeType = mime.lookup(thumbnail) || 'application/octet-stream'; // Get MIME type based on file extension
 
         const thumbnailFileCreate = this.fileRepository.create({
-          fileName: `${outputName}.jpeg`, //thumbnail.split('/').at(-1),
+          orginalName: `${outputName}.jpeg`, //thumbnail.split('/').at(-1),
           mimetype: mimeType,
           storedName: `${outputName}.jpeg`, // thumbnail.split('/').at(-1),
           realmId: (req as any).subdomainId || 1,
@@ -298,6 +245,13 @@ export class FileService {
           getThumbnailFileSaved,
           `${thumbnailFileSaved.realmId}/${thumbnailFileSaved.storedName}`,
         );
+        const thumbnailPath: string = join(
+          __dirname,
+          '../../../../storage/',
+          thumbnailFileSaved.storedName,
+        );
+        unlink(thumbnailPath, () => {});
+        unlink(videoPath, () => {});
         return {
           data: [thumbnailFileSaved, videoFileSaved],
         };
@@ -307,11 +261,16 @@ export class FileService {
           file,
           `${videoFileSaved.realmId}/${videoFileSaved.storedName}`,
         );
-
+        const videoPath: string = join(
+          __dirname,
+          '../../../../storage/',
+          videoFileSaved.storedName,
+        );
+        unlink(videoPath, () => {});
         return { data: videoFileSaved };
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
       this.logService.logData(
         'uploadOneVideo-file',
         JSON.stringify({

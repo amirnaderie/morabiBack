@@ -30,12 +30,6 @@ export class FileValidationPipe implements PipeTransform {
     }
 
     // Validate file type
-    console.log(fileMimetype, 'fileMimetype');
-    console.log(file.mimetype, 'file.mimetype');
-    console.log(
-      fileMimetype.includes(file.mimetype),
-      'file.fileMimetype.includes(file.mimetype)',
-    );
     if (!fileMimetype.includes(file.mimetype)) {
       throw new BadRequestException(
         ` ${fileMimetype.join(', ')} :فرمت های مجاز `,

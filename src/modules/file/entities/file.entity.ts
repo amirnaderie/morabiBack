@@ -20,14 +20,11 @@ export class File {
 
   @Column({ default: 1 }) realmId: number;
 
-  @Column({ nullable: false, length: 100 })
-  fileName: string;
+  @Column({ nullable: false, length: 150 })
+  orginalName: string;
 
   @Column({ nullable: true, length: 100 })
   storedName: string;
-
-  @Column({ nullable: true, length: 150 })
-  link: string;
 
   @Column({ nullable: true, length: 10 })
   mimetype: string;
@@ -43,9 +40,6 @@ export class File {
   @ManyToMany(() => Movement, (movement) => movement.files, {
     onDelete: 'CASCADE',
   })
-  // @JoinTable({
-  //   name: 'file-movement',
-  // })
   movements: Movement[];
 
   @ManyToOne(() => User, (user) => user.files)

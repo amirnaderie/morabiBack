@@ -15,21 +15,18 @@ import {
 import { Response } from 'express';
 
 import { FileService } from './providers/file.service';
-import { MulterFile, multerOptions } from './fileOptions';
 import { join } from 'path';
 import { File } from './entities/file.entity';
 import { User } from '../users/entities/user.entity';
 import { GetUser } from 'src/decorators/getUser.decorator';
 import { existsSync, mkdirSync } from 'fs';
 import { UploadFileDto } from './dto/upload-file.dto';
-import {
-  FileInterceptor,
-  FileInterceptor as MulterFileInterceptor,
-} from '@nestjs/platform-express';
+
 // import { HttpResponseTransform } from 'src/interceptors/http-response-transform.interceptor';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { FileValidationPipe } from 'src/pipes/file-validation.pipe';
 import { ConfigService } from '@nestjs/config';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('files')
 @UseGuards(AuthGuard)
@@ -41,10 +38,12 @@ export class FileController {
   ) {}
 
   @Post('upload')
-  @UseInterceptors(MulterFileInterceptor('file', multerOptions))
+  @UseInterceptors(FileInterceptor('file'))
   async uploadFile(
-    @UploadedFile() file: MulterFile,
-    @Req() req: Request,
+    @UploadedFile(new FileValidationPipe([], 1, true))
+    file: Express.Multer.File,
+    @Req()
+    req: Request,
     @GetUser() user: User,
   ): Promise<{ data: File | File[] }> {
     const storageDir = join(__dirname, 'storage');
@@ -57,7 +56,7 @@ export class FileController {
   @Post('upload-video')
   @UseInterceptors(FileInterceptor('file'))
   async uploadOneVideo(
-    @UploadedFile(new FileValidationPipe(['video/webm', 'video/ogg'], 10, true))
+    @UploadedFile(new FileValidationPipe([], 1, true))
     file: Express.Multer.File,
     @Req() req: Request,
     @GetUser() user: User,

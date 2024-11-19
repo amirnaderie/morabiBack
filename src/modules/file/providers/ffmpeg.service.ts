@@ -54,7 +54,7 @@ export class FFmpegService {
     });
   }
 
-  async storeConvertVideoToMp4(file: Express.Multer.File): Promise<{
+  async storeAndConvertVideoToMp4(file: Express.Multer.File): Promise<{
     message: string;
     filePath: string;
     size: number; // File size in bytes
