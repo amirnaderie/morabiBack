@@ -120,13 +120,16 @@ export class FFmpegService {
       'storage',
       `${uuidv4()}.mp4`,
     );
+    console.log(outputFilePath, 'outputFilePath');
     const inputFilePath = path.join(
       __dirname,
       '../../../../',
       'storage',
       `${uuidv4()}.mp4`,
     );
+    console.log(inputFilePath, 'inputFilePath');
     fs.writeFileSync(inputFilePath, file.buffer);
+    console.log('fs.writeFileSync');
     // const fileStream = Readable.from(file.buffer);
 
     return new Promise((resolve, reject) => {
@@ -141,6 +144,7 @@ export class FFmpegService {
         .output(outputFilePath)
         .on('end', async () => {
           fs.unlink(inputFilePath, () => {});
+          console.log('fs.unlinkdvdvdvd', inputFilePath);
           ffmpeg.ffprobe(outputFilePath, (err, metadata) => {
             if (err) {
               reject({ message: 'Error retrieving file metadata', error: err });
