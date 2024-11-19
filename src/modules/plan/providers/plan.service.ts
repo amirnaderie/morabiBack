@@ -51,7 +51,7 @@ export class PlanService {
         place,
         planTime,
         state,
-        weekDays:weekDays,
+        weekDays: JSON.stringify(weekDays),
         weight,
         realmId: (req as any).subdomainId || 1,
       });
@@ -77,12 +77,78 @@ export class PlanService {
     }
   }
 
-  findAll() {
-    return `This action returns all plan`;
+  async findAll(userId: string, req: Request) {
+    try {
+      const plans = await this.planRepository.find({
+        relations: ['logo', 'user'],
+        select: {
+          id: true,
+          planName: true,
+          gender: true,
+          level: true,
+          place: true,
+          state: true,
+          weight: true,
+          user: {
+            realmId: true,
+          },
+          logo: {
+            storedName: true,
+          },
+        },
+        where: [
+          {
+            user: {
+              id: userId, // Ensure you have a variable named creatorId with the proper value
+            },
+            realmId: (req as any).subdomainId,
+          },
+        ],
+      });
+      return {
+        message: `عملیات با موفقیت انجام پذیرفت`,
+        data: plans,
+      };
+    } catch (error) {
+      this.logService.logData(
+        'findAll-plan',
+        'no input',
+        error?.stack ? error.stack : 'error not have message!!',
+      );
+      throw new InternalServerErrorException(
+        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
+      );
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} plan`;
+  async findOne(id: string, req: Request) {
+    try {
+      const plan = await this.planRepository.findOne({
+        where: { id: id, realmId: (req as any).subdomainId },
+        relations: ['tags', 'logo', 'user'],
+        select: {
+          user: {
+            realmId: true,
+          },
+          logo: {
+            storedName: true,
+          },
+        },
+      });
+      return {
+        message: `عملیات با موفقیت انجام پذیرفت`,
+        data: plan,
+      };
+    } catch (error) {
+      this.logService.logData(
+        'findOne-plan',
+        JSON.stringify({ id: id }),
+        error?.stack ? error.stack : 'error not have message!!',
+      );
+      throw new InternalServerErrorException(
+        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
+      );
+    }
   }
 
   update(id: number, updatePlanDto: UpdatePlanDto) {
