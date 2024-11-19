@@ -138,6 +138,7 @@ export class FileService {
           thumbnailFileSaved.storedName,
         );
         unlink(thumbnailPath, () => {});
+        unlink(videoPath, () => {});
         return { data: [thumbnailFileSaved, videoFileSaved] };
       } else {
         // const getSavedFile: ReadStream = await this.getFile(
