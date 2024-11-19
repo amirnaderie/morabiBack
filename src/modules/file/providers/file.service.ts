@@ -1,31 +1,35 @@
 import {
-  BadRequestException,
   Injectable,
-  InternalServerErrorException,
   NotFoundException,
+  BadRequestException,
   UnauthorizedException,
+  InternalServerErrorException,
 } from '@nestjs/common';
-import { MulterFile } from '../fileOptions';
-import { InjectRepository } from '@nestjs/typeorm';
+
+import * as fs from 'fs';
+import { join } from 'path';
 import { File } from '../entities/file.entity';
+import { v4 as uuidv4 } from 'uuid';
+import { MulterFile } from '../fileOptions';
 import { In, Repository } from 'typeorm';
 import { UtilityService } from 'src/utility/providers/utility.service';
-import { join } from 'path';
+import { InjectRepository } from '@nestjs/typeorm';
+
 import {
-  createReadStream,
-  existsSync,
-  mkdirSync,
-  ReadStream,
   unlink,
+  mkdirSync,
+  existsSync,
+  ReadStream,
+  createReadStream,
 } from 'fs';
-import { ConfigService } from '@nestjs/config';
+
+import * as mime from 'mime-types';
 import { User } from 'src/modules/users/entities/user.entity';
-import { Movement } from 'src/modules/movement/entities/movement.entity';
+import { s3Service } from './s3.service';
+import { LogService } from 'src/modules/log/providers/log.service';
+import { ConfigService } from '@nestjs/config';
 import { FFmpegService } from './ffmpeg.service';
 import { UploadFileDto } from '../dto/upload-file.dto';
-import * as mime from 'mime-types';
-import { LogService } from 'src/modules/log/providers/log.service';
-import { s3Service } from './s3.service';
 
 @Injectable()
 export class FileService {
@@ -43,108 +47,53 @@ export class FileService {
     file: MulterFile,
     req: Request,
     user: User,
-    movement?: Movement,
-  ): Promise<{ data: File | File[] }> {
+  ): Promise<{ data: File | File[] } | any> {
     try {
-      if (!file) {
-        const errorMessage = req['fileValidationError'] || 'File upload failed';
-        throw new BadRequestException(errorMessage);
-      }
-
-      const isVideo = this.configService
-        .get<string>('VIDEO_ALLOWD_MIMETYPES')
-        .split(',')
-        .includes(file.mimetype);
-      const isImage = this.configService
-        .get<string>('IMAGE_ALLOWD_MIMETYPES')
-        .split(',')
-        .includes(file.mimetype);
-
-      if (!isImage && !isVideo) {
-        throw new BadRequestException('فرمت فایل صحیح نمی باشد');
-      }
-      if (
-        file.originalname.length >
-        parseFloat(this.configService.get<string>('FILE_SIZE_IMAGE'))
-      ) {
-        throw new BadRequestException(
-          `${parseFloat(this.configService.get<string>('FILE_SIZE_IMAGE')) / 1048576}MB حداکثر حجم قابل پذیریش برای این فایل برابر است با`,
-        );
-      }
-      if (
-        file.originalname.length >
-        parseFloat(this.configService.get<string>('FILE_SIZE_VIDEO'))
-      ) {
-        throw new BadRequestException(
-          `${parseFloat(this.configService.get<string>('FILE_SIZE_VIDEO')) / 1048576}MB حداکثر حجم قابل پذیریش برای این فایل برابر است با`,
-        );
-      }
-      if (
-        file.size >
-          parseFloat(this.configService.get<string>('FILE_SIZE_IMAGE')) ||
-        file.size >
-          parseFloat(this.configService.get<string>('FILE_SIZE_VIDEO'))
-      ) {
-        throw new BadRequestException('نام فایل طولانی می باشد');
-      }
-
-      if (!this.utilityService.onlyLettersAndNumbers(file.originalname)) {
-        throw new BadRequestException('نام فایل حاوی کاراکترهای غیر مجاز است');
-      }
-
       const filename = `${Date.now()}-${file.originalname}`;
 
-      const mimetype = file.mimetype;
+      const inputFilePath = join(
+        __dirname,
+        '../../../../',
+        'storage',
+        filename,
+      );
 
-      // const filePath = join(__dirname, '..', '..', 'uploads', filename);
-
-      if (!existsSync(join(__dirname, '..', '..', 'uploads'))) {
-        mkdirSync(join(__dirname, '..', '..', 'uploads'));
-      }
-      // writeFileSync(filePath, file.buffer); // Save the file manually
-
-      const newFile = this.fileRepository.create({
-        fileName: filename,
-        mimetype: mimetype,
-        storedName: file.filename,
-        realmId: (req as any).subdomainId || 1,
-      });
-      newFile.user = user;
-      if (movement) newFile.movements = [movement];
-      const savedFile = await this.fileRepository.save(newFile);
+      fs.writeFileSync(inputFilePath, file.buffer);
 
       if (file.mimetype === 'image/gif') {
         const gifPath: string = join(
           __dirname,
           '../../../../storage/',
-          savedFile.storedName,
+          filename,
         );
         const outPutPath = join(
           __dirname,
           '../../../../storage/',
-          `${savedFile.storedName.split('.')[0]}.mp4`,
+          `${uuidv4()}.mp4`,
         );
-        await this.ffmpegService.convertGifToMp4(gifPath, outPutPath);
-        const mp4 = await this.fileRepository.findOne({
-          where: { id: savedFile.id },
+        const mp4 = await this.ffmpegService.convertGifToMp4(
+          gifPath,
+          outPutPath,
+        );
+
+        unlink(inputFilePath, () => {});
+
+        const mp4Create = this.fileRepository.create({
+          orginalName: filename,
+          mimetype: 'video/mp4',
+          storedName: mp4.filePath.split('/').at(-1),
+          realmId: (req as any).subdomainId || 1,
         });
-        mp4.storedName = `${savedFile.storedName.split('.')[0]}.mp4`;
-        mp4.mimetype = 'video/mp4';
-        const videoFileSaved = await this.fileRepository.save(mp4);
-        const filePath = join(
-          __dirname,
-          '../../../../storage/',
-          savedFile.storedName,
-        );
-        unlink(filePath, () => {});
+
+        const videoFileSaved = await this.fileRepository.save(mp4Create);
 
         const videoPath: string = join(
           __dirname,
-          `../../../../storage/${savedFile.storedName.split('.')[0]}.mp4`,
+          `../../../../storage/${videoFileSaved.storedName.split('.')[0]}.mp4`,
         );
         const outputDir: string = join(__dirname, '../../../../storage/');
         const timestamp: number = 1;
-        const outputName: string = savedFile.storedName.split('.')[0];
+        const outputName: string = videoFileSaved.storedName.split('.')[0];
 
         const thumbnail = await this.ffmpegService.generatePoster(
           videoPath,
@@ -153,12 +102,12 @@ export class FileService {
           outputName,
         );
 
-        const mimeType = mime.lookup(thumbnail) || 'application/octet-stream'; // Get MIME type based on file extension
+        const mimeType = mime.lookup(thumbnail) || 'application/octet-stream';
 
         const thumbnailFileCreate = this.fileRepository.create({
-          fileName: `${outputName}.jpeg`, //thumbnail.split('/').at(-1),
+          orginalName: `${outputName}.jpeg`,
           mimetype: mimeType,
-          storedName: `${outputName}.jpeg`, // thumbnail.split('/').at(-1),
+          storedName: `${outputName}.jpeg`,
           realmId: (req as any).subdomainId || 1,
         });
         thumbnailFileCreate.user = user;
@@ -183,17 +132,29 @@ export class FileService {
           getThumbnailFileSaved,
           `${thumbnailFileSaved.realmId}/${thumbnailFileSaved.storedName}`,
         );
-
+        const thumbnailPath: string = join(
+          __dirname,
+          '../../../../storage/',
+          thumbnailFileSaved.storedName,
+        );
+        unlink(thumbnailPath, () => {});
+        unlink(videoPath, () => {});
         return { data: [thumbnailFileSaved, videoFileSaved] };
       } else {
-        const getSavedFile: ReadStream = await this.getFile(
-          savedFile.storedName,
-        );
-        await this.s3Service.storeObject(
-          getSavedFile,
-          `${savedFile.realmId}/${savedFile.storedName}`,
-        );
-        return { data: savedFile };
+        // const getSavedFile: ReadStream = await this.getFile(
+        //   savedFile.storedName,
+        // );
+        // await this.s3Service.storeObject(
+        //   getSavedFile,
+        //   `${savedFile.realmId}/${savedFile.storedName}`,
+        // );
+        // const savedFilePath: string = join(
+        //   __dirname,
+        //   '../../../../storage/',
+        //   savedFile.storedName,
+        // );
+        // unlink(savedFilePath, () => {});
+        // return { data: savedFile };
       }
     } catch (error) {
       this.logService.logData(
@@ -202,7 +163,6 @@ export class FileService {
           file,
           req,
           user,
-          movement,
         }),
         error?.stack ? error.stack : 'error not have message!!',
       );
@@ -217,52 +177,30 @@ export class FileService {
   }
 
   async uploadOneVideo(
-    file: MulterFile,
+    file: Express.Multer.File,
     req: Request,
     user: User,
     uploadFileDto: UploadFileDto,
   ): Promise<{ data: File | File[] }> {
     try {
       if (!file) throw new BadRequestException();
-      const isVideo = this.configService
-        .get<string>('VIDEO_ALLOWD_MIMETYPES')
-        .split(',')
-        .includes(file.mimetype);
+      if (!existsSync(join(__dirname, '..', '..', '..', '..', 'storage'))) {
+        mkdirSync(join(__dirname, '..', '..', '..', '..', 'storage'));
+      }
+      const storedFile =
+        await this.ffmpegService.storeAndConvertVideoToMp4(file);
 
-      if (!isVideo) throw new BadRequestException('فرمت فایل صحیح نمی باشد');
-      const fileSizeVideo: string =
-        this.configService.get<string>('FILE_SIZE_VIDEO');
-
-      if (file.originalname.length > parseFloat(fileSizeVideo))
-        throw new BadRequestException(
-          `${parseFloat(fileSizeVideo) / 1048576}MB حداکثر حجم قابل پذیریش برای این فایل برابر است با`,
-        );
-
-      if (file.size > parseFloat(fileSizeVideo))
-        throw new BadRequestException('نام فایل طولانی می باشد');
-
-      // if (!this.utilityService.onlyLettersAndNumbers(file.originalname))
-      //   throw new BadRequestException('نام فایل حاوی کاراکترهای غیر مجاز است');
-
-      const filename = `${Date.now()}-${file.originalname}`;
-
-      const mimetype = file.mimetype;
-
-      const videoFileCreate = this.fileRepository.create({
-        fileName: filename,
-        mimetype: mimetype,
-        storedName: file.filename,
+      const newVideo = this.fileRepository.create({
+        mimetype: file.mimetype,
+        orginalName: file.originalname,
         realmId: (req as any).subdomainId || 1,
+        storedName: storedFile.filePath.split('/').at(-1),
       });
-      videoFileCreate.user = user;
-
-      const videoFileSaved = await this.fileRepository.save(videoFileCreate);
+      newVideo.user = user;
+      const videoFileSaved = await this.fileRepository.save(newVideo);
       delete videoFileSaved.user;
-      if (uploadFileDto?.screenSeconds) {
-        if (!existsSync(join(__dirname, '..', '..', '..', '..', 'uploads'))) {
-          mkdirSync(join(__dirname, '..', '..', '..', '..', 'uploads'));
-        }
 
+      if (uploadFileDto?.screenSeconds) {
         const videoPath: string = join(
           __dirname,
           '../../../../storage/',
@@ -282,7 +220,7 @@ export class FileService {
         const mimeType = mime.lookup(thumbnail) || 'application/octet-stream'; // Get MIME type based on file extension
 
         const thumbnailFileCreate = this.fileRepository.create({
-          fileName: `${outputName}.jpeg`, //thumbnail.split('/').at(-1),
+          orginalName: `${outputName}.jpeg`, //thumbnail.split('/').at(-1),
           mimetype: mimeType,
           storedName: `${outputName}.jpeg`, // thumbnail.split('/').at(-1),
           realmId: (req as any).subdomainId || 1,
@@ -308,6 +246,13 @@ export class FileService {
           getThumbnailFileSaved,
           `${thumbnailFileSaved.realmId}/${thumbnailFileSaved.storedName}`,
         );
+        const thumbnailPath: string = join(
+          __dirname,
+          '../../../../storage/',
+          thumbnailFileSaved.storedName,
+        );
+        unlink(thumbnailPath, () => {});
+        unlink(videoPath, () => {});
         return {
           data: [thumbnailFileSaved, videoFileSaved],
         };
@@ -317,11 +262,16 @@ export class FileService {
           file,
           `${videoFileSaved.realmId}/${videoFileSaved.storedName}`,
         );
-
+        const videoPath: string = join(
+          __dirname,
+          '../../../../storage/',
+          videoFileSaved.storedName,
+        );
+        unlink(videoPath, () => {});
         return { data: videoFileSaved };
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
       this.logService.logData(
         'uploadOneVideo-file',
         JSON.stringify({

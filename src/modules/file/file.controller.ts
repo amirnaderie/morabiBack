@@ -15,32 +15,35 @@ import {
 import { Response } from 'express';
 
 import { FileService } from './providers/file.service';
-import {
-  MulterFile,
-  multerOptions,
-  oneVideoMulterOptions,
-} from './fileOptions';
 import { join } from 'path';
 import { File } from './entities/file.entity';
 import { User } from '../users/entities/user.entity';
 import { GetUser } from 'src/decorators/getUser.decorator';
 import { existsSync, mkdirSync } from 'fs';
 import { UploadFileDto } from './dto/upload-file.dto';
-import { FileInterceptor as MulterFileInterceptor } from '@nestjs/platform-express';
+
 // import { HttpResponseTransform } from 'src/interceptors/http-response-transform.interceptor';
 import { AuthGuard } from 'src/guards/auth.guard';
+import { VideoValidationPipe } from 'src/pipes/video-validation.pipe';
+import { ConfigService } from '@nestjs/config';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ImageValidationPipe } from 'src/pipes/image-validation.pipe';
 
 @Controller('files')
 @UseGuards(AuthGuard)
-// @UseInterceptors(HttpResponseTransform)
 export class FileController {
-  constructor(private readonly fileService: FileService) {}
+  constructor(
+    private readonly fileService: FileService,
+    private readonly configService: ConfigService,
+  ) {}
 
   @Post('upload')
-  @UseInterceptors(MulterFileInterceptor('file', multerOptions))
+  @UseInterceptors(FileInterceptor('file'))
   async uploadFile(
-    @UploadedFile() file: MulterFile,
-    @Req() req: Request,
+    @UploadedFile(new ImageValidationPipe([], 1, true))
+    file: Express.Multer.File,
+    @Req()
+    req: Request,
     @GetUser() user: User,
   ): Promise<{ data: File | File[] }> {
     const storageDir = join(__dirname, 'storage');
@@ -49,19 +52,21 @@ export class FileController {
     }
     return await this.fileService.handleFileUpload(file, req, user);
   }
-
+  // video\/(mp4|webm|ogg)
   @Post('upload-video')
-  @UseInterceptors(MulterFileInterceptor('file', oneVideoMulterOptions))
+  @UseInterceptors(FileInterceptor('file'))
   async uploadOneVideo(
-    @UploadedFile() file: MulterFile,
+    @UploadedFile(new VideoValidationPipe([], 1, true))
+    file: Express.Multer.File,
     @Req() req: Request,
     @GetUser() user: User,
     @Body() uploadFileDto: UploadFileDto,
-  ): Promise<{ data: File | File[] }> {
+  ): Promise<{ data: File | File[] } | any> {
     const storageDir = join(__dirname, 'storage');
     if (!existsSync(storageDir)) {
       mkdirSync(storageDir, { recursive: true });
     }
+
     return await this.fileService.uploadOneVideo(
       file,
       req,

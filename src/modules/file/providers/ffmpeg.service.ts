@@ -2,6 +2,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as ffmpeg from 'fluent-ffmpeg';
 import { Injectable } from '@nestjs/common';
+import { v4 as uuidv4 } from 'uuid';
+// import { Readable } from 'stream';
 
 @Injectable()
 export class FFmpegService {
@@ -36,16 +38,141 @@ export class FFmpegService {
     });
   }
 
-  async convertGifToMp4(gifPath: string, outputPath: string): Promise<string> {
+  async convertGifToMp4(
+    gifPath: string,
+    outputPath: string,
+  ): Promise<{
+    message: string;
+    filePath: string;
+    size: number; // File size in bytes
+    metadata: {
+      format: string; // File format, e.g., 'mp4'
+      duration: number; // Duration in seconds
+      videoCodec: string | undefined; // Video codec, e.g., 'h264'
+      audioCodec: string | undefined; // Audio codec, e.g., 'aac'
+      resolution: {
+        width: number | undefined; // Video width in pixels
+        height: number | undefined; // Video height in pixels
+      };
+    };
+  }> {
     return new Promise((resolve, reject) => {
       ffmpeg(gifPath)
         .output(outputPath)
         .on('end', () => {
           console.log('Conversion finished!');
-          resolve(outputPath);
+          ffmpeg.ffprobe(outputPath, (err, metadata) => {
+            if (err) {
+              reject({ message: 'Error retrieving file metadata', error: err });
+              return;
+            }
+            const fileStats = fs.statSync(outputPath);
+
+            resolve({
+              message: 'File converted successfully!',
+              filePath: outputPath,
+              size: fileStats.size, // File size in bytes
+              metadata: {
+                format: metadata.format.format_name,
+                duration: metadata.format.duration,
+                videoCodec: metadata.streams.find(
+                  (s) => s.codec_type === 'video',
+                )?.codec_name,
+                audioCodec: metadata.streams.find(
+                  (s) => s.codec_type === 'audio',
+                )?.codec_name,
+                resolution: {
+                  width: metadata.streams.find((s) => s.codec_type === 'video')
+                    ?.width,
+                  height: metadata.streams.find((s) => s.codec_type === 'video')
+                    ?.height,
+                },
+              },
+            });
+          });
         })
         .on('error', (err) => {
           console.error('Error during conversion:', err);
+          reject(err);
+        })
+        .run();
+    });
+  }
+
+  async storeAndConvertVideoToMp4(file: Express.Multer.File): Promise<{
+    message: string;
+    filePath: string;
+    size: number; // File size in bytes
+    metadata: {
+      format: string; // File format, e.g., 'mp4'
+      duration: number; // Duration in seconds
+      videoCodec: string | undefined; // Video codec, e.g., 'h264'
+      audioCodec: string | undefined; // Audio codec, e.g., 'aac'
+      resolution: {
+        width: number | undefined; // Video width in pixels
+        height: number | undefined; // Video height in pixels
+      };
+    };
+  }> {
+    const outputFilePath = path.join(
+      __dirname,
+      '../../../../',
+      'storage',
+      `${uuidv4()}.mp4`,
+    );
+    const inputFilePath = path.join(
+      __dirname,
+      '../../../../',
+      'storage',
+      `${uuidv4()}.mp4`,
+    );
+    fs.writeFileSync(inputFilePath, file.buffer);
+    // const fileStream = Readable.from(file.buffer);
+
+    return new Promise((resolve, reject) => {
+      ffmpeg()
+        .input(inputFilePath)
+        .videoCodec('libx264')
+        .audioCodec('aac')
+        .outputOptions([
+          '-vf', // Apply a video filter
+          `drawtext=text='morabi.io':fontcolor=gray:fontsize=30:x=10:y=H-th-10`, // Text filter options
+        ])
+        .output(outputFilePath)
+        .on('end', async () => {
+          fs.unlink(inputFilePath, () => {});
+          ffmpeg.ffprobe(outputFilePath, (err, metadata) => {
+            if (err) {
+              reject({ message: 'Error retrieving file metadata', error: err });
+              return;
+            }
+            const fileStats = fs.statSync(outputFilePath);
+            resolve({
+              message: 'File converted successfully!',
+              filePath: outputFilePath,
+              size: fileStats.size, // File size in bytes
+              metadata: {
+                format: metadata.format.format_name,
+                duration: metadata.format.duration,
+                videoCodec: metadata.streams.find(
+                  (s) => s.codec_type === 'video',
+                )?.codec_name,
+                audioCodec: metadata.streams.find(
+                  (s) => s.codec_type === 'audio',
+                )?.codec_name,
+                resolution: {
+                  width: metadata.streams.find((s) => s.codec_type === 'video')
+                    ?.width,
+                  height: metadata.streams.find((s) => s.codec_type === 'video')
+                    ?.height,
+                },
+              },
+            });
+          });
+        })
+        .on('error', (err) => {
+          console.error('Error during conversion:', err);
+          fs.unlink(inputFilePath, () => {});
           reject(err);
         })
         .run();
