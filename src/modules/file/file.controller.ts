@@ -24,13 +24,13 @@ import { UploadFileDto } from './dto/upload-file.dto';
 
 // import { HttpResponseTransform } from 'src/interceptors/http-response-transform.interceptor';
 import { AuthGuard } from 'src/guards/auth.guard';
-import { FileValidationPipe } from 'src/pipes/file-validation.pipe';
+import { VideoValidationPipe } from 'src/pipes/video-validation.pipe';
 import { ConfigService } from '@nestjs/config';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ImageValidationPipe } from 'src/pipes/image-validation.pipe';
 
 @Controller('files')
 @UseGuards(AuthGuard)
-// @UseInterceptors(HttpResponseTransform)
 export class FileController {
   constructor(
     private readonly fileService: FileService,
@@ -40,7 +40,7 @@ export class FileController {
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(
-    @UploadedFile(new FileValidationPipe([], 1, true))
+    @UploadedFile(new ImageValidationPipe([], 1, true))
     file: Express.Multer.File,
     @Req()
     req: Request,
@@ -56,7 +56,7 @@ export class FileController {
   @Post('upload-video')
   @UseInterceptors(FileInterceptor('file'))
   async uploadOneVideo(
-    @UploadedFile(new FileValidationPipe([], 1, true))
+    @UploadedFile(new VideoValidationPipe([], 1, true))
     file: Express.Multer.File,
     @Req() req: Request,
     @GetUser() user: User,

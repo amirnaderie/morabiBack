@@ -2,25 +2,23 @@ import { Injectable, PipeTransform, BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
-export class FileValidationPipe implements PipeTransform {
+export class ImageValidationPipe implements PipeTransform {
   constructor(
-    private readonly allowedTypes: string[], // E.g., ['image/png', 'image/jpeg']
+    private readonly allowedTypes: string[], // ['image/png', 'image/jpeg']
     private readonly maxSizeMB: number, // Max file size in MB
     private readonly useDefaultEnv: boolean, // Max file size in MB
   ) {}
 
   transform(file: Express.Multer.File) {
     const configService = new ConfigService();
-    let fileMimetype = this.allowedTypes; // FILE_SIZE_VIDEO
-    let fileSize = this.maxSizeMB; // FILE_SIZE_VIDEO FILE_NAME_LENGTH
+    let fileMimetype = this.allowedTypes;
+    let fileSize = this.maxSizeMB;
     const defaultFileNameSize = configService.get<number>('FILE_NAME_LENGTH');
     if (this.useDefaultEnv) {
       fileMimetype = configService
-        .get<string>('VIDEO_ALLOWD_MIMETYPES')
+        .get<string>('IMAGE_ALLOWD_MIMETYPES')
         .split(',');
 
-      if (fileMimetype.includes('video'))
-        fileSize = configService.get<number>('FILE_SIZE_VIDEO');
       if (fileMimetype.includes('image'))
         fileSize = configService.get<number>('FILE_SIZE_IMAGE');
     }

@@ -6,8 +6,10 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 
+import * as fs from 'fs';
 import { join } from 'path';
 import { File } from '../entities/file.entity';
+import { v4 as uuidv4 } from 'uuid';
 import { MulterFile } from '../fileOptions';
 import { In, Repository } from 'typeorm';
 import { UtilityService } from 'src/utility/providers/utility.service';
@@ -23,7 +25,6 @@ import {
 
 import * as mime from 'mime-types';
 import { User } from 'src/modules/users/entities/user.entity';
-import { Movement } from 'src/modules/movement/entities/movement.entity';
 import { s3Service } from './s3.service';
 import { LogService } from 'src/modules/log/providers/log.service';
 import { ConfigService } from '@nestjs/config';
@@ -46,53 +47,53 @@ export class FileService {
     file: MulterFile,
     req: Request,
     user: User,
-    movement?: Movement,
-  ): Promise<{ data: File | File[] }> {
+  ): Promise<{ data: File | File[] } | any> {
     try {
       const filename = `${Date.now()}-${file.originalname}`;
 
-      const newFile = this.fileRepository.create({
-        orginalName: filename,
-        mimetype: file.mimetype,
-        storedName: file.filename,
-        realmId: (req as any).subdomainId || 1,
-      });
-      newFile.user = user;
-      if (movement) newFile.movements = [movement];
-      const savedFile = await this.fileRepository.save(newFile);
+      const inputFilePath = join(
+        __dirname,
+        '../../../../',
+        'storage',
+        filename,
+      );
+
+      fs.writeFileSync(inputFilePath, file.buffer);
 
       if (file.mimetype === 'image/gif') {
         const gifPath: string = join(
           __dirname,
           '../../../../storage/',
-          savedFile.storedName,
+          filename,
         );
         const outPutPath = join(
           __dirname,
           '../../../../storage/',
-          `${savedFile.storedName.split('.')[0]}.mp4`,
+          `${uuidv4()}.mp4`,
         );
-        await this.ffmpegService.convertGifToMp4(gifPath, outPutPath);
-        const mp4 = await this.fileRepository.findOne({
-          where: { id: savedFile.id },
+        const mp4 = await this.ffmpegService.convertGifToMp4(
+          gifPath,
+          outPutPath,
+        );
+
+        unlink(inputFilePath, () => {});
+
+        const mp4Create = this.fileRepository.create({
+          orginalName: filename,
+          mimetype: 'video/mp4',
+          storedName: mp4.filePath.split('/').at(-1),
+          realmId: (req as any).subdomainId || 1,
         });
-        mp4.storedName = `${savedFile.storedName.split('.')[0]}.mp4`;
-        mp4.mimetype = 'video/mp4';
-        const videoFileSaved = await this.fileRepository.save(mp4);
-        const filePath = join(
-          __dirname,
-          '../../../../storage/',
-          savedFile.storedName,
-        );
-        unlink(filePath, () => {});
+
+        const videoFileSaved = await this.fileRepository.save(mp4Create);
 
         const videoPath: string = join(
           __dirname,
-          `../../../../storage/${savedFile.storedName.split('.')[0]}.mp4`,
+          `../../../../storage/${videoFileSaved.storedName.split('.')[0]}.mp4`,
         );
         const outputDir: string = join(__dirname, '../../../../storage/');
         const timestamp: number = 1;
-        const outputName: string = savedFile.storedName.split('.')[0];
+        const outputName: string = videoFileSaved.storedName.split('.')[0];
 
         const thumbnail = await this.ffmpegService.generatePoster(
           videoPath,
@@ -101,12 +102,12 @@ export class FileService {
           outputName,
         );
 
-        const mimeType = mime.lookup(thumbnail) || 'application/octet-stream'; // Get MIME type based on file extension
+        const mimeType = mime.lookup(thumbnail) || 'application/octet-stream';
 
         const thumbnailFileCreate = this.fileRepository.create({
-          orginalName: `${outputName}.jpeg`, //thumbnail.split('/').at(-1),
+          orginalName: `${outputName}.jpeg`,
           mimetype: mimeType,
-          storedName: `${outputName}.jpeg`, // thumbnail.split('/').at(-1),
+          storedName: `${outputName}.jpeg`,
           realmId: (req as any).subdomainId || 1,
         });
         thumbnailFileCreate.user = user;
@@ -139,20 +140,20 @@ export class FileService {
         unlink(thumbnailPath, () => {});
         return { data: [thumbnailFileSaved, videoFileSaved] };
       } else {
-        const getSavedFile: ReadStream = await this.getFile(
-          savedFile.storedName,
-        );
-        await this.s3Service.storeObject(
-          getSavedFile,
-          `${savedFile.realmId}/${savedFile.storedName}`,
-        );
-        const savedFilePath: string = join(
-          __dirname,
-          '../../../../storage/',
-          savedFile.storedName,
-        );
-        unlink(savedFilePath, () => {});
-        return { data: savedFile };
+        // const getSavedFile: ReadStream = await this.getFile(
+        //   savedFile.storedName,
+        // );
+        // await this.s3Service.storeObject(
+        //   getSavedFile,
+        //   `${savedFile.realmId}/${savedFile.storedName}`,
+        // );
+        // const savedFilePath: string = join(
+        //   __dirname,
+        //   '../../../../storage/',
+        //   savedFile.storedName,
+        // );
+        // unlink(savedFilePath, () => {});
+        // return { data: savedFile };
       }
     } catch (error) {
       this.logService.logData(
@@ -161,7 +162,6 @@ export class FileService {
           file,
           req,
           user,
-          movement,
         }),
         error?.stack ? error.stack : 'error not have message!!',
       );

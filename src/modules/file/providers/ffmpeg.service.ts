@@ -38,13 +38,58 @@ export class FFmpegService {
     });
   }
 
-  async convertGifToMp4(gifPath: string, outputPath: string): Promise<string> {
+  async convertGifToMp4(
+    gifPath: string,
+    outputPath: string,
+  ): Promise<{
+    message: string;
+    filePath: string;
+    size: number; // File size in bytes
+    metadata: {
+      format: string; // File format, e.g., 'mp4'
+      duration: number; // Duration in seconds
+      videoCodec: string | undefined; // Video codec, e.g., 'h264'
+      audioCodec: string | undefined; // Audio codec, e.g., 'aac'
+      resolution: {
+        width: number | undefined; // Video width in pixels
+        height: number | undefined; // Video height in pixels
+      };
+    };
+  }> {
     return new Promise((resolve, reject) => {
       ffmpeg(gifPath)
         .output(outputPath)
         .on('end', () => {
           console.log('Conversion finished!');
-          resolve(outputPath);
+          ffmpeg.ffprobe(outputPath, (err, metadata) => {
+            if (err) {
+              reject({ message: 'Error retrieving file metadata', error: err });
+              return;
+            }
+            const fileStats = fs.statSync(outputPath);
+
+            resolve({
+              message: 'File converted successfully!',
+              filePath: outputPath,
+              size: fileStats.size, // File size in bytes
+              metadata: {
+                format: metadata.format.format_name,
+                duration: metadata.format.duration,
+                videoCodec: metadata.streams.find(
+                  (s) => s.codec_type === 'video',
+                )?.codec_name,
+                audioCodec: metadata.streams.find(
+                  (s) => s.codec_type === 'audio',
+                )?.codec_name,
+                resolution: {
+                  width: metadata.streams.find((s) => s.codec_type === 'video')
+                    ?.width,
+                  height: metadata.streams.find((s) => s.codec_type === 'video')
+                    ?.height,
+                },
+              },
+            });
+          });
         })
         .on('error', (err) => {
           console.error('Error during conversion:', err);
