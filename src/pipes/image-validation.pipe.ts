@@ -19,8 +19,7 @@ export class ImageValidationPipe implements PipeTransform {
         .get<string>('IMAGE_ALLOWD_MIMETYPES')
         .split(',');
 
-      if (fileMimetype.includes('image'))
-        fileSize = configService.get<number>('FILE_SIZE_IMAGE');
+      fileSize = configService.get<number>('FILE_SIZE_IMAGE');
     }
 
     if (!file) {

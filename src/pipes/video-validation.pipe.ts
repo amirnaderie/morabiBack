@@ -19,10 +19,7 @@ export class VideoValidationPipe implements PipeTransform {
         .get<string>('VIDEO_ALLOWD_MIMETYPES')
         .split(',');
 
-      if (fileMimetype.includes('video'))
-        fileSize = configService.get<number>('FILE_SIZE_VIDEO');
-      if (fileMimetype.includes('image'))
-        fileSize = configService.get<number>('FILE_SIZE_IMAGE');
+      fileSize = configService.get<number>('FILE_SIZE_VIDEO');
     }
 
     if (!file) {
