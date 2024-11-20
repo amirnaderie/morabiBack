@@ -63,10 +63,7 @@ export class FileService {
       if (file.mimetype === 'image/gif') {
         const gifPath: string = join(__dirname, 'storage', filename);
         const outPutPath = join(__dirname, 'storage', `${uuidFileName}.mp4`);
-        const mp4 = await this.ffmpegService.convertGifToMp4(
-          gifPath,
-          outPutPath,
-        );
+        await this.ffmpegService.convertGifToMp4(gifPath, outPutPath);
 
         unlink(inputFilePath, () => {});
 
@@ -178,17 +175,28 @@ export class FileService {
   ): Promise<{ data: File | File[] }> {
     try {
       if (!file) throw new BadRequestException();
-      if (!existsSync(join(__dirname, 'storage'))) {
-        mkdirSync(join(__dirname, 'storage'));
+      const filename = `${Date.now()}-${file.originalname}`;
+
+      const inputFilePath = join(__dirname, 'storage', filename);
+
+      if (!fs.existsSync(join(__dirname, 'storage'))) {
+        fs.mkdirSync(join(__dirname, 'storage'), { recursive: true });
       }
-      const storedFile =
-        await this.ffmpegService.storeAndConvertVideoToMp4(file);
+
+      fs.writeFileSync(inputFilePath, file.buffer);
+      const uuidFileName = uuidv4();
+
+      const filePath: string = join(__dirname, 'storage', filename);
+      const outPutPath = join(__dirname, 'storage', `${uuidFileName}.mp4`);
+      await this.ffmpegService.convertGifToMp4(filePath, outPutPath);
+
+      unlink(inputFilePath, () => {});
 
       const newVideo = this.fileRepository.create({
         mimetype: file.mimetype,
         orginalName: file.originalname,
         realmId: (req as any).subdomainId || 1,
-        storedName: storedFile.filepathUUid,
+        storedName: `${uuidFileName}.mp4`,
         user,
       });
 
