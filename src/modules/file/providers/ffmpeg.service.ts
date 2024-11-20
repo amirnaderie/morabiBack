@@ -126,7 +126,8 @@ export class FFmpegService {
       `${uuidv4()}.mp4`,
     );
     console.log(inputFilePath, 'inputFilePath');
-    fs.writeFileSync(inputFilePath, file.buffer);
+    // await fs.writeFileSync(inputFilePath, file.buffer);
+    await fs.promises.writeFile(inputFilePath, file.buffer);
     console.log('fs.writeFileSync');
     // const fileStream = Readable.from(file.buffer);
 
@@ -141,10 +142,11 @@ export class FFmpegService {
         ])
         .output(outputFilePath)
         .on('end', async () => {
-          fs.unlink(inputFilePath, () => {});
+          // fs.unlink(inputFilePath, () => {});
           console.log('fs.unlinkdvdvdvd', inputFilePath);
           ffmpeg.ffprobe(outputFilePath, (err, metadata) => {
             if (err) {
+              console.log('777777777', err);
               reject({ message: 'Error retrieving file metadata', error: err });
               return;
             }
@@ -173,8 +175,8 @@ export class FFmpegService {
           });
         })
         .on('error', (err) => {
-          console.error('Error during conversion:', err);
-          fs.unlink(inputFilePath, () => {});
+          console.error('Error during conversion9898:', err);
+          // fs.unlink(inputFilePath, () => {});
           reject(err);
         })
         .run();
