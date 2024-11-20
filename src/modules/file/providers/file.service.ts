@@ -188,9 +188,10 @@ export class FileService {
         mimetype: file.mimetype,
         orginalName: file.originalname,
         realmId: (req as any).subdomainId || 1,
-        storedName: storedFile.filePath.split('/').at(-1),
+        storedName: storedFile.filepathUUid,
+        user,
       });
-      newVideo.user = user;
+
       const videoFileSaved = await this.fileRepository.save(newVideo);
       delete videoFileSaved.user;
 
@@ -218,8 +219,8 @@ export class FileService {
           mimetype: mimeType,
           storedName: `${outputName}.jpeg`, // thumbnail.split('/').at(-1),
           realmId: (req as any).subdomainId || 1,
+          user,
         });
-        thumbnailFileCreate.user = user;
 
         const thumbnailFileSaved =
           await this.fileRepository.save(thumbnailFileCreate);

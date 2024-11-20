@@ -104,7 +104,6 @@ export class FileController {
     @GetUser()
     user: User,
   ) {
-    console.log(user, 'ddd user');
 
     return await this.fileService.delete(fileId, user);
   }

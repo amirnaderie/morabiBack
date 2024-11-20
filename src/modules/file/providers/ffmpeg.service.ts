@@ -22,11 +22,9 @@ export class FFmpegService {
 
       ffmpeg(videoPath)
         .on('end', () => {
-          console.log('Screenshot taken successfully');
           resolve(outputImagePath);
         })
         .on('error', (err) => {
-          console.error('Error taking screenshot:', err);
           reject(err);
         })
         .screenshots({
@@ -60,7 +58,6 @@ export class FFmpegService {
       ffmpeg(gifPath)
         .output(outputPath)
         .on('end', () => {
-          console.log('Conversion finished!');
           ffmpeg.ffprobe(outputPath, (err, metadata) => {
             if (err) {
               reject({ message: 'Error retrieving file metadata', error: err });
@@ -102,6 +99,7 @@ export class FFmpegService {
   async storeAndConvertVideoToMp4(file: Express.Multer.File): Promise<{
     message: string;
     filePath: string;
+    filepathUUid:string;
     size: number; // File size in bytes
     metadata: {
       format: string; // File format, e.g., 'mp4'
@@ -114,21 +112,19 @@ export class FFmpegService {
       };
     };
   }> {
+    const outputUuid=`${uuidv4()}.mp4`
     const outputFilePath = path.join(
       __dirname,
       '/storage/',
-      `${uuidv4()}.mp4`,
+      outputUuid,
     );
-    console.log(outputFilePath, 'outputFilePath');
     const inputFilePath = path.join(
       __dirname,
       '/storage/',
       `${uuidv4()}.mp4`,
     );
-    console.log(inputFilePath, 'inputFilePath');
     // await fs.writeFileSync(inputFilePath, file.buffer);
     await fs.promises.writeFile(inputFilePath, file.buffer);
-    console.log('fs.writeFileSync');
     // const fileStream = Readable.from(file.buffer);
 
     return new Promise((resolve, reject) => {
@@ -143,10 +139,8 @@ export class FFmpegService {
         .output(outputFilePath)
         .on('end', async () => {
           // fs.unlink(inputFilePath, () => {});
-          console.log('fs.unlinkdvdvdvd', inputFilePath);
           ffmpeg.ffprobe(outputFilePath, (err, metadata) => {
             if (err) {
-              console.log('777777777', err);
               reject({ message: 'Error retrieving file metadata', error: err });
               return;
             }
@@ -154,6 +148,7 @@ export class FFmpegService {
             resolve({
               message: 'File converted successfully!',
               filePath: outputFilePath,
+              filepathUUid:outputUuid,
               size: fileStats.size, // File size in bytes
               metadata: {
                 format: metadata.format.format_name,
