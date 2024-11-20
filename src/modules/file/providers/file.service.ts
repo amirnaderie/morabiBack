@@ -51,26 +51,18 @@ export class FileService {
     try {
       const filename = `${Date.now()}-${file.originalname}`;
 
-      const inputFilePath = join(
-        __dirname,
-        '../../../../',
-        'storage',
-        filename,
-      );
+      const inputFilePath = join(__dirname, 'storage', filename);
+
+      if (!fs.existsSync(join(__dirname, 'storage'))) {
+        fs.mkdirSync(join(__dirname, 'storage'), { recursive: true });
+      }
 
       fs.writeFileSync(inputFilePath, file.buffer);
+      const uuidFileName = uuidv4();
 
       if (file.mimetype === 'image/gif') {
-        const gifPath: string = join(
-          __dirname,
-          '../../../../storage/',
-          filename,
-        );
-        const outPutPath = join(
-          __dirname,
-          '../../../../storage/',
-          `${uuidv4()}.mp4`,
-        );
+        const gifPath: string = join(__dirname, 'storage', filename);
+        const outPutPath = join(__dirname, 'storage', `${uuidFileName}.mp4`);
         const mp4 = await this.ffmpegService.convertGifToMp4(
           gifPath,
           outPutPath,
@@ -81,17 +73,19 @@ export class FileService {
         const mp4Create = this.fileRepository.create({
           orginalName: filename,
           mimetype: 'video/mp4',
-          storedName: mp4.filePath.split('/').at(-1),
+          storedName: `${uuidFileName}.mp4`,
           realmId: (req as any).subdomainId || 1,
+          user,
         });
 
         const videoFileSaved = await this.fileRepository.save(mp4Create);
 
         const videoPath: string = join(
           __dirname,
-          `../../../../storage/${videoFileSaved.storedName.split('.')[0]}.mp4`,
+          'storage',
+          `${uuidFileName}.mp4`,
         );
-        const outputDir: string = join(__dirname, '../../../../storage/');
+        const outputDir: string = join(__dirname, 'storage');
         const timestamp: number = 1;
         const outputName: string = videoFileSaved.storedName.split('.')[0];
 
@@ -109,8 +103,8 @@ export class FileService {
           mimetype: mimeType,
           storedName: `${outputName}.jpeg`,
           realmId: (req as any).subdomainId || 1,
+          user,
         });
-        thumbnailFileCreate.user = user;
 
         const thumbnailFileSaved =
           await this.fileRepository.save(thumbnailFileCreate);
@@ -134,7 +128,7 @@ export class FileService {
         );
         const thumbnailPath: string = join(
           __dirname,
-          '../../../../storage/',
+          'storage',
           thumbnailFileSaved.storedName,
         );
         unlink(thumbnailPath, () => {});
@@ -150,7 +144,7 @@ export class FileService {
         // );
         // const savedFilePath: string = join(
         //   __dirname,
-        //   '../../../../storage/',
+        //   '/storage/',
         //   savedFile.storedName,
         // );
         // unlink(savedFilePath, () => {});
@@ -184,8 +178,8 @@ export class FileService {
   ): Promise<{ data: File | File[] }> {
     try {
       if (!file) throw new BadRequestException();
-      if (!existsSync(join(__dirname, '..', '..', '..', '..', 'storage'))) {
-        mkdirSync(join(__dirname, '..', '..', '..', '..', 'storage'));
+      if (!existsSync(join(__dirname, 'storage'))) {
+        mkdirSync(join(__dirname, 'storage'));
       }
       const storedFile =
         await this.ffmpegService.storeAndConvertVideoToMp4(file);
@@ -203,10 +197,10 @@ export class FileService {
       if (uploadFileDto?.screenSeconds) {
         const videoPath: string = join(
           __dirname,
-          '../../../../storage/',
+          'storage',
           videoFileSaved.storedName,
         );
-        const outputDir = join(__dirname, '../../../../storage/');
+        const outputDir = join(__dirname, 'storage');
         const timestamp: number = uploadFileDto?.screenSeconds;
         const outputName: string = videoFileSaved.storedName.split('.')[0];
 
@@ -248,7 +242,7 @@ export class FileService {
         );
         const thumbnailPath: string = join(
           __dirname,
-          '../../../../storage/',
+          'storage',
           thumbnailFileSaved.storedName,
         );
         unlink(thumbnailPath, () => {});
@@ -264,7 +258,7 @@ export class FileService {
         );
         const videoPath: string = join(
           __dirname,
-          '../../../../storage/',
+          'storage',
           videoFileSaved.storedName,
         );
         unlink(videoPath, () => {});
@@ -293,7 +287,7 @@ export class FileService {
 
   async getFile(fileName: string): Promise<ReadStream> {
     try {
-      const filePath = join(__dirname, '../../../../storage/', fileName);
+      const filePath = join(__dirname, 'storage', fileName);
       if (!existsSync(filePath)) {
         throw new NotFoundException(`فایلی با این شناسه یافت نشد`);
       }
@@ -385,7 +379,7 @@ export class FileService {
     await this.fileRepository.delete(id);
 
     try {
-      const filePath = join(__dirname, '../../../../storage/', file.storedName);
+      const filePath = join(__dirname, 'storage', file.storedName);
       unlink(filePath, () => {});
       return { data: 'فایل با موفقیت حذف شد' };
     } catch (error) {

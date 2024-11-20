@@ -116,13 +116,13 @@ export class FFmpegService {
   }> {
     const outputFilePath = path.join(
       __dirname,
-      '../../../../storage/',
+      '/storage/',
       `${uuidv4()}.mp4`,
     );
     console.log(outputFilePath, 'outputFilePath');
     const inputFilePath = path.join(
       __dirname,
-      '../../../../storage/',
+      '/storage/',
       `${uuidv4()}.mp4`,
     );
     console.log(inputFilePath, 'inputFilePath');
