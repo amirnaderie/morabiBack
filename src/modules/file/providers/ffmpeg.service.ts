@@ -117,7 +117,7 @@ export class FFmpegService {
     const outputFilePath = path.join(
       __dirname,
       '../../../../storage/',
-      `${uuidv4()}.mp4`,
+      `${uuidv4()}888.mp4`,
     );
     console.log(outputFilePath, 'outputFilePath');
     const inputFilePath = path.join(
@@ -145,6 +145,7 @@ export class FFmpegService {
           console.log('fs.unlinkdvdvdvd', inputFilePath);
           ffmpeg.ffprobe(outputFilePath, (err, metadata) => {
             if (err) {
+              console.log('777777777', err);
               reject({ message: 'Error retrieving file metadata', error: err });
               return;
             }
