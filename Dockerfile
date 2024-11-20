@@ -7,11 +7,11 @@ COPY package*.json ./
 RUN npm install
 
 RUN apk update && apk add ffmpeg
-
-RUN chown -R 777 node:node /app
+## RUN addgroup -S node && adduser -S node -G node
+## RUN chown -R 777 node:node /app
 RUN chmod -R 777 /app
 
-USER node
+#USER node
 
 COPY . .
 
