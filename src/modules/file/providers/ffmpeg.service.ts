@@ -126,7 +126,8 @@ export class FFmpegService {
       `${uuidv4()}.mp4`,
     );
     console.log(inputFilePath, 'inputFilePath');
-    fs.writeFileSync(inputFilePath, file.buffer);
+    // await fs.writeFileSync(inputFilePath, file.buffer);
+    await fs.promises.writeFile(inputFilePath, file.buffer);
     console.log('fs.writeFileSync');
     // const fileStream = Readable.from(file.buffer);
 
