@@ -15,13 +15,7 @@ import { In, Repository } from 'typeorm';
 import { UtilityService } from 'src/utility/providers/utility.service';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import {
-  unlink,
-  mkdirSync,
-  existsSync,
-  ReadStream,
-  createReadStream,
-} from 'fs';
+import { unlink, existsSync, ReadStream, createReadStream } from 'fs';
 
 import * as mime from 'mime-types';
 import { User } from 'src/modules/users/entities/user.entity';
@@ -188,8 +182,9 @@ export class FileService {
 
       const filePath: string = join(__dirname, 'storage', filename);
       const outPutPath = join(__dirname, 'storage', `${uuidFileName}.mp4`);
+      console.log(111111);
       await this.ffmpegService.convertGifToMp4(filePath, outPutPath);
-
+      console.log(222222);
       unlink(inputFilePath, () => {});
 
       const newVideo = this.fileRepository.create({
