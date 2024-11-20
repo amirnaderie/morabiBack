@@ -6,12 +6,11 @@ COPY package*.json ./
 
 RUN npm install
 
+RUN apk update && apk add ffmpeg
+
+RUN chown -R 777 node:node /app
+
 COPY . .
-
-RUN apk update
-RUN apk add
-RUN apk add ffmpeg
-
 
 RUN npm run build
 
