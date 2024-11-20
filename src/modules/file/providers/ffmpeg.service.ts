@@ -113,8 +113,8 @@ export class FFmpegService {
     };
   }> {
     const outputUuid = `${uuidv4()}.mp4`;
-    const outputFilePath = path.join(__dirname, '/storage/', outputUuid);
-    const inputFilePath = path.join(__dirname, '/storage/', `${uuidv4()}.mp4`);
+    const outputFilePath = path.join(__dirname, 'storage', outputUuid);
+    const inputFilePath = path.join(__dirname, 'storage', `${uuidv4()}.mp4`);
     // await fs.writeFileSync(inputFilePath, file.buffer);
     await fs.promises.writeFile(inputFilePath, file.buffer);
     // const fileStream = Readable.from(file.buffer);
