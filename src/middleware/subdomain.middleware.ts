@@ -9,14 +9,13 @@ export class SubdomainMiddleware implements NestMiddleware {
 
   async use(req: Request, res: Response, next: NextFunction) {
     const referer = req.headers.referer;
-
     if (!referer) {
       req.subdomainId = null;
       return next();
     }
-
     const url = new URL(referer);
     const hostname = url.hostname;
+
     const subdomain =
       hostname === 'localhost'
         ? 'panel'
@@ -33,7 +32,7 @@ export class SubdomainMiddleware implements NestMiddleware {
   }
 
   private getSubdomainFromHostname(hostname: string): string | null {
-    const parts = '37.32.26.201'.split('.');
+    const parts = hostname.split('.');
     if (parts.length > 3) return null;
     if (parts.length > 2) {
       return parts.slice(0, -2).join('.');
