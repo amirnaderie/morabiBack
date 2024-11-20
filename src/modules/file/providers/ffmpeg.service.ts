@@ -2,7 +2,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as ffmpeg from 'fluent-ffmpeg';
 import { Injectable } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
 // import { Readable } from 'stream';
 
 @Injectable()
@@ -96,10 +95,12 @@ export class FFmpegService {
     });
   }
 
-  async storeAndConvertVideoToMp4(file: Express.Multer.File): Promise<{
+  async watermarkAndConvertVideoToMp4(
+    filePath: string,
+    outputPath: string,
+  ): Promise<{
     message: string;
     filePath: string;
-    filepathUUid: string;
     size: number; // File size in bytes
     metadata: {
       format: string; // File format, e.g., 'mp4'
@@ -112,35 +113,27 @@ export class FFmpegService {
       };
     };
   }> {
-    const outputUuid = `${uuidv4()}.mp4`;
-    const outputFilePath = path.join(__dirname, 'storage', outputUuid);
-    const inputFilePath = path.join(__dirname, 'storage', `${uuidv4()}.mp4`);
-    // await fs.writeFileSync(inputFilePath, file.buffer);
-    await fs.promises.writeFile(inputFilePath, file.buffer);
-    // const fileStream = Readable.from(file.buffer);
-
     return new Promise((resolve, reject) => {
       ffmpeg()
-        .input(inputFilePath)
+        .input(filePath)
         .videoCodec('libx264')
         .audioCodec('aac')
         .outputOptions([
           '-vf', // Apply a video filter
           `drawtext=text='morabi.io':fontcolor=gray:fontsize=30:x=10:y=H-th-10`, // Text filter options
         ])
-        .output(outputFilePath)
+        .output(outputPath)
         .on('end', async () => {
-          fs.unlink(inputFilePath, () => {});
-          ffmpeg.ffprobe(outputFilePath, (err, metadata) => {
+          fs.unlink(filePath, () => {});
+          ffmpeg.ffprobe(outputPath, (err, metadata) => {
             if (err) {
               reject({ message: 'Error retrieving file metadata', error: err });
               return;
             }
-            const fileStats = fs.statSync(outputFilePath);
+            const fileStats = fs.statSync(outputPath);
             resolve({
               message: 'File converted successfully!',
-              filePath: outputFilePath,
-              filepathUUid: outputUuid,
+              filePath: outputPath,
               size: fileStats.size, // File size in bytes
               metadata: {
                 format: metadata.format.format_name,
@@ -163,7 +156,7 @@ export class FFmpegService {
         })
         .on('error', (err) => {
           console.error('Error during conversion9898:', err);
-          fs.unlink(inputFilePath, () => {});
+          fs.unlink(filePath, () => {});
           reject(err);
         })
         .run();

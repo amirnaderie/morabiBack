@@ -183,7 +183,10 @@ export class FileService {
       const filePath: string = join(__dirname, 'storage', filename);
       const outPutPath = join(__dirname, 'storage', `${uuidFileName}.mp4`);
       console.log(111111);
-      await this.ffmpegService.convertGifToMp4(filePath, outPutPath);
+      await this.ffmpegService.watermarkAndConvertVideoToMp4(
+        filePath,
+        outPutPath,
+      );
       console.log(222222);
       unlink(inputFilePath, () => {});
 
