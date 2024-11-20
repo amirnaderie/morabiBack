@@ -99,7 +99,7 @@ export class FFmpegService {
   async storeAndConvertVideoToMp4(file: Express.Multer.File): Promise<{
     message: string;
     filePath: string;
-    filepathUUid:string;
+    filepathUUid: string;
     size: number; // File size in bytes
     metadata: {
       format: string; // File format, e.g., 'mp4'
@@ -112,17 +112,9 @@ export class FFmpegService {
       };
     };
   }> {
-    const outputUuid=`${uuidv4()}.mp4`
-    const outputFilePath = path.join(
-      __dirname,
-      '/storage/',
-      outputUuid,
-    );
-    const inputFilePath = path.join(
-      __dirname,
-      '/storage/',
-      `${uuidv4()}.mp4`,
-    );
+    const outputUuid = `${uuidv4()}.mp4`;
+    const outputFilePath = path.join(__dirname, '/storage/', outputUuid);
+    const inputFilePath = path.join(__dirname, '/storage/', `${uuidv4()}.mp4`);
     // await fs.writeFileSync(inputFilePath, file.buffer);
     await fs.promises.writeFile(inputFilePath, file.buffer);
     // const fileStream = Readable.from(file.buffer);
@@ -138,7 +130,7 @@ export class FFmpegService {
         ])
         .output(outputFilePath)
         .on('end', async () => {
-          // fs.unlink(inputFilePath, () => {});
+          fs.unlink(inputFilePath, () => {});
           ffmpeg.ffprobe(outputFilePath, (err, metadata) => {
             if (err) {
               reject({ message: 'Error retrieving file metadata', error: err });
@@ -148,7 +140,7 @@ export class FFmpegService {
             resolve({
               message: 'File converted successfully!',
               filePath: outputFilePath,
-              filepathUUid:outputUuid,
+              filepathUUid: outputUuid,
               size: fileStats.size, // File size in bytes
               metadata: {
                 format: metadata.format.format_name,
@@ -171,7 +163,7 @@ export class FFmpegService {
         })
         .on('error', (err) => {
           console.error('Error during conversion9898:', err);
-          // fs.unlink(inputFilePath, () => {});
+          fs.unlink(inputFilePath, () => {});
           reject(err);
         })
         .run();
