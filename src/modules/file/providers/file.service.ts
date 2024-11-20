@@ -246,13 +246,13 @@ export class FileService {
           getThumbnailFileSaved,
           `${thumbnailFileSaved.realmId}/${thumbnailFileSaved.storedName}`,
         );
-        const thumbnailPath: string = join(
-          __dirname,
-          '../../../../storage/',
-          thumbnailFileSaved.storedName,
-        );
-        unlink(thumbnailPath, () => {});
-        unlink(videoPath, () => {});
+        // const thumbnailPath: string = join(
+        //   __dirname,
+        //   '../../../../storage/',
+        //   thumbnailFileSaved.storedName,
+        // );
+        // unlink(thumbnailPath, () => {});
+        // unlink(videoPath, () => {});
         return {
           data: [thumbnailFileSaved, videoFileSaved],
         };
@@ -262,12 +262,12 @@ export class FileService {
           file,
           `${videoFileSaved.realmId}/${videoFileSaved.storedName}`,
         );
-        const videoPath: string = join(
-          __dirname,
-          '../../../../storage/',
-          videoFileSaved.storedName,
-        );
-        unlink(videoPath, () => {});
+        // const videoPath: string = join(
+        //   __dirname,
+        //   '../../../../storage/',
+        //   videoFileSaved.storedName,
+        // );
+        // unlink(videoPath, () => {});
         return { data: videoFileSaved };
       }
     } catch (error) {
