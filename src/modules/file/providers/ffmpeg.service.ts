@@ -141,7 +141,7 @@ export class FFmpegService {
         ])
         .output(outputFilePath)
         .on('end', async () => {
-          fs.unlink(inputFilePath, () => {});
+          // fs.unlink(inputFilePath, () => {});
           console.log('fs.unlinkdvdvdvd', inputFilePath);
           ffmpeg.ffprobe(outputFilePath, (err, metadata) => {
             if (err) {
@@ -173,8 +173,8 @@ export class FFmpegService {
           });
         })
         .on('error', (err) => {
-          console.error('Error during conversion:', err);
-          fs.unlink(inputFilePath, () => {});
+          console.error('Error during conversion9898:', err);
+          // fs.unlink(inputFilePath, () => {});
           reject(err);
         })
         .run();
