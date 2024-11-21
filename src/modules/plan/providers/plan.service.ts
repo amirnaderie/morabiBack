@@ -187,7 +187,8 @@ export class PlanService {
       const tagsEntity = await this.tagService.findById(tags);
       const fileEntity = await this.fileService.findById([logo]);
 
-      const updatedPlan = this.planRepository.create({
+      const updatedPlan = await this.planRepository.save({
+        id,
         user: user,
         planName,
         tags: tagsEntity,
@@ -202,12 +203,11 @@ export class PlanService {
         weight,
         realmId: (req as any).subdomainId || 1,
       });
-      const result = await this.planRepository.save(plan);
-      delete result.user.permissions;
-      delete result.user.roles;
+      delete updatedPlan.user
+     
       return {
         message: `عملیات با موفقیت انجام پذیرفت`,
-        data: result,
+        data: updatedPlan,
       };
     } catch (error) {
       this.logService.logData(

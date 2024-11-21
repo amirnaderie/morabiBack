@@ -51,6 +51,7 @@ export class PlanController {
   }
 
   @Put(':id')
+  @SetMetadata('permission', 'update-plan')
   update(
     @Param('id') id: string,
     @Body() updatePlanDto: UpdatePlanDto,

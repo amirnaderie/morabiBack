@@ -10,6 +10,8 @@ import {
   MaxLength,
   IsJSON,
   IsNotEmpty,
+  IsNumberString,
+  ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { User } from 'src/modules/users/entities/user.entity';
@@ -32,24 +34,28 @@ export class BasePlanDto {
   @IsOptional()
   @Min(1)
   @Max(3)
+  @Type(() => Number)
   gender?: number;
 
   @IsNumber()
   @IsOptional()
   @Min(1)
   @Max(4)
+  @Type(() => Number)
   weight?: number;
 
   @IsNumber()
   @IsOptional()
   @Min(1)
   @Max(3)
+  @Type(() => Number)
   place?: number;
 
   @IsNumber()
   @IsOptional()
   @Min(1)
   @Max(4)
+  @Type(() => Number)
   level?: number;
 
   @IsNumber()
@@ -63,10 +69,14 @@ export class BasePlanDto {
   @IsOptional()
   planTime: number;
 
+  // @IsArray()
+  // // @IsString({ each: true })
+  // @IsOptional()
+  // weekDays: string;
+
   @IsArray()
-  @IsString({ each: true })
   @IsOptional()
-  weekDays: string;
+  weekDays: any[];
 }
 
 // Create DTO
