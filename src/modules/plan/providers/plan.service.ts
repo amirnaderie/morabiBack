@@ -2,6 +2,7 @@ import {
   ConflictException,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 import { CreatePlanDto, UpdatePlanDto } from '../dto/create-plan.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -131,6 +132,7 @@ export class PlanService {
             realmId: true,
           },
           logo: {
+            id: true,
             storedName: true,
           },
         },
@@ -151,8 +153,73 @@ export class PlanService {
     }
   }
 
-  update(id: number, updatePlanDto: UpdatePlanDto) {
-    return `This action updates a #${id} plan`;
+  async update(
+    id: string,
+    updatePlanDto: UpdatePlanDto,
+    user: User,
+    req: Request,
+  ) {
+    const {
+      gender,
+      level,
+      logo,
+      place,
+      planDescription,
+      planName,
+      planTime,
+      state,
+      tags,
+      weekDays,
+      weight,
+    } = updatePlanDto;
+    const plan = await this.planRepository.findOne({
+      where: {
+        user: { id: user.id },
+        id: id,
+        realmId: (req as any).subdomainId,
+      },
+      relations: {
+        logo: true,
+      },
+    });
+    if (!plan) throw new NotFoundException('موردی یافت نشد');
+    try {
+      const tagsEntity = await this.tagService.findById(tags);
+      const fileEntity = await this.fileService.findById([logo]);
+
+      const updatedPlan = this.planRepository.create({
+        user: user,
+        planName,
+        tags: tagsEntity,
+        logo: fileEntity[0],
+        planDescription,
+        gender,
+        level,
+        place,
+        planTime,
+        state,
+        weekDays: JSON.stringify(weekDays),
+        weight,
+        realmId: (req as any).subdomainId || 1,
+      });
+      const result = await this.planRepository.save(plan);
+      delete result.user.permissions;
+      delete result.user.roles;
+      return {
+        message: `عملیات با موفقیت انجام پذیرفت`,
+        data: result,
+      };
+    } catch (error) {
+      this.logService.logData(
+        'update-plan',
+        JSON.stringify({ createPlanDto: updatePlanDto, user: user }),
+        error?.stack ? error.stack : 'error not have message!!',
+      );
+
+      throw new InternalServerErrorException(
+        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
+      );
+    }
   }
 
   remove(id: number) {

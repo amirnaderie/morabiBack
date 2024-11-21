@@ -94,6 +94,39 @@ export class FFmpegService {
         .run();
     });
   }
+  async convertImageToJpeg(
+    imagePath: string,
+    outputPath: string,
+  ): Promise<{
+    message: string;
+    filePath: string;
+    size: number; // File size in bytes
+  }> {
+    return new Promise((resolve, reject) => {
+      ffmpeg(imagePath)
+        .output(outputPath)
+        .on('end', () => {
+          ffmpeg.ffprobe(outputPath, (err, metadata) => {
+            if (err) {
+              reject({ message: 'Error retrieving file metadata', error: err });
+              return;
+            }
+            const fileStats = fs.statSync(outputPath);
+
+            resolve({
+              message: 'File converted successfully!',
+              filePath: outputPath,
+              size: fileStats.size, // File size in bytes
+            });
+          });
+        })
+        .on('error', (err) => {
+          console.error('Error during conversion:', err);
+          reject(err);
+        })
+        .run();
+    });
+  }
 
   async watermarkAndConvertVideoToMp4(
     filePath: string,

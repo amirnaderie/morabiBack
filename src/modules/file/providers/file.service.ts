@@ -24,6 +24,7 @@ import { LogService } from 'src/modules/log/providers/log.service';
 import { ConfigService } from '@nestjs/config';
 import { FFmpegService } from './ffmpeg.service';
 import { UploadFileDto } from '../dto/upload-file.dto';
+import { PassThrough, Readable } from 'stream';
 
 @Injectable()
 export class FileService {
@@ -126,20 +127,29 @@ export class FileService {
         unlink(videoPath, () => {});
         return { data: [thumbnailFileSaved, videoFileSaved] };
       } else {
-        // const getSavedFile: ReadStream = await this.getFile(
-        //   savedFile.storedName,
-        // );
-        // await this.s3Service.storeObject(
-        //   getSavedFile,
-        //   `${savedFile.realmId}/${savedFile.storedName}`,
-        // );
-        // const savedFilePath: string = join(
-        //   __dirname,
-        //   '/storage/',
-        //   savedFile.storedName,
-        // );
-        // unlink(savedFilePath, () => {});
-        // return { data: savedFile };
+        const imagePath: string = join(__dirname, 'storage', filename);
+        const outPutPath = join(__dirname, 'storage', `${uuidFileName}.jpeg`);
+        await this.ffmpegService.convertImageToJpeg(imagePath, outPutPath);
+        const fileStreamed: ReadStream = await this.getFile(
+          `${uuidFileName}.jpeg`,
+        );
+
+        await this.s3Service.storeObject(
+          fileStreamed,
+          `${(req as any).subdomainId || 1}/${uuidFileName}.jpeg`,
+        );
+
+        const createStoredImage = this.fileRepository.create({
+          orginalName: file.originalname,
+          mimetype: file.mimetype,
+          storedName: `${uuidFileName}.jpeg`,
+          realmId: (req as any).subdomainId || 1,
+          user,
+        });
+        const storedImage = await this.fileRepository.save(createStoredImage);
+        delete storedImage.user;
+        unlink(inputFilePath, () => {});
+        return { data: storedImage };
       }
     } catch (error) {
       this.logService.logData(
@@ -161,6 +171,12 @@ export class FileService {
     }
   }
 
+  bufferToReadStream(buffer: Buffer) {
+    const stream = new Readable();
+    stream.push(buffer);
+    stream.push(null);
+    return stream;
+  }
   async uploadOneVideo(
     file: Express.Multer.File,
     req: Request,

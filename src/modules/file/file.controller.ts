@@ -46,10 +46,10 @@ export class FileController {
     req: Request,
     @GetUser() user: User,
   ): Promise<{ data: File | File[] }> {
-    const storageDir = join(__dirname, 'storage');
-    if (!existsSync(storageDir)) {
-      mkdirSync(storageDir, { recursive: true });
-    }
+    // const storageDir = join(__dirname, 'storage');
+    // if (!existsSync(storageDir)) {
+    //   mkdirSync(storageDir, { recursive: true });
+    // }
     return await this.fileService.handleFileUpload(file, req, user);
   }
   // video\/(mp4|webm|ogg)
@@ -62,10 +62,10 @@ export class FileController {
     @GetUser() user: User,
     @Body() uploadFileDto: UploadFileDto,
   ): Promise<{ data: File | File[] } | any> {
-    const storageDir = join(__dirname, 'storage');
-    if (!existsSync(storageDir)) {
-      mkdirSync(storageDir, { recursive: true });
-    }
+    // const storageDir = join(__dirname, 'storage');
+    // if (!existsSync(storageDir)) {
+    //   mkdirSync(storageDir, { recursive: true });
+    // }
 
     return await this.fileService.uploadOneVideo(
       file,

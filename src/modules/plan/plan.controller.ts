@@ -10,6 +10,7 @@ import {
   SetMetadata,
   UseGuards,
   UseInterceptors,
+  Put,
 } from '@nestjs/common';
 import { CreatePlanDto } from './dto/create-plan.dto';
 import { UpdatePlanDto } from './dto/update-plan.dto';
@@ -22,7 +23,6 @@ import { RolesGuard } from 'src/guards/role.guard';
 import { HttpResponseTransform } from 'src/interceptors/http-response-transform.interceptor';
 
 @Controller('plans')
-
 @UseGuards(AuthGuard, RolesGuard)
 @UseInterceptors(HttpResponseTransform)
 export class PlanController {
@@ -50,9 +50,14 @@ export class PlanController {
     return this.planService.findOne(id, req);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePlanDto: UpdatePlanDto) {
-    return this.planService.update(+id, updatePlanDto);
+  @Put(':id')
+  update(
+    @Param('id') id: string,
+    @Body() updatePlanDto: UpdatePlanDto,
+    @GetUser() user: User,
+    @Req() req: Request,
+  ) {
+    return this.planService.update(id, updatePlanDto, user, req);
   }
 
   @Delete(':id')
