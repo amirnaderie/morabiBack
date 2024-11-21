@@ -6,6 +6,7 @@ import {
   HeadBucketCommand,
   CreateBucketCommand,
   PutObjectCommand,
+  DeleteObjectCommand,
 } from '@aws-sdk/client-s3';
 import { ReadStream } from 'typeorm/platform/PlatformTools';
 
@@ -67,6 +68,19 @@ export class s3Service {
         ACL: 'public-read',
       };
       return await this.client.send(new PutObjectCommand(uploadParams as any));
+    } catch (err) {
+      console.log(err, 'err');
+    }
+  }
+
+  async deleteObject(fileName: string, realmId: number) {
+    try {
+      await this.headBucket();
+      const deleteParams = {
+        Key: `${realmId}/${fileName}`,
+        Bucket: this.bucketName,
+      };
+      return await this.client.send(new DeleteObjectCommand(deleteParams));
     } catch (err) {
       console.log(err, 'err');
     }

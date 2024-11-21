@@ -378,29 +378,28 @@ export class FileService {
   }
 
   async delete(id: string, user: User) {
-    const file = await this.fileRepository.findOne({
-      where: { id: id },
-      relations: {
-        user: true,
-        movements: true,
-      },
-    });
-
-    if (!file) throw new NotFoundException();
-
-    if (file.user.id !== user.id) {
-      throw new UnauthorizedException('شما توانایی حذف این فایل را ندارید!');
-    }
-
-    // if (file.movements.length > 0) {
-    //   throw new BadRequestException('فایل دارای حرکت میباشد!');
-    // }
-
-    await this.fileRepository.delete(id);
-
     try {
-      const filePath = join(__dirname, 'storage', file.storedName);
-      unlink(filePath, () => {});
+      const file = await this.fileRepository.findOne({
+        where: { id: id },
+        relations: {
+          user: true,
+          movements: true,
+        },
+      });
+
+      if (!file) throw new NotFoundException();
+
+      if (file.user.id !== user.id) {
+        throw new UnauthorizedException('شما توانایی حذف این فایل را ندارید!');
+      }
+
+      // if (file.movements.length > 0) {
+      //   throw new BadRequestException('فایل دارای حرکت میباشد!');
+      // }
+
+      await this.s3Service.deleteObject(file.storedName, file.realmId);
+      await this.fileRepository.delete(id);
+
       return { data: 'فایل با موفقیت حذف شد' };
     } catch (error) {
       this.logService.logData(
