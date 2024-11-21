@@ -140,8 +140,7 @@ export class MovementService {
           files: true,
         },
       });
-      console.log(movement?.files, 'movement.files');
-      console.log(files, 'files');
+
       // remove files if movement not have file in update
       if (movement.files && movement.files.length > 0 && files.length === 0) {
         for (let i = 0; i < movement.files.length; i++) {
@@ -176,7 +175,6 @@ export class MovementService {
         data: savedMovement,
       };
     } catch (error) {
-      console.log(error, 'err');
       this.logService.logData(
         'update-movement',
         JSON.stringify({ updateMovementDto: updateMovementDto, id: id }),
