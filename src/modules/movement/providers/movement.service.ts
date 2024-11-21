@@ -75,9 +75,7 @@ export class MovementService {
           id: true,
           isDefault: true,
           name: true,
-          user: {
-            id: true,
-          },
+          creatorId: true,
           tags: {
             id: true,
             name: true,
@@ -86,6 +84,7 @@ export class MovementService {
             id: true,
             mimetype: true,
             storedName: true,
+            realmId: true,
           },
         },
         where: [
@@ -120,6 +119,7 @@ export class MovementService {
         where: { id: id, realmId: (req as any).subdomainId },
         relations: ['tags', 'files', 'user'],
       });
+      delete movement.user;
       return {
         message: `عملیات با موفقیت انجام پذیرفت`,
         data: movement,

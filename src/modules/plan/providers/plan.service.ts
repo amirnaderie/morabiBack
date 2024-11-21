@@ -90,11 +90,9 @@ export class PlanService {
           place: true,
           state: true,
           weight: true,
-          user: {
-            realmId: true,
-          },
           logo: {
             storedName: true,
+            realmId: true,
           },
         },
         where: [
@@ -134,6 +132,7 @@ export class PlanService {
           logo: {
             id: true,
             storedName: true,
+            realmId: true,
           },
         },
       });
@@ -203,8 +202,8 @@ export class PlanService {
         weight,
         realmId: (req as any).subdomainId || 1,
       });
-      delete updatedPlan.user
-     
+      delete updatedPlan.user;
+
       return {
         message: `عملیات با موفقیت انجام پذیرفت`,
         data: updatedPlan,
