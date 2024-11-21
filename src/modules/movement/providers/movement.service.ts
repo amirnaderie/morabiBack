@@ -126,6 +126,10 @@ export class MovementService {
   ) {
     try {
       const { description, tags, files, screenSeconds } = updateMovementDto;
+
+      const tagsEntity = await this.tagService.findById(tags);
+      const fileEntity = await this.fileService.findById(files);
+
       const movement = await this.movementRepository.findOne({
         where: {
           user: { id: user.id },
@@ -136,15 +140,27 @@ export class MovementService {
           files: true,
         },
       });
-
+      console.log(movement?.files, 'movement.files');
+      console.log(files, 'files');
+      // remove files if movement not have file in update
       if (movement.files && movement.files.length > 0 && files.length === 0) {
         for (let i = 0; i < movement.files.length; i++) {
           await this.fileService.delete(movement.files[i].id, user);
         }
       }
 
-      const tagsEntity = await this.tagService.findById(tags);
-      const fileEntity = await this.fileService.findById(files);
+      // remove old files after get new file in update
+      if (movement.files && movement.files.length > 0 && files.length > 0) {
+        if (
+          movement.files[0].id !== files[0] ||
+          movement.files[1].id !== files[0] ||
+          movement.files[0].id !== files[1] ||
+          movement.files[1].id !== files[1]
+        )
+          for (let i = 0; i < movement.files.length; i++) {
+            await this.fileService.delete(movement.files[i].id, user);
+          }
+      }
 
       movement.tags = tagsEntity;
       movement.files = fileEntity;
@@ -160,6 +176,7 @@ export class MovementService {
         data: savedMovement,
       };
     } catch (error) {
+      console.log(error, 'err');
       this.logService.logData(
         'update-movement',
         JSON.stringify({ updateMovementDto: updateMovementDto, id: id }),
