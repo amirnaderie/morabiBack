@@ -2,9 +2,11 @@ import { User } from '../../users/entities/user.entity';
 import { Movement } from '../entities/movement.entity';
 import { Repository } from 'typeorm';
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 import { TagService } from '../../tag/providers/tag.service';
 import { FileService } from '../../file/providers/file.service';
@@ -140,30 +142,29 @@ export class MovementService {
     user: User,
     req: Request,
   ) {
+    const { description, tags, files, screenSeconds } = updateMovementDto;
+
+    const tagsEntity = await this.tagService.findById(tags);
+    const fileEntity = await this.fileService.findById(files);
+
+    const movement = await this.movementRepository.findOne({
+      where: {
+        user: { id: user.id },
+        id: id,
+        realmId: (req as any).subdomainId,
+      },
+      relations: {
+        files: true,
+      },
+    });
+    if (!movement) throw new NotFoundException('موردی یافت نشد');
+
+    // remove files if movement not have file in update
+    if (movement.files && movement.files.length > 0 && files.length === 0) {
+      if (!movement)
+        throw new BadRequestException('اطلاعات وارد شده معتبر نیست');
+    }
     try {
-      const { description, tags, files, screenSeconds } = updateMovementDto;
-
-      const tagsEntity = await this.tagService.findById(tags);
-      const fileEntity = await this.fileService.findById(files);
-
-      const movement = await this.movementRepository.findOne({
-        where: {
-          user: { id: user.id },
-          id: id,
-          realmId: (req as any).subdomainId,
-        },
-        relations: {
-          files: true,
-        },
-      });
-
-      // remove files if movement not have file in update
-      if (movement.files && movement.files.length > 0 && files.length === 0) {
-        for (let i = 0; i < movement.files.length; i++) {
-          await this.fileService.delete(movement.files[i].id, user);
-        }
-      }
-
       // remove old files after get new file in update
       if (movement.files && movement.files.length > 0 && files.length > 0) {
         if (
