@@ -68,8 +68,24 @@ export class MovementService {
   async findAll(userId: string, req: Request) {
     try {
       const movements = await this.movementRepository.find({
-        select: ['user'],
         relations: ['tags', 'files', 'user'],
+        select: {
+          id: true,
+          isDefault: true,
+          name: true,
+          user: {
+            id: true,
+          },
+          tags: {
+            id: true,
+            name: true,
+          },
+          files: {
+            id: true,
+            mimetype: true,
+            storedName: true,
+          },
+        },
         where: [
           {
             user: {

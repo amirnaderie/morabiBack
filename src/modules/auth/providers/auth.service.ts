@@ -135,7 +135,7 @@ export class AuthService {
         password: true,
         userName: true,
       },
-      relations: ['roles', 'roles.permissions'],
+      relations: ['roles', 'roles.permissions', 'realm'],
     });
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
@@ -153,9 +153,11 @@ export class AuthService {
     const userPermissionEnNames = userPermissionsObj.map(
       (permission) => permission.enName,
     );
+
     const payload = {
       userName: user.userName,
       id: user.id,
+      realmId: user.realm.id,
       roles: user.roles.map((role: Role) => role.enName),
       permissions: userPermissionEnNames,
     };

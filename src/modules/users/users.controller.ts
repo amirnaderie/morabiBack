@@ -46,11 +46,15 @@ export class UsersController {
       id: user.id,
       roles: user.roles,
       permissions: user.permissions,
+      realmId: user.realmId,
     };
   }
 
   @Post('/assgin-role')
-  assginRole(@Body() assginUserRoleDto: AssginUserRoleDto, @Req() req: Request): any {
-    return this.usersService.assginRole(assginUserRoleDto,req);
+  assginRole(
+    @Body() assginUserRoleDto: AssginUserRoleDto,
+    @Req() req: Request,
+  ): any {
+    return this.usersService.assginRole(assginUserRoleDto, req);
   }
 }
