@@ -7,6 +7,7 @@ import { Movement } from './entities/movement.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TagModule } from '../tag/tag.module';
 import { LogModule } from '../log/log.module';
+import { UtilityModule } from 'src/utility/utility.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { LogModule } from '../log/log.module';
     forwardRef(() => FileModule),
     forwardRef(() => TagModule),
     forwardRef(() => LogModule),
+    UtilityModule,
   ],
   controllers: [MovementController],
   providers: [MovementService],

@@ -14,6 +14,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreateMovementDto } from '../dto/create-movement.dto';
 import { UpdateMovementDto } from '../dto/update-movement.dto';
 import { LogService } from 'src/modules/log/providers/log.service';
+import { UtilityService } from 'src/utility/providers/utility.service';
 
 @Injectable()
 export class MovementService {
@@ -23,13 +24,20 @@ export class MovementService {
     private readonly tagService: TagService,
     private readonly fileService: FileService,
     private readonly logService: LogService,
+    private readonly utilityService: UtilityService,
   ) {}
 
   async create(createMovementDto: CreateMovementDto, user: User, req: Request) {
-    try {
-      const { name, description, tags, files, screenSeconds } =
-        createMovementDto;
+    const { name, description, tags, files, screenSeconds } = createMovementDto;
 
+    if (
+      !(
+        this.utilityService.onlyLettersAndNumbers(name) &&
+        this.utilityService.onlyLettersAndNumbers(description)
+      )
+    )
+      throw new BadRequestException('مقادیر ورودی معتبر نیست');
+    try {
       const tagsEntity = await this.tagService.findById(tags);
       const fileEntity = await this.fileService.findById(files);
 
@@ -143,6 +151,8 @@ export class MovementService {
     req: Request,
   ) {
     const { description, tags, files, screenSeconds } = updateMovementDto;
+    if (!this.utilityService.onlyLettersAndNumbers(description))
+      throw new BadRequestException('مقادیر ورودی معتبر نیست');
 
     const tagsEntity = await this.tagService.findById(tags);
     const fileEntity = await this.fileService.findById(files);

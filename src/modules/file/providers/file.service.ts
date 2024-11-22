@@ -24,7 +24,7 @@ import { LogService } from 'src/modules/log/providers/log.service';
 import { ConfigService } from '@nestjs/config';
 import { FFmpegService } from './ffmpeg.service';
 import { UploadFileDto } from '../dto/upload-file.dto';
-import { PassThrough, Readable } from 'stream';
+import { Readable } from 'stream';
 
 @Injectable()
 export class FileService {

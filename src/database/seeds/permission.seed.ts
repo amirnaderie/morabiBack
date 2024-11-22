@@ -75,6 +75,9 @@ export const createPermissionSeed = async (AppDataSource: DataSource) => {
           name: 'مشاهده لیست پاسخ سوالات فرم‌ها',
           enName: 'form-questions-answer',
         },
+        { name: 'ایجاد برنامه', enName: 'create-plan' },
+        { name: 'ویرایش برنامه', enName: 'update-plan' },
+        { name: 'حذف برنامه', enName: 'delete-plan' },
       ])
       .execute();
   } catch (error) {

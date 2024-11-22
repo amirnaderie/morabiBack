@@ -3,7 +3,6 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   Req,
@@ -62,7 +61,8 @@ export class PlanController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.planService.remove(+id);
+  @SetMetadata('permission', 'delete-plan')
+  remove(@Param('id') id: string, @GetUser() user: User, @Req() req: Request) {
+    return this.planService.remove(id, user, req);
   }
 }

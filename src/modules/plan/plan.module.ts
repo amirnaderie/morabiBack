@@ -7,6 +7,7 @@ import { FileModule } from '../file/file.module';
 import { TagModule } from '../tag/tag.module';
 import { LogModule } from '../log/log.module';
 import { AuthModule } from '../auth/auth.module';
+import { UtilityModule } from 'src/utility/utility.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { AuthModule } from '../auth/auth.module';
     forwardRef(() => FileModule),
     forwardRef(() => TagModule),
     forwardRef(() => LogModule),
+    UtilityModule,
   ],
   controllers: [PlanController],
   providers: [PlanService],

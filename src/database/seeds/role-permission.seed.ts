@@ -74,6 +74,12 @@ export const addPermissionToRole = async (ADS: DataSource) => {
       '2,19',
       '2,20',
       '2,21',
+      '2,47',
+      '2,48',
+      '2,49',
+      '1,47',
+      '1,48',
+      '1,49',
     ];
 
     for (let i = 0; i < arr.length; i++) {

@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   InternalServerErrorException,
@@ -12,6 +13,7 @@ import { TagService } from 'src/modules/tag/providers/tag.service';
 import { FileService } from 'src/modules/file/providers/file.service';
 import { LogService } from 'src/modules/log/providers/log.service';
 import { User } from 'src/modules/users/entities/user.entity';
+import { UtilityService } from 'src/utility/providers/utility.service';
 
 @Injectable()
 export class PlanService {
@@ -21,23 +23,31 @@ export class PlanService {
     private readonly tagService: TagService,
     private readonly fileService: FileService,
     private readonly logService: LogService,
+    private readonly utilityService: UtilityService,
   ) {}
   async create(createPlanDto: CreatePlanDto, user: User, req: Request) {
-    try {
-      const {
-        planDescription,
-        planName,
-        planTime,
-        state,
-        weekDays,
-        gender,
-        level,
-        logo,
-        place,
-        tags,
-        weight,
-      } = createPlanDto;
+    const {
+      planDescription,
+      planName,
+      planTime,
+      state,
+      weekDays,
+      gender,
+      level,
+      logo,
+      place,
+      tags,
+      weight,
+    } = createPlanDto;
 
+    if (
+      !(
+        this.utilityService.onlyLettersAndNumbers(planName) &&
+        this.utilityService.onlyLettersAndNumbers(planDescription)
+      )
+    )
+      throw new BadRequestException('مقادیر ورودی معتبر نیست');
+    try {
       const tagsEntity = await this.tagService.findById(tags);
       const fileEntity = await this.fileService.findById([logo]);
 
@@ -171,6 +181,15 @@ export class PlanService {
       weekDays,
       weight,
     } = updatePlanDto;
+
+    if (
+      !(
+        this.utilityService.onlyLettersAndNumbers(planName) &&
+        this.utilityService.onlyLettersAndNumbers(planDescription)
+      )
+    )
+      throw new BadRequestException('مقادیر ورودی معتبر نیست');
+
     const plan = await this.planRepository.findOne({
       where: {
         user: { id: user.id },
@@ -221,7 +240,17 @@ export class PlanService {
     }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} plan`;
+  async remove(id: string, user: User, req: Request) {
+    const plan = await this.planRepository.find({
+      where: {
+        user: { id: user.id },
+        id: id,
+        realmId: (req as any).subdomainId,
+      },
+    });
+
+    if (!plan) throw new NotFoundException('موردی یافت نشد');
+
+    return this.planRepository.remove(plan);
   }
 }
