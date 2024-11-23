@@ -14,6 +14,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { File } from 'src/modules/file/entities/file.entity';
+import { Plan } from 'src/modules/plan/entities/plan.entity';
 
 @Entity()
 export class Realm {
@@ -43,6 +44,11 @@ export class Realm {
     onDelete: 'CASCADE',
   })
   movements: Movement[];
+ 
+  @OneToMany(() => Plan, (plan) => plan.realm, {
+    onDelete: 'CASCADE',
+  })
+  plans: Plan[];
 
   @OneToMany(() => File, (file) => file.realm, {
     onDelete: 'CASCADE',

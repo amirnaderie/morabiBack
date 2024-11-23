@@ -48,19 +48,19 @@ export class Plan {
     nullable: true,
   })
   weight: number;
-  
+
   @Column({
     type: 'tinyint',
     nullable: true,
   })
   place: number;
-  
+
   @Column({
     type: 'tinyint',
     nullable: true,
   })
   level: number;
-  
+
   @Column({
     type: 'tinyint',
     nullable: true,
@@ -91,11 +91,11 @@ export class Plan {
   @Exclude({ toPlainOnly: true })
   deletedAt: Date;
 
-  @OneToOne(() => File)
-  @JoinColumn()
+  @ManyToOne(() => File, (file) => file.plans, { cascade: true })
+  @JoinColumn({ name: 'logoId', referencedColumnName: 'id' })
   logo: File;
 
-  @ManyToOne(() => User, (user) => user.movements)
+  @ManyToOne(() => User, (user) => user.plans)
   @JoinColumn({ name: 'creatorId', referencedColumnName: 'id' })
   user: User;
 
@@ -107,7 +107,7 @@ export class Plan {
   })
   tags: Tag[];
 
-  @ManyToOne(() => Realm, (realm) => realm.movements)
+  @ManyToOne(() => Realm, (realm) => realm.plans, { cascade: true })
   @JoinColumn({ name: 'realmId' })
   realm: Realm;
 
