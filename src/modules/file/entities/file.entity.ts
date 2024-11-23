@@ -20,6 +20,7 @@ export class File {
   id: string;
 
   @Column({ default: 1 }) realmId: number;
+  @Column() userId: string;
 
   @Column({ nullable: false, length: 150 })
   orginalName: string;

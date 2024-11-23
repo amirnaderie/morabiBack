@@ -177,14 +177,13 @@ export class MovementService {
       // remove old files after get new file in update
       if (movement.files && movement.files.length > 0 && files.length > 0) {
         if (
-          movement.files[0].id !== files[0] ||
-          movement.files[1].id !== files[0] ||
-          movement.files[0].id !== files[1] ||
-          movement.files[1].id !== files[1]
-        )
+          movement.files[0].id !== files[0] &&
+          movement.files[1].id !== files[0]
+        ) {
           for (let i = 0; i < movement.files.length; i++) {
             await this.fileService.delete(movement.files[i].id, user);
           }
+        }
       }
 
       movement.name = name;
@@ -202,6 +201,7 @@ export class MovementService {
         data: savedMovement,
       };
     } catch (error) {
+      console.log(error, 'error update-movement');
       this.logService.logData(
         'update-movement',
         JSON.stringify({ updateMovementDto: updateMovementDto, id: id }),
