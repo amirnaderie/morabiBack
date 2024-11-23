@@ -15,6 +15,7 @@ import { Movement } from 'src/modules/movement/entities/movement.entity';
 import { File } from 'src/modules/file/entities/file.entity';
 import { Tag } from 'src/modules/tag/entities/tag.entity';
 import { Realm } from 'src/modules/realm/entities/realm.entity';
+import { Plan } from 'src/modules/plan/entities/plan.entity';
 
 @Entity()
 export class User {
@@ -56,6 +57,9 @@ export class User {
 
   @OneToMany(() => Movement, (movement) => movement.user)
   movements: Movement[];
+
+  @OneToMany(() => Plan, (plan) => plan.user)
+  plans: Plan[];
 
   @OneToMany(() => Tag, (tag) => tag.user)
   tags: Tag[];

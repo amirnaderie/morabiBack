@@ -12,6 +12,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Realm } from 'src/modules/realm/entities/realm.entity';
+import { Plan } from 'src/modules/plan/entities/plan.entity';
 
 @Entity()
 export class File {
@@ -41,6 +42,11 @@ export class File {
     onDelete: 'CASCADE',
   })
   movements: Movement[];
+
+  @ManyToMany(() => Plan, (plan) => plan.logo, {
+    onDelete: 'CASCADE',
+  })
+  plans: Plan[];
 
   @ManyToOne(() => User, (user) => user.files)
   @JoinColumn({ name: 'userId', referencedColumnName: 'id' })

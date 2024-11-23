@@ -20,6 +20,7 @@ import { Plan } from './entities/plan.entity';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { RolesGuard } from 'src/guards/role.guard';
 import { HttpResponseTransform } from 'src/interceptors/http-response-transform.interceptor';
+import { DeepPartial } from 'typeorm';
 
 @Controller('plans')
 @UseGuards(AuthGuard, RolesGuard)
@@ -36,6 +37,15 @@ export class PlanController {
   ): Promise<{ data: Plan }> {
     return await this.planService.create(createPlanDto, user, req);
   }
+  @Post('/copy-plan/:id')
+  @SetMetadata('permission', 'create-plan')
+  async copy(
+    @GetUser() user: User,
+    @Param('id') id: string,
+    @Req() req: Request,
+  ): Promise<{ message: string; data: DeepPartial<Plan> }> {
+    return await this.planService.copy(id, user, req);
+  }
 
   @Get()
   @SetMetadata('permission', 'plans')
@@ -45,8 +55,8 @@ export class PlanController {
 
   @Get(':id')
   @SetMetadata('permission', 'plan')
-  findOne(@Param('id') id: string, @Req() req: Request) {
-    return this.planService.findOne(id, req);
+  findOne(@Param('id') id: string, @GetUser() user: User, @Req() req: Request) {
+    return this.planService.findOne(id, user.id, req);
   }
 
   @Put(':id')

@@ -14,6 +14,7 @@ import { FileService } from 'src/modules/file/providers/file.service';
 import { LogService } from 'src/modules/log/providers/log.service';
 import { User } from 'src/modules/users/entities/user.entity';
 import { UtilityService } from 'src/utility/providers/utility.service';
+import { Tag } from 'src/modules/tag/entities/tag.entity';
 
 @Injectable()
 export class PlanService {
@@ -87,6 +88,82 @@ export class PlanService {
         );
     }
   }
+  async copy(id: string, userInfo: User, req: Request) {
+    const foundPlan = await this.planRepository.findOne({
+      where: {
+        id: id,
+        realmId: (req as any).subdomainId,
+        user: { id: userInfo.id },
+      },
+      relations: ['tags', 'logo', 'user'],
+    });
+
+    const {
+      user,
+      planName,
+      tags,
+      logo,
+      planDescription,
+      gender,
+      level,
+      place,
+      planTime,
+      state,
+      weekDays,
+      weight,
+      realmId,
+    } = foundPlan;
+    try {
+      const plan = this.planRepository.create({
+        user,
+        planName: `کپی ${planName}`,
+        tags,
+        logo,
+        planDescription,
+        gender,
+        level,
+        place,
+        planTime,
+        state,
+        weekDays,
+        weight,
+        realmId,
+      });
+      const result = await this.planRepository.save(plan);
+      delete result.user.permissions;
+      delete result.user.roles;
+
+      return {
+        message: `عملیات با موفقیت انجام پذیرفت`,
+        data: {
+          id: result.id,
+          planName: `کپی ${planName}`,
+          tags: result.tags,
+          logo: {
+            storedName: result.logo.storedName,
+            realmId: result.logo.realmId,
+          },
+          gender,
+          level,
+          place,
+          state,
+          weight,
+        },
+      };
+    } catch (error) {
+      this.logService.logData(
+        'copy-plan',
+        JSON.stringify({ copiedPlanData: foundPlan, user: user }),
+        error?.stack ? error.stack : 'error not have message!!',
+      );
+      if (error.message.includes('Violation of UNIQUE KEY constraint'))
+        throw new ConflictException('اطلاعات تکراری است');
+      else
+        throw new InternalServerErrorException(
+          'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
+        );
+    }
+  }
 
   async findAll(userId: string, req: Request) {
     try {
@@ -130,10 +207,15 @@ export class PlanService {
     }
   }
 
-  async findOne(id: string, req: Request) {
+  async findOne(id: string, userId: string, req: Request) {
     try {
       const plan = await this.planRepository.findOne({
-        where: { id: id, realmId: (req as any).subdomainId },
+        where: {
+          id: id,
+          realmId: (req as any).subdomainId,
+          user: { id: userId },
+        },
+
         relations: ['tags', 'logo', 'user'],
         select: {
           user: {
