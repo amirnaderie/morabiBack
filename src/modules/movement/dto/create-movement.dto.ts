@@ -14,6 +14,7 @@ export class CreateMovementDto {
   //   column: 'name',
   //   message: 'حرکتی با این نام موجود است',
   // })
+  @IsString()
   readonly name: string;
 
   @IsNotEmpty({ message: 'توضیح حرکت را وارد نمایید' })

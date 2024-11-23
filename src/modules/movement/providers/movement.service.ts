@@ -150,7 +150,7 @@ export class MovementService {
     user: User,
     req: Request,
   ) {
-    const { description, tags, files, screenSeconds } = updateMovementDto;
+    const { name, description, tags, files, screenSeconds } = updateMovementDto;
     if (!this.utilityService.onlyLettersAndNumbers(description))
       throw new BadRequestException('مقادیر ورودی معتبر نیست');
 
@@ -168,7 +168,6 @@ export class MovementService {
       },
     });
     if (!movement) throw new NotFoundException('موردی یافت نشد');
-
     // remove files if movement not have file in update
     if (movement.files && movement.files.length > 0 && files.length === 0) {
       if (!movement)
@@ -188,6 +187,7 @@ export class MovementService {
           }
       }
 
+      movement.name = name;
       movement.tags = tagsEntity;
       movement.files = fileEntity;
       movement.description = description;
