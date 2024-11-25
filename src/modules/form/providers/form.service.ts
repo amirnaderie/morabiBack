@@ -1,6 +1,10 @@
 import { Form } from '../entities/form.entity';
 import { Repository } from 'typeorm';
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateFormDto } from '../dto/create-form.dto';
 import { UpdateFormDto } from '../dto/update-form.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -68,13 +72,15 @@ export class FormService {
 
   async findOne(id: string, req: Request, user: User): Promise<Form> {
     try {
-      return await this.formRepository.findOne({
+      const form = await this.formRepository.findOne({
         where: {
           id: id,
           creatorId: user.id,
           realmId: (req as any).subdomainId || 1,
         },
       });
+      if (!form) throw new NotFoundException('یافت نشد');
+      return form;
     } catch (error) {
       this.logService.logData(
         'findOne-form',

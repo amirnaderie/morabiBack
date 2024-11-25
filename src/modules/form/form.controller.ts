@@ -51,6 +51,7 @@ export class FormController {
     @Req() req: Request,
     @GetUser() user: User,
   ): Promise<Form> {
+    console.log('dvdvd');
     return this.formService.findOne(id, req, user);
   }
 

@@ -28,10 +28,17 @@ export class Form {
   @Column({ default: 1 })
   realmId: number;
 
-  @Column()
+  @Column({
+    type: 'nvarchar',
+    length: 100,
+  })
   name: string;
 
-  @Column()
+  @Column({
+    type: 'nvarchar',
+    length: 500,
+    nullable: true,
+  })
   description: string;
 
   @CreateDateColumn({ select: false })
