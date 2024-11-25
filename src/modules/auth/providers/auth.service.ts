@@ -131,7 +131,7 @@ export class AuthService {
         realmId: (req as any).subdomainId,
       },
       select: {
-        id: true,
+        id: true, 
         password: true,
         userName: true,
       },
