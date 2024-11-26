@@ -4,6 +4,7 @@ import {
   IsNotEmpty,
   IsNumber,
   IsString,
+  ValidateIf,
 } from 'class-validator';
 // import { IsUnique } from 'src/validation/is-unique';
 
@@ -18,6 +19,7 @@ export class CreateMovementDto {
   readonly name: string;
 
   @IsString()
+  @ValidateIf((object, value) => value !== undefined)
   readonly description: string;
 
   @IsNumber()
