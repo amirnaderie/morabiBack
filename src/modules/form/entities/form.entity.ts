@@ -41,6 +41,13 @@ export class Form {
   })
   description: string;
 
+  @Column({
+    length: 10,
+    nullable: true,
+    type: 'varchar',
+  })
+  type: string;
+
   @CreateDateColumn({ select: false })
   createdAt: Date;
 

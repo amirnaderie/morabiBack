@@ -28,7 +28,7 @@ export class File {
   @Column({ nullable: true, length: 100 })
   storedName: string;
 
-  @Column({ nullable: true, length: 10 })
+  @Column({ nullable: true, length: 50 })
   mimetype: string;
 
   @CreateDateColumn({ name: 'created_at', default: () => 'CURRENT_TIMESTAMP' })

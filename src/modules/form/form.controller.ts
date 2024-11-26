@@ -10,6 +10,7 @@ import {
   Controller,
   SetMetadata,
   UseInterceptors,
+  Query,
 } from '@nestjs/common';
 
 import { User } from '../users/entities/user.entity';
@@ -40,7 +41,12 @@ export class FormController {
 
   @Get()
   @SetMetadata('permission', 'forms')
-  async findAll(@Req() req: Request, @GetUser() user: User): Promise<Form[]> {
+  async findAll(
+    @Req() req: Request,
+    @GetUser() user: User,
+    @Query('type') type?: string,
+  ): Promise<Form[]> {
+    console.log(type, 'type');
     return await this.formService.findAll(req, user);
   }
 
