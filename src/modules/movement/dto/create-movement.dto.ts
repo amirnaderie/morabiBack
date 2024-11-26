@@ -17,7 +17,7 @@ export class CreateMovementDto {
   @IsString()
   readonly name: string;
 
-  @IsNotEmpty({ message: 'توضیح حرکت را وارد نمایید' })
+  @IsString()
   readonly description: string;
 
   @IsNumber()

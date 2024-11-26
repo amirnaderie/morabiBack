@@ -36,6 +36,7 @@ export class Movement {
   @Column({
     type: 'nvarchar',
     length: 500,
+    nullable: true,
   })
   description: string;
 
