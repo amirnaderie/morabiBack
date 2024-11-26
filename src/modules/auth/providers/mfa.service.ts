@@ -107,33 +107,33 @@ export class MFAService {
     const response = await lastValueFrom(this.httpService.post(smsUrl, null));
 
     if (response.status === 200) {
-      await this.redis.set(
-        `${token}${secret}`,
-        JSON.stringify({ userMobile, userFamily, userName, secret }),
-        'EX',
-        parseInt(this.configService.get<string>('OTP_EXPIRESIN')) + 4,
-      );
+      // await this.redis.set(
+      //   `${token}${secret}`,
+      //   JSON.stringify({ userMobile, userFamily, userName, secret }),
+      //   'EX',
+      //   parseInt(this.configService.get<string>('OTP_EXPIRESIN')) + 4,
+      // );
 
-      await this.redis.set(
-        secret,
-        parseInt(this.configService.get<string>('OTP_COUNT')),
-        'EX',
-        parseInt(this.configService.get<string>('OTP_EXPIRESIN')),
-      );
+      // await this.redis.set(
+      //   secret,
+      //   parseInt(this.configService.get<string>('OTP_COUNT')),
+      //   'EX',
+      //   parseInt(this.configService.get<string>('OTP_EXPIRESIN')),
+      // );
 
-      await this.redis.set(
-        userMobile,
-        'true',
-        'EX',
-        parseInt(this.configService.get<string>('OTP_EXPIRESIN')),
-      );
+      // await this.redis.set(
+      //   userMobile,
+      //   'true',
+      //   'EX',
+      //   parseInt(this.configService.get<string>('OTP_EXPIRESIN')),
+      // );
 
-      await this.redis.set(
-        requestIp,
-        'true',
-        'EX',
-        parseInt(this.configService.get<string>('OTP_EXPIRESIN')),
-      );
+      // await this.redis.set(
+      //   requestIp,
+      //   'true',
+      //   'EX',
+      //   parseInt(this.configService.get<string>('OTP_EXPIRESIN')),
+      // );
 
       return secret;
       //console.log('SMS sent successfully:', response.data);
