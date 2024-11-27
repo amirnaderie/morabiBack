@@ -8,6 +8,7 @@ import { TagModule } from '../tag/tag.module';
 import { LogModule } from '../log/log.module';
 import { AuthModule } from '../auth/auth.module';
 import { UtilityModule } from 'src/utility/utility.module';
+import { MovementModule } from '../movement/movement.module';
 
 @Module({
   imports: [
@@ -16,9 +17,11 @@ import { UtilityModule } from 'src/utility/utility.module';
     forwardRef(() => FileModule),
     forwardRef(() => TagModule),
     forwardRef(() => LogModule),
+    forwardRef(() => MovementModule),
     UtilityModule,
   ],
   controllers: [PlanController],
   providers: [PlanService],
+  exports: [PlanService],
 })
 export class PlanModule {}

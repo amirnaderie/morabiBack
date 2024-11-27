@@ -15,6 +15,7 @@ import { CreateMovementDto } from '../dto/create-movement.dto';
 import { UpdateMovementDto } from '../dto/update-movement.dto';
 import { LogService } from 'src/modules/log/providers/log.service';
 import { UtilityService } from 'src/utility/providers/utility.service';
+import { PlanService } from 'src/modules/plan/providers/plan.service';
 
 @Injectable()
 export class MovementService {
@@ -25,6 +26,7 @@ export class MovementService {
     private readonly fileService: FileService,
     private readonly logService: LogService,
     private readonly utilityService: UtilityService,
+    private readonly planService: PlanService,
   ) {}
 
   async create(createMovementDto: CreateMovementDto, user: User, req: Request) {
@@ -214,12 +216,18 @@ export class MovementService {
   }
 
   async remove(id: string, user: User, req: Request) {
-    try {
-      const movement = await this.movementRepository.findOne({
-        where: { id: id },
-        relations: { files: true },
-      });
+    const movement = await this.movementRepository.findOne({
+      where: { id: id },
+      relations: { files: true },
+    });
 
+    const plansUsedTheMovement =
+      await this.planService.findPlansByMovementId(id);
+    if (plansUsedTheMovement > 0)
+      throw new ConflictException(
+        'این حرکت در برنامه ها استفاده شده و امکان حذف آن وجود ندارد',
+      );
+    try {
       await this.movementRepository.delete({
         id: id,
         user: { id: user.id },

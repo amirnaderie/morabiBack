@@ -1,6 +1,8 @@
 import {
   BadRequestException,
   ConflictException,
+  forwardRef,
+  Inject,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -15,6 +17,7 @@ import { LogService } from 'src/modules/log/providers/log.service';
 import { User } from 'src/modules/users/entities/user.entity';
 import { UtilityService } from 'src/utility/providers/utility.service';
 import { Tag } from 'src/modules/tag/entities/tag.entity';
+import { MovementService } from 'src/modules/movement/providers/movement.service';
 
 @Injectable()
 export class PlanService {
@@ -25,6 +28,8 @@ export class PlanService {
     private readonly fileService: FileService,
     private readonly logService: LogService,
     private readonly utilityService: UtilityService,
+    @Inject(forwardRef(() => MovementService))
+    private readonly movementService: MovementService,
   ) {}
   async create(createPlanDto: CreatePlanDto, user: User, req: Request) {
     const {
@@ -228,6 +233,47 @@ export class PlanService {
           },
         },
       });
+
+      const weeksData = JSON.parse(plan.weekDays);
+      const newWeeksDate = await Promise.all(
+        weeksData.map(async (week: any) => {
+          if (week.isRest) return week;
+
+          const circuits = await Promise.all(
+            week.circuits.map(async (circuit: any) => {
+              const circuitExercises = await Promise.all(
+                circuit.circuitExercises.map(async (circuitExercise: any) => {
+                  try {
+                    const { data: exerciseData } =
+                      await this.movementService.findOne(
+                        circuitExercise.movementId,
+                        req,
+                      );
+
+                    return {
+                      ...circuitExercise,
+                      movementMovie: (exerciseData as any).files[0]?.storedName,
+                      movementPoster: (exerciseData as any).files[1]
+                        ?.storedName,
+                      movieRealmId: (exerciseData as any).files[0]?.realmId,
+                      posterRealmId: (exerciseData as any).files[1]?.realmId,
+                      exerciseName: exerciseData.name,
+                    };
+                  } catch (error) {
+                    console.error(`Error fetching exercise data: ${error}`);
+                    return circuitExercise;
+                  }
+                }),
+              );
+
+              return { ...circuit, circuitExercises };
+            }),
+          );
+
+          return { ...week, circuits };
+        }),
+      );
+      plan.weekDays = JSON.stringify(newWeeksDate);
       return {
         message: `عملیات با موفقیت انجام پذیرفت`,
         data: plan,
@@ -330,9 +376,21 @@ export class PlanService {
         realmId: (req as any).subdomainId,
       },
     });
-
     if (!plan) throw new NotFoundException('موردی یافت نشد');
-
     return this.planRepository.remove(plan);
+  }
+  async findPlansByMovementId(movementId: string) {
+    try {
+      const retVal = await this.planRepository
+        .createQueryBuilder('entity')
+        .where('entity.weekDays LIKE :searchPattern', {
+          searchPattern: `%"movementId":"${movementId}"%`,
+        })
+        .getMany();
+
+      return retVal.length;
+    } catch (error) {
+      return 0;
+    }
   }
 }
