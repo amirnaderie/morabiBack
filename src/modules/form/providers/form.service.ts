@@ -10,6 +10,7 @@ import { UpdateFormDto } from '../dto/update-form.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/modules/users/entities/user.entity';
 import { LogService } from 'src/modules/log/providers/log.service';
+import { QueryFormDto } from '../dto/query-params.dto';
 
 @Injectable()
 export class FormService {
@@ -25,13 +26,14 @@ export class FormService {
     user: User,
   ): Promise<{ data: Form }> {
     try {
-      const { name, description } = createFormDto;
+      const { name, description, type } = createFormDto;
 
       const form = this.formRepository.create({
         name: name,
         description: description,
         creatorId: user.id,
         realmId: (req as any).subdomainId || 1,
+        type: type,
       });
 
       const formSaved = await this.formRepository.save(form);
@@ -52,12 +54,17 @@ export class FormService {
     }
   }
 
-  async findAll(req: Request, user: User): Promise<Form[]> {
+  async findAll(
+    req: Request,
+    user: User,
+    queryParametrs?: QueryFormDto,
+  ): Promise<Form[]> {
     try {
       return await this.formRepository.find({
         where: {
           creatorId: user.id,
           realmId: (req as any).subdomainId || 1,
+          type: queryParametrs.type,
         },
       });
     } catch (error) {

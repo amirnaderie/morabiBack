@@ -5,12 +5,12 @@ import {
   Body,
   Patch,
   Param,
+  Query,
   Delete,
   UseGuards,
   Controller,
   SetMetadata,
   UseInterceptors,
-  Query,
 } from '@nestjs/common';
 
 import { User } from '../users/entities/user.entity';
@@ -22,6 +22,7 @@ import { FormService } from './providers/form.service';
 import { UpdateFormDto } from './dto/update-form.dto';
 import { CreateFormDto } from './dto/create-form.dto';
 import { HttpResponseTransform } from 'src/interceptors/http-response-transform.interceptor';
+import { QueryFormDto } from './dto/query-params.dto';
 
 @Controller('form')
 @UseGuards(AuthGuard, RolesGuard)
@@ -44,10 +45,9 @@ export class FormController {
   async findAll(
     @Req() req: Request,
     @GetUser() user: User,
-    @Query('type') type?: string,
+    @Query() queryParametrs?: QueryFormDto,
   ): Promise<Form[]> {
-    console.log(type, 'type');
-    return await this.formService.findAll(req, user);
+    return await this.formService.findAll(req, user, queryParametrs);
   }
 
   @Get(':id')

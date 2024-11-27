@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
+import {
+  IsString,
+  MaxLength,
+  MinLength,
+  ValidateIf,
+  IsNotEmpty,
+} from 'class-validator';
 
 export class CreateFormDto {
   @IsString()
@@ -7,8 +13,13 @@ export class CreateFormDto {
   @IsNotEmpty({ message: 'نام فرم را وارد نمایید' })
   name: string;
 
+  @ValidateIf((object, value) => value !== undefined)
+  @IsString()
+  @MaxLength(10)
+  @MinLength(3)
+  type?: string;
+
   @IsString()
   @MaxLength(500)
-  // @IsNotEmpty({ message: 'توضیحات فرم را وارد نمایید' })
   description?: string;
 }
