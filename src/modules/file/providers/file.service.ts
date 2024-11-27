@@ -17,7 +17,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 import { unlink, existsSync, ReadStream, createReadStream } from 'fs';
 
-import * as mime from 'mime-types';
+// import * as mime from 'mime-types';
 import { User } from 'src/modules/users/entities/user.entity';
 import { s3Service } from './s3.service';
 import { LogService } from 'src/modules/log/providers/log.service';
@@ -81,18 +81,18 @@ export class FileService {
         const timestamp: number = 1;
         const outputName: string = videoFileSaved.storedName.split('.')[0];
 
-        const thumbnail = await this.ffmpegService.generatePoster(
+        await this.ffmpegService.generatePoster(
           videoPath,
           timestamp,
           outputDir,
           outputName,
         );
 
-        const mimeType = mime.lookup(thumbnail) || 'application/octet-stream';
+        // const mimeType = mime.lookup(thumbnail) || 'application/octet-stream';
 
         const thumbnailFileCreate = this.fileRepository.create({
           orginalName: `${outputName}.jpeg`,
-          mimetype: mimeType,
+          mimetype: 'image/jpeg',
           storedName: `${outputName}.jpeg`,
           realmId: (req as any).subdomainId || 1,
           user,
@@ -141,7 +141,7 @@ export class FileService {
 
         const createStoredImage = this.fileRepository.create({
           orginalName: file.originalname,
-          mimetype: file.mimetype,
+          mimetype: 'image/jpeg',
           storedName: `${uuidFileName}.jpeg`,
           realmId: (req as any).subdomainId || 1,
           user,
@@ -204,7 +204,7 @@ export class FileService {
       unlink(inputFilePath, () => {});
 
       const newVideo = this.fileRepository.create({
-        mimetype: file.mimetype,
+        mimetype: 'video/mp4',
         orginalName: file.originalname,
         realmId: (req as any).subdomainId || 1,
         storedName: `${uuidFileName}.mp4`,
@@ -224,18 +224,18 @@ export class FileService {
         const timestamp: number = uploadFileDto?.screenSeconds;
         const outputName: string = videoFileSaved.storedName.split('.')[0];
 
-        const thumbnail = await this.ffmpegService.generatePoster(
+        await this.ffmpegService.generatePoster(
           videoPath,
           timestamp,
           outputDir,
           outputName,
         );
 
-        const mimeType = mime.lookup(thumbnail) || 'application/octet-stream'; // Get MIME type based on file extension
+        // const mimeType = mime.lookup(thumbnail) || 'application/octet-stream'; // Get MIME type based on file extension
 
         const thumbnailFileCreate = this.fileRepository.create({
           orginalName: `${outputName}.jpeg`, //thumbnail.split('/').at(-1),
-          mimetype: mimeType,
+          mimetype: 'image/jpeg',
           storedName: `${outputName}.jpeg`, // thumbnail.split('/').at(-1),
           realmId: (req as any).subdomainId || 1,
           user,
