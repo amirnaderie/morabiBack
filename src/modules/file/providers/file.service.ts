@@ -64,7 +64,6 @@ export class FileService {
 
         const mp4Create = this.fileRepository.create({
           orginalName: filename,
-          mimetype: 'video/mp4',
           storedName: `${uuidFileName}.mp4`,
           realmId: (req as any).subdomainId || 1,
           user,
@@ -92,7 +91,6 @@ export class FileService {
 
         const thumbnailFileCreate = this.fileRepository.create({
           orginalName: `${outputName}.jpeg`,
-          mimetype: 'image/jpeg',
           storedName: `${outputName}.jpeg`,
           realmId: (req as any).subdomainId || 1,
           user,
@@ -141,7 +139,6 @@ export class FileService {
 
         const createStoredImage = this.fileRepository.create({
           orginalName: file.originalname,
-          mimetype: 'image/jpeg',
           storedName: `${uuidFileName}.jpeg`,
           realmId: (req as any).subdomainId || 1,
           user,
@@ -204,7 +201,6 @@ export class FileService {
       unlink(inputFilePath, () => {});
 
       const newVideo = this.fileRepository.create({
-        mimetype: 'video/mp4',
         orginalName: file.originalname,
         realmId: (req as any).subdomainId || 1,
         storedName: `${uuidFileName}.mp4`,
@@ -235,7 +231,6 @@ export class FileService {
 
         const thumbnailFileCreate = this.fileRepository.create({
           orginalName: `${outputName}.jpeg`, //thumbnail.split('/').at(-1),
-          mimetype: 'image/jpeg',
           storedName: `${outputName}.jpeg`, // thumbnail.split('/').at(-1),
           realmId: (req as any).subdomainId || 1,
           user,

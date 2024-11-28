@@ -1,7 +1,7 @@
 import {
   Get,
   Req,
-  Res,
+  // Res,
   Body,
   Post,
   Param,
@@ -12,14 +12,12 @@ import {
   ParseUUIDPipe,
   UseInterceptors,
 } from '@nestjs/common';
-import { Response } from 'express';
+// import { Response } from 'express';
 
-import { FileService } from './providers/file.service';
-import { join } from 'path';
 import { File } from './entities/file.entity';
 import { User } from '../users/entities/user.entity';
 import { GetUser } from 'src/decorators/getUser.decorator';
-import { existsSync, mkdirSync } from 'fs';
+import { FileService } from './providers/file.service';
 import { UploadFileDto } from './dto/upload-file.dto';
 
 // import { HttpResponseTransform } from 'src/interceptors/http-response-transform.interceptor';
@@ -75,36 +73,34 @@ export class FileController {
     );
   }
 
-  @Get('download/:fileId') async downloadFile(
-    @Param('fileId', ParseUUIDPipe)
-    fileId: string,
-    @Res() res: Response,
-  ) {
-    try {
-      const { mimetype, storedName } =
-        await this.fileService.getFileName(fileId);
-      const fileStream = await this.fileService.getFile(storedName);
-      // console.log(fileStream, 'fileStream');
+  // @Get('download/:fileId') async downloadFile(
+  //   @Param('fileId', ParseUUIDPipe)
+  //   fileId: string,
+  //   @Res() res: Response,
+  // ) {
+  //   try {
+  //     const { storedName } = await this.fileService.getFileName(fileId);
+  //     const fileStream = await this.fileService.getFile(storedName);
+  //     // console.log(fileStream, 'fileStream');
 
-      // res.set({
-      //   'Content-Type': 'application/octet-stream',
-      //   'Content-Disposition': `attachment; filename="${fileName}"`,
-      // });
-      res.setHeader('Content-Type', mimetype);
+  //     // res.set({
+  //     //   'Content-Type': 'application/octet-stream',
+  //     //   'Content-Disposition': `attachment; filename="${fileName}"`,
+  //     // });
+  //     res.setHeader('Content-Type', mimetype);
 
-      // fileStream.pipe(res);
-      return res.sendFile(fileStream.path as string);
-    } catch (error) {
-      throw new Error(error);
-    }
-  }
+  //     // fileStream.pipe(res);
+  //     return res.sendFile(fileStream.path as string);
+  //   } catch (error) {
+  //     throw new Error(error);
+  //   }
+  // }
 
   @Delete('/:fileId') async delete(
     @Param('fileId', ParseUUIDPipe) fileId: string,
     @GetUser()
     user: User,
   ) {
-
     return await this.fileService.delete(fileId, user);
   }
 

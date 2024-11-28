@@ -92,7 +92,6 @@ export class MovementService {
           },
           files: {
             id: true,
-            mimetype: true,
             storedName: true,
             realmId: true,
           },
@@ -161,6 +160,11 @@ export class MovementService {
       tagsEntity = await this.tagService.findById(tags);
       fileEntity = await this.fileService.findById(files);
     } catch (error) {
+      this.logService.logData(
+        'update-movement-getfile-gettags',
+        JSON.stringify({ updateMovementDto: updateMovementDto, id: id }),
+        error?.stack ? error.stack : 'error not have message!!',
+      );
       throw new BadRequestException('خطا در ثبت اطلاعات');
     }
 
