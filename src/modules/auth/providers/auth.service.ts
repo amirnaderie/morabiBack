@@ -131,7 +131,7 @@ export class AuthService {
         realmId: (req as any).subdomainId,
       },
       select: {
-        id: true, 
+        id: true,
         password: true,
         userName: true,
       },
@@ -176,8 +176,7 @@ export class AuthService {
       maxAge:
         parseInt(this.configService.get<string>('REFRESH_TOKEN_EXPIRESIN')) *
         1000,
-      // secure: process.env.ENV === 'prod',
-      secure: false,
+      secure: process.env.ENV === 'prod',
       domain: this.configService.get<string>('COOKIE_DOMAIN'), // Add domain
       path: '/', // Explicitly set path
     };
@@ -206,8 +205,7 @@ export class AuthService {
       httpOnly: true,
       sameSite: 'lax',
       maxAge: parseInt(this.configService.get<string>('JWT_EXPIRESIN')) * 1000,
-      // secure: process.env.ENV === 'prod',
-      secure: false,
+      secure: process.env.ENV === 'prod',
       domain: this.configService.get<string>('COOKIE_DOMAIN'), // Add domain
       path: '/', // Explicitly set path
     };
