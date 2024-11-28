@@ -155,9 +155,14 @@ export class MovementService {
     const { name, description, tags, files, screenSeconds } = updateMovementDto;
     if (!this.utilityService.onlyLettersAndNumbers(description))
       throw new BadRequestException('مقادیر ورودی معتبر نیست');
-
-    const tagsEntity = await this.tagService.findById(tags);
-    const fileEntity = await this.fileService.findById(files);
+    let tagsEntity;
+    let fileEntity;
+    try {
+      tagsEntity = await this.tagService.findById(tags);
+      fileEntity = await this.fileService.findById(files);
+    } catch (error) {
+      throw new BadRequestException('خطا در ثبت اطلاعات');
+    }
 
     const movement = await this.movementRepository.findOne({
       where: {
@@ -203,7 +208,6 @@ export class MovementService {
         data: savedMovement,
       };
     } catch (error) {
-      console.log(error, 'error update-movement');
       this.logService.logData(
         'update-movement',
         JSON.stringify({ updateMovementDto: updateMovementDto, id: id }),
