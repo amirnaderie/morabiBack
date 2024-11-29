@@ -47,9 +47,12 @@ export class AuthController {
   }
 
   @Post('change-forgot-password')
-  async changeForgotPassword(@Body() signUpDto: SignUpDto): Promise<void> {
+  async changeForgotPassword(
+    @Body() signUpDto: SignUpDto,
+    @Req() req: Request,
+  ): Promise<void> {
     // Send the token via SMS
-    return await this.authService.changeForgotPassword(signUpDto);
+    return await this.authService.changeForgotPassword(signUpDto, req);
   }
 
   @Post('verify-otp')

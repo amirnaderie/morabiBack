@@ -81,7 +81,10 @@ export class AuthService {
     }
   }
 
-  async changeForgotPassword(signUpDto: SignUpDto): Promise<void> {
+  async changeForgotPassword(
+    signUpDto: SignUpDto,
+    req: Request,
+  ): Promise<void> {
     const { token, password, secret } = signUpDto;
 
     const isVerified: boolean = await this.mFAService.verify2FAToken({
@@ -100,7 +103,10 @@ export class AuthService {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     try {
-      const user = await this.usresRepository.findOneBy({ userMobile });
+      const user = await this.usresRepository.findOneBy({
+        userMobile,
+        realmId: (req as any).subdomainId || 1,
+      });
       user.password = hashedPassword;
       // user.updatedAt = new Date();
       if (user) {

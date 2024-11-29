@@ -59,7 +59,7 @@ export class MFAService {
     userMobile: string,
     req: Request,
   ): Promise<string> {
-    const user: User = await this.usersService.getUserByMobile(userMobile);
+    const user: User = await this.usersService.getUserByMobile(userMobile, req);
 
     if (!user)
       throw new ConflictException('این شماره همراه پیش از این ثبت نشده است');
@@ -78,7 +78,7 @@ export class MFAService {
   async send2FAToken(sendOtpDto: SendOtpDto, req: Request): Promise<string> {
     const { userMobile } = sendOtpDto;
 
-    const user: User = await this.usersService.getUserByMobile(userMobile);
+    const user: User = await this.usersService.getUserByMobile(userMobile, req);
 
     if (user)
       throw new ConflictException('این شماره همراه پیش از این ثبت شده است');
@@ -87,7 +87,7 @@ export class MFAService {
   }
 
   private sendSMS = async (sendOtpDto: SendOtpDto, req: Request) => {
-    const { userMobile, userFamily, userName } = sendOtpDto;
+    const { userMobile } = sendOtpDto;
     const requestIp: string =
       (req as any).ip || (req as any).connection.remodeAddress;
 

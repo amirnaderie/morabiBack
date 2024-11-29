@@ -34,8 +34,11 @@ export class UsersService {
     return `This action removes a #${id} user`;
   }
 
-  async getUserByMobile(userMobile: string): Promise<User> {
-    const user = await this.userRepository.findOneBy({ userMobile });
+  async getUserByMobile(userMobile: string, req: Request): Promise<User> {
+    const user = await this.userRepository.findOneBy({
+      userMobile,
+      realmId: (req as any).subdomainId || 1,
+    });
     return user;
   }
 
