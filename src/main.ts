@@ -19,7 +19,11 @@ async function bootstrap() {
 
   const corsOptions = {
     origin: (origin, callback) => {
-      if (!origin || /.*\.morabi\.info$/.test(origin)) {
+      if (
+        !origin ||
+        /.*\.morabi\.info$/.test(origin) ||
+        process.env.ENV === 'dev'
+      ) {
         callback(null, true);
       } else {
         callback(new Error('Not allowed by CORS'));

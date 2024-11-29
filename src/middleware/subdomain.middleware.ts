@@ -9,7 +9,6 @@ export class SubdomainMiddleware implements NestMiddleware {
 
   async use(req: Request, res: Response, next: NextFunction) {
     const referer = req.headers.referer;
-    console.log(referer, 'referer');
     if (!referer) {
       req.subdomainId = null;
       return next();
@@ -22,7 +21,6 @@ export class SubdomainMiddleware implements NestMiddleware {
       hostname === 'localhost'
         ? 'panel'
         : this.getSubdomainFromHostname(hostname);
-    console.log(subdomain, 'subdomain');
     if (subdomain) {
       const subdomainId: number =
         await this.realmService.getRealmIdByName(subdomain);

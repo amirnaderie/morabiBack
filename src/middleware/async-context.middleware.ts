@@ -16,9 +16,11 @@ export class AsyncContextMiddleware implements NestMiddleware {
       // accessToken: req.headers['authorization']
       //   ? req.headers['authorization'].toString().split(' ')[1]
       //   : '',
-      accessToken: req.cookies['accessToken'],
+      accessToken: req.cookies['accessToken'] ? req.cookies['accessToken'] : '',
       subdomainId: req.subdomainId,
-      refreshToken: req.cookies['refreshToken'],
+      refreshToken: req.cookies['refreshToken']
+        ? req.cookies['refreshToken']
+        : '',
     };
     this.als.run(store, () => {
       next(); // Continue to the next middleware or request handler

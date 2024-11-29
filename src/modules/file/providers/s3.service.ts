@@ -34,7 +34,6 @@ export class s3Service {
         }),
       );
     } catch (error) {
-      console.error('createBucket:', error);
       throw new ServiceUnavailableException(
         'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
       );
