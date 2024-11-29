@@ -17,14 +17,20 @@ async function bootstrap() {
   const config = app.get<ConfigService>(ConfigService);
   const appPort = config.get('APP_PORT');
 
-  const corsOrigins = process.env.CORS_ORIGINS.split(',');
-
-  app.enableCors({
-    origin: corsOrigins, // Add more sites as needed
-    // methods: 'GET,POST,PUT,DELETE',
-    // allowedHeaders: 'Content-Type, Authorization',
+  const corsOptions = {
+    origin: (origin, callback) => {
+      if (!origin || /.*\.morabi\.info$/.test(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    // methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
-  });
+  };
+
+  app.enableCors(corsOptions);
+
   app.use(cookieParser()); // Use cookie-parser middleware
 
   app.useGlobalPipes(
