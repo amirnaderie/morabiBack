@@ -8,6 +8,7 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  Unique,
   UpdateDateColumn,
 } from 'typeorm';
 import { Role } from 'src/modules/role/entities/role.entity';
@@ -18,6 +19,7 @@ import { Realm } from 'src/modules/realm/entities/realm.entity';
 import { Plan } from 'src/modules/plan/entities/plan.entity';
 
 @Entity()
+@Unique(['userMobile', 'realmId'])
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -33,7 +35,7 @@ export class User {
   @Column({ length: 100, select: false })
   password: string;
 
-  @Column({ unique: true, length: 12 })
+  @Column({ length: 12 })
   userMobile: string;
 
   @CreateDateColumn({

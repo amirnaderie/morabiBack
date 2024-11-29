@@ -75,6 +75,11 @@ export class AuthService {
       user.roles = [role];
       await this.usresRepository.save(user);
     } catch (error) {
+      this.logService.logData(
+        'signUp',
+        JSON.stringify({ userMobile }),
+        error.stack,
+      );
       if (error.number === 2627)
         throw new ConflictException('نام کاربری تکراری است');
       else throw new InternalServerErrorException();
