@@ -36,15 +36,16 @@ export class MFAService {
   // Function to verify the TOTP token
   async verify2FAToken(verifyOtp: VerifyOtp): Promise<boolean> {
     const { token, secret } = verifyOtp;
-    const remainCount = await this.redis.get(secret);
-    if (!remainCount || parseInt(remainCount) === 0) return false;
-    else {
-      await this.redis.set(
-        secret,
-        parseInt(remainCount) - 1,
-        'EX',
-        this.configService.get<string>('OTP_EXPIRESIN'),
-      );
+    //موقت کامنت شده است
+    // const remainCount = await this.redis.get(secret);
+    // if (!remainCount || parseInt(remainCount) === 0) return false;
+    // else {
+    //   await this.redis.set(
+    //     secret,
+    //     parseInt(remainCount) - 1,
+    //     'EX',
+    //     this.configService.get<string>('OTP_EXPIRESIN'),
+    //   );
       return speakeasy.totp.verify({
         secret: secret,
         encoding: 'base32',
