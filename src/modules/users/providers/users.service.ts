@@ -53,7 +53,7 @@ export class UsersService {
       user.roles = [role];
       return await this.userRepository.save(user);
     } catch (error) {
-      console.log(error, 'error');
+      console.error(error, 'error');
     }
   }
 }

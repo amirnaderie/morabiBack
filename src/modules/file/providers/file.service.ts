@@ -280,7 +280,6 @@ export class FileService {
         return { data: videoFileSaved };
       }
     } catch (error) {
-      console.error(error);
       this.logService.logData(
         'uploadOneVideo-file',
         JSON.stringify({

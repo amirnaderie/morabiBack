@@ -68,7 +68,7 @@ export class s3Service {
       };
       return await this.client.send(new PutObjectCommand(uploadParams as any));
     } catch (err) {
-      console.log(err, 'err');
+      console.error(err, 'err');
     }
   }
 
@@ -81,7 +81,7 @@ export class s3Service {
       };
       return await this.client.send(new DeleteObjectCommand(deleteParams));
     } catch (err) {
-      console.log(err, 'err');
+      console.error(err, 'err');
     }
   }
 }

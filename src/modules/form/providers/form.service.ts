@@ -155,10 +155,23 @@ export class FormService {
   }
 
   async remove(id: string, req: Request, user: User) {
-    return this.formRepository.delete({
-      id: id,
-      creatorId: user.id,
-      realmId: (req as any).subdomainId || 1,
-    });
+    try {
+      return this.formRepository.delete({
+        id: id,
+        creatorId: user.id,
+        realmId: (req as any).subdomainId || 1,
+      });
+    } catch (error) {
+      this.logService.logData(
+        'remove-form',
+        JSON.stringify({
+          id: id,
+          req: req,
+          user: user,
+        }),
+        error?.stack ? error.stack : 'error not have message!!',
+      );
+      throw new Error(error);
+    }
   }
 }
