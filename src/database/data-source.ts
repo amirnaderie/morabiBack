@@ -29,6 +29,8 @@ AppDataSource.initialize()
       await createPermissionSeed(AppDataSource);
       await addPermissionToRole(AppDataSource);
       AppDataSource.destroy();
+      console.info('seed successfully finished');
+      console.info('press Ctrl + C');
     } catch (error) {
       throw new Error(error);
     }

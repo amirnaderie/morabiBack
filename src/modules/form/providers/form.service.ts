@@ -66,6 +66,13 @@ export class FormService {
           realmId: (req as any).subdomainId || 1,
           type: queryParametrs.type,
         },
+        select: {
+          id: true,
+          name: true,
+          type: true,
+          createdAt: true,
+          description: true,
+        },
       });
     } catch (error) {
       this.logService.logData(
