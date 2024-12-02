@@ -47,7 +47,11 @@ export class FormQuestion {
   @JoinColumn({ name: 'realmId' })
   realm: Realm;
 
-  @ManyToOne(() => Form, (form) => form.questions)
+  @ManyToOne(() => Form, (form) => form.questions, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+    orphanedRowAction: 'delete',
+  })
   @JoinColumn({ name: 'formId' })
   form: Form;
 

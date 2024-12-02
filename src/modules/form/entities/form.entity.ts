@@ -68,7 +68,7 @@ export class Form {
   realm: Realm;
 
   @OneToMany(() => FormQuestion, (formQuestion) => formQuestion.form, {
-    onDelete: 'CASCADE',
+    cascade: true,
   })
   questions: FormQuestion[];
 }
