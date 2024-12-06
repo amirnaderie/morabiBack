@@ -80,7 +80,7 @@ export class MovementService {
   async findAll(userId: string, req: Request) {
     try {
       const movements = await this.movementRepository.find({
-        relations: ['tags', 'files', 'user'],
+        relations: ['tags', 'files'],
         select: {
           id: true,
           isDefault: true,
@@ -106,6 +106,7 @@ export class MovementService {
           { isDefault: true, realmId: (req as any).subdomainId },
         ],
       });
+
       return {
         message: `عملیات با موفقیت انجام پذیرفت`,
         data: movements,

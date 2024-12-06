@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -6,7 +7,6 @@ import {
   Post,
   Req,
   Res,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { VerifyOtp } from './dto/verifyOtp.dto';
 import { AuthService } from './providers/auth.service';
@@ -60,7 +60,7 @@ export class AuthController {
     const isValid = await this.mfaService.verify2FAToken(verifyOtp);
     if (!isValid) {
       // return { message: 'Invalid 2FA token' };
-      throw new UnauthorizedException();
+      throw new BadRequestException();
     }
     return { message: '2FA verified successfully' };
   }
