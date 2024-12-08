@@ -7,6 +7,7 @@ import {
   ManyToMany,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   Unique,
   UpdateDateColumn,
@@ -17,6 +18,7 @@ import { File } from 'src/modules/file/entities/file.entity';
 import { Tag } from 'src/modules/tag/entities/tag.entity';
 import { Realm } from 'src/modules/realm/entities/realm.entity';
 import { Plan } from 'src/modules/plan/entities/plan.entity';
+import { Profile } from './profile.entity';
 
 @Entity()
 @Unique(['userMobile', 'realmId'])
@@ -25,6 +27,11 @@ export class User {
   id: string;
 
   @Column({ default: 1 }) realmId: number;
+
+  @Column({
+    nullable: true,
+  })
+  profileId: string;
 
   @Column({ nullable: false, length: 20 })
   userName: string;
@@ -72,4 +79,8 @@ export class User {
   @ManyToOne(() => Realm, (realm) => realm.users)
   @JoinColumn({ name: 'realmId' })
   realm: Realm;
+
+  @OneToOne(() => Profile, (profile) => profile.user) // specify inverse side as a second parameter
+  @JoinColumn({ name: 'profileId' })
+  profile: Profile;
 }

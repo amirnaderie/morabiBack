@@ -8,10 +8,7 @@ import {
   Min,
   Max,
   MaxLength,
-  IsJSON,
   IsNotEmpty,
-  IsNumberString,
-  ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { User } from 'src/modules/users/entities/user.entity';

@@ -1,10 +1,10 @@
 import {
-  ArrayMinSize,
   IsArray,
-  IsNotEmpty,
-  IsNumber,
   IsString,
+  IsNumber,
   ValidateIf,
+  IsNotEmpty,
+  ArrayMinSize,
 } from 'class-validator';
 // import { IsUnique } from 'src/validation/is-unique';
 
