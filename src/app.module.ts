@@ -28,6 +28,7 @@ import {
   MiddlewareConsumer,
 } from '@nestjs/common';
 import { PlanModule } from './modules/plan/plan.module';
+import { CategoryModule } from './modules/category/category.module';
 
 @Module({
   imports: [
@@ -75,6 +76,7 @@ import { PlanModule } from './modules/plan/plan.module';
     FormModule,
     FormQuestionModule,
     PlanModule,
+    CategoryModule,
   ],
   providers: [IsUniqueConstraint],
 })

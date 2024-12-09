@@ -5,6 +5,7 @@ import {
   Controller,
   SetMetadata,
   Get,
+  UseInterceptors,
 } from '@nestjs/common';
 
 import { User } from './entities/user.entity';
@@ -12,9 +13,11 @@ import { GetUser } from 'src/decorators/getUser.decorator';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { ProfileService } from './providers/profile.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { HttpResponseTransform } from 'src/interceptors/http-response-transform.interceptor';
 
 @Controller('profile')
 @UseGuards(AuthGuard)
+@UseInterceptors(HttpResponseTransform)
 export class ProfileController {
   constructor(private readonly profileService: ProfileService) {}
 
