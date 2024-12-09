@@ -42,7 +42,7 @@ export class UsersController {
     @GetUser() user: User & { permissions: string[] },
   ): UserResponseDto & { permissions: string[] } {
     return {
-      userName: user.userName,
+      // userName: user.userName,
       id: user.id,
       roles: user.roles,
       permissions: user.permissions,

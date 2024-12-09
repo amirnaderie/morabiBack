@@ -8,6 +8,7 @@ import { SendOtpDto } from '../dto/sendOtp.dto';
 import { User } from 'src/modules/users/entities/user.entity';
 import { lastValueFrom } from 'rxjs';
 import { UsersService } from 'src/modules/users/providers/users.service';
+import { ProfileService } from 'src/modules/users/providers/profile.service';
 
 @Injectable()
 export class MFAService {
@@ -16,6 +17,7 @@ export class MFAService {
     private readonly configService: ConfigService,
     @Inject('REDIS_CLIENT') private readonly redis: Redis,
     private usersService: UsersService,
+    private profileService: ProfileService,
   ) {}
 
   // Function to generate a 2FA secret and OTP
@@ -65,11 +67,12 @@ export class MFAService {
     if (!user)
       throw new ConflictException('این شماره همراه پیش از این ثبت نشده است');
 
+    const profile = await this.profileService.get(user);
     return this.sendSMS(
       {
-        userFamily: user.userFamily,
+        userName: profile.family,
+        userFamily: profile.name,
         userMobile: user.userMobile,
-        userName: user.userName,
       },
       req,
     );
@@ -83,6 +86,8 @@ export class MFAService {
 
     if (user)
       throw new ConflictException('این شماره همراه پیش از این ثبت شده است');
+
+    // const profile = await this.profileService.get(user);
 
     return this.sendSMS(sendOtpDto, req);
   }

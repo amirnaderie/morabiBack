@@ -33,12 +33,6 @@ export class User {
   })
   profileId: string;
 
-  @Column({ nullable: false, length: 20 })
-  userName: string;
-
-  @Column({ length: 40 })
-  userFamily: string;
-
   @Column({ length: 100, select: false })
   password: string;
 

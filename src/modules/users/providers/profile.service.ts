@@ -20,6 +20,16 @@ export class ProfileService {
     });
   }
 
+  async create(payload: { name: string; family: string; userId: string }) {
+    const profile = this.profileRepository.create({
+      name: payload.name,
+      family: payload.family,
+      userId: payload.userId,
+    });
+
+    return await this.profileRepository.save(profile);
+  }
+
   async update(
     updateProfiletDto: UpdateProfileDto,
     user: User,

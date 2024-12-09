@@ -1,11 +1,11 @@
 import {
   Column,
-  CreateDateColumn,
   Entity,
   JoinTable,
   ManyToMany,
-  PrimaryGeneratedColumn,
   UpdateDateColumn,
+  CreateDateColumn,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { RoleSeed } from './role-seed.entity';
 
@@ -14,11 +14,11 @@ export class UserSeed {
   @PrimaryGeneratedColumn('uuid')
   id: number;
 
-  @Column({ nullable: false, length: 20 })
-  userName: string;
+  // @Column({ nullable: false, length: 20 })
+  // userName: string;
 
-  @Column({ length: 40 })
-  userFamily: string;
+  // @Column({ length: 40 })
+  // userFamily: string;
 
   @Column({ length: 100 })
   password: string;

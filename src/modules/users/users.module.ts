@@ -11,13 +11,12 @@ import { ProfileService } from './providers/profile.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User]),
-    TypeOrmModule.forFeature([Profile]),
+    TypeOrmModule.forFeature([User, Profile]),
     forwardRef(() => AuthModule),
     RolesModule,
   ],
   controllers: [UsersController, ProfileController],
   providers: [UsersService, ProfileService],
-  exports: [TypeOrmModule, UsersService],
+  exports: [TypeOrmModule, UsersService, ProfileService],
 })
 export class UsersModule {}
