@@ -55,13 +55,12 @@ export class UserType {
   category: Category;
 
   @CreateDateColumn({
-    type: 'date',
+    type: 'datetime',
     select: false,
-    name: 'created_at',
     default: () => 'CURRENT_TIMESTAMP',
   })
   createdAt: Date;
 
-  @UpdateDateColumn({ name: 'updated_at', select: false, type: 'date' })
+  @UpdateDateColumn({ select: false, type: 'datetime' })
   updatedAt: Date;
 }
