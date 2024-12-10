@@ -29,6 +29,7 @@ import {
 } from '@nestjs/common';
 import { PlanModule } from './modules/plan/plan.module';
 import { CategoryModule } from './modules/category/category.module';
+import { UserTypeModule } from './modules/user-type/user-type.module';
 
 @Module({
   imports: [
@@ -77,6 +78,7 @@ import { CategoryModule } from './modules/category/category.module';
     FormQuestionModule,
     PlanModule,
     CategoryModule,
+    UserTypeModule,
   ],
   providers: [IsUniqueConstraint],
 })

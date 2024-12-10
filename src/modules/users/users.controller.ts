@@ -1,11 +1,10 @@
-import { Controller, Get, Post, Body, UseGuards, Req } from '@nestjs/common';
 import { User } from './entities/user.entity';
-import { UserResponseDto } from './dto/response/userResponse.dto';
-// import { RolesGuard } from 'src/modules/auth/role.guard';
-import { AssginUserRoleDto } from './dto/assign-user-roles.dto';
-import { UsersService } from './providers/users.service';
 import { GetUser } from 'src/decorators/getUser.decorator';
 import { AuthGuard } from 'src/guards/auth.guard';
+import { UsersService } from './providers/users.service';
+import { UserResponseDto } from './dto/response/userResponse.dto';
+import { AssginUserRoleDto } from './dto/assign-user-roles.dto';
+import { Controller, Get, Post, Body, UseGuards, Req } from '@nestjs/common';
 
 @Controller('users')
 @UseGuards(AuthGuard)
