@@ -1,3 +1,7 @@
+import { UserType } from 'src/interfaces/user';
+import { Category } from 'src/modules/category/entities/category.entity';
+import { userTypes } from 'src/modules/users/entities/user-type.entity';
+import { User } from 'src/modules/users/entities/user.entity';
 import {
   Column,
   Entity,
@@ -8,17 +12,8 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-import { User } from 'src/modules/users/entities/user.entity';
-import { Category } from 'src/modules/category/entities/category.entity';
-
-export type UserTypes = 'mentor' | 'athlete';
-export const userTypes = {
-  MENTOR: 'mentor' as UserTypes,
-  ATHLETE: 'athlete' as UserTypes,
-};
-
-@Entity('user-type')
-export class UserType {
+@Entity('athlete-mentor')
+export class AthleteMentor {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -38,7 +33,7 @@ export class UserType {
     nullable: false,
     enum: Object.values(userTypes),
   })
-  type: UserTypes;
+  type: UserType;
 
   @Column({
     type: 'datetime',
@@ -50,7 +45,7 @@ export class UserType {
   @JoinColumn({ name: 'userId', referencedColumnName: 'id' })
   user: User;
 
-  @ManyToOne(() => Category, (category) => category.userTypes)
+  @ManyToOne(() => Category, (category) => category.gymMembers)
   @JoinColumn({ name: 'categoryId', referencedColumnName: 'id' })
   category: Category;
 

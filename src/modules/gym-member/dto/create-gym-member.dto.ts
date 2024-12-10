@@ -6,10 +6,11 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { userTypes, UserTypes } from '../entities/user-type.entity';
 import { Type } from 'class-transformer';
+import { UserType } from 'src/interfaces/user';
+import { userTypes } from 'src/modules/users/entities/user-type.entity';
 
-export class CreateUserTypeDto {
+export class CreateGymMemberDto {
   @IsString({ message: ' شناسه‌کاربر صحیح نمیباشد' })
   @MaxLength(36, { message: 'شناسه‌کاربر صحیح نمیباشد' })
   @MinLength(36, { message: 'شناسه‌کاربر صحیح نمیباشد' })
@@ -34,5 +35,5 @@ export class CreateUserTypeDto {
   @IsEnum(userTypes, {
     message: `باشد ${Object.values(userTypes)} نوع کاربری باید یکی از موارد`,
   })
-  type: UserTypes;
+  type: UserType;
 }

@@ -11,12 +11,12 @@ import {
   SetMetadata,
 } from '@nestjs/common';
 
-import { UserTypeService } from './user-type.service';
-import { CreateUserTypeDto } from './dto/create-user-type.dto';
-import { UpdateUserTypeDto } from './dto/update-user-type.dto';
+import { UserTypeService } from './gym-member.service';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { HttpResponseTransform } from 'src/interceptors/http-response-transform.interceptor';
-import { UserType } from './entities/user-type.entity';
+import { GymMember } from './entities/gym-member.entity';
+import { CreateGymMemberDto } from './dto/create-gym-member.dto';
+import { UpdateGymMemberDto } from './dto/update-gym-member.dto';
 
 @Controller('user-type')
 @UseGuards(AuthGuard)
@@ -27,8 +27,8 @@ export class UserTypeController {
   @Post()
   @SetMetadata('permission', 'create-user-type')
   async create(
-    @Body() createUserTypeDto: CreateUserTypeDto,
-  ): Promise<UserType> {
+    @Body() createUserTypeDto: CreateGymMemberDto,
+  ): Promise<GymMember> {
     return this.userTypeService.create(createUserTypeDto);
   }
 
@@ -45,7 +45,7 @@ export class UserTypeController {
   @Patch(':id')
   update(
     @Param('id') id: string,
-    @Body() updateUserTypeDto: UpdateUserTypeDto,
+    @Body() updateUserTypeDto: UpdateGymMemberDto,
   ) {
     return this.userTypeService.update(id, updateUserTypeDto);
   }

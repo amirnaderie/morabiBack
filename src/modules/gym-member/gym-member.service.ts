@@ -1,20 +1,20 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { CreateUserTypeDto } from './dto/create-user-type.dto';
-import { UpdateUserTypeDto } from './dto/update-user-type.dto';
+import { GymMember } from './entities/gym-member.entity';
 import { Repository } from 'typeorm';
-import { UserType } from './entities/user-type.entity';
-import { InjectRepository } from '@nestjs/typeorm';
 import { LogService } from '../log/providers/log.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { CreateGymMemberDto } from './dto/create-gym-member.dto';
+import { UpdateGymMemberDto } from './dto/update-gym-member.dto';
 
 @Injectable()
 export class UserTypeService {
   constructor(
-    @InjectRepository(UserType)
-    private readonly usertypeRepository: Repository<UserType>,
+    @InjectRepository(GymMember)
+    private readonly usertypeRepository: Repository<GymMember>,
     readonly logService: LogService,
   ) {}
 
-  async create(createUserTypeDto: CreateUserTypeDto): Promise<UserType> {
+  async create(createUserTypeDto: CreateGymMemberDto): Promise<GymMember> {
     try {
       const { categoryId, expireAt, type, userId } = createUserTypeDto;
       const usertype = this.usertypeRepository.create({
@@ -47,10 +47,10 @@ export class UserTypeService {
 
   async update(
     id: string,
-    updateUserTypeDto: UpdateUserTypeDto,
-  ): Promise<UserType> {
+    updateGymMemberDto: UpdateGymMemberDto,
+  ): Promise<GymMember> {
     try {
-      const { categoryId, expireAt, type, userId } = updateUserTypeDto;
+      const { categoryId, expireAt, type, userId } = updateGymMemberDto;
       const usertype = await this.usertypeRepository.findOneBy({ id });
       usertype.categoryId = categoryId;
       usertype.expireAt = expireAt;
@@ -60,7 +60,7 @@ export class UserTypeService {
     } catch (error) {
       this.logService.logData(
         'update-usertype',
-        JSON.stringify({ updateUserTypeDto: updateUserTypeDto, id: id }),
+        JSON.stringify({ updateUserTypeDto: updateGymMemberDto, id: id }),
         error?.stack ? error.stack : 'error not have message!!',
       );
       throw new InternalServerErrorException(

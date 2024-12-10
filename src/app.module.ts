@@ -29,7 +29,8 @@ import {
 } from '@nestjs/common';
 import { PlanModule } from './modules/plan/plan.module';
 import { CategoryModule } from './modules/category/category.module';
-import { UserTypeModule } from './modules/user-type/user-type.module';
+import { UserTypeModule } from './modules/gym-member/gym-member.module';
+import { AthleteMentorModule } from './modules/gym-member-relation/athlete-mentor.module';
 
 @Module({
   imports: [
@@ -79,6 +80,7 @@ import { UserTypeModule } from './modules/user-type/user-type.module';
     PlanModule,
     CategoryModule,
     UserTypeModule,
+    AthleteMentorModule,
   ],
   providers: [IsUniqueConstraint],
 })
