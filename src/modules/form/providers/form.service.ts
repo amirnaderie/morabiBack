@@ -104,6 +104,7 @@ export class FormService {
           id: true,
           name: true,
           type: true,
+          status: true,
           createdAt: true,
           description: true,
         },
@@ -160,7 +161,7 @@ export class FormService {
       throw new Error(error);
     }
   }
-
+  //publish
   async update(
     id: string,
     req: Request,
@@ -188,6 +189,32 @@ export class FormService {
           req: req,
           user: user,
           updateFormDto: updateFormDto,
+        }),
+        error?.stack ? error.stack : 'error not have message!!',
+      );
+      throw new Error(error);
+    }
+  }
+
+  async publish(user: User, id: string, req: Request) {
+    try {
+      const form = await this.formRepository.findOne({
+        where: {
+          id: id,
+          creatorId: user.id,
+          realmId: (req as any).subdomainId || 1,
+        },
+      });
+      form.status = 1;
+
+      return await this.formRepository.save(form);
+    } catch (error) {
+      this.logService.logData(
+        'publish-form',
+        JSON.stringify({
+          id: id,
+          req: req,
+          user: user,
         }),
         error?.stack ? error.stack : 'error not have message!!',
       );

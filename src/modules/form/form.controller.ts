@@ -36,6 +36,16 @@ export class FormController {
     return await this.formService.copy(user, id);
   }
 
+  @Post(':id/publish')
+  @SetMetadata('permission', 'update-form')
+  async publish(
+    @GetUser() user: User,
+    @Param('id') id: string,
+    @Req() req: Request,
+  ): Promise<Form> {
+    return await this.formService.publish(user, id, req);
+  }
+
   @Post()
   @SetMetadata('permission', 'create-form')
   async create(

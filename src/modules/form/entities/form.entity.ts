@@ -35,6 +35,12 @@ export class Form {
   name: string;
 
   @Column({
+    type: 'bit',
+    default: 0,
+  })
+  status: number;
+
+  @Column({
     type: 'nvarchar',
     length: 500,
     nullable: true,
