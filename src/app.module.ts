@@ -30,7 +30,7 @@ import {
 import { PlanModule } from './modules/plan/plan.module';
 import { CategoryModule } from './modules/category/category.module';
 import { UserTypeModule } from './modules/gym-member/gym-member.module';
-import { AthleteMentorModule } from './modules/gym-member-relation/athlete-mentor.module';
+import { GymMemberRelationModule } from './modules/gym-member-relation/gym-member-relation.module';
 
 @Module({
   imports: [
@@ -80,7 +80,7 @@ import { AthleteMentorModule } from './modules/gym-member-relation/athlete-mento
     PlanModule,
     CategoryModule,
     UserTypeModule,
-    AthleteMentorModule,
+    GymMemberRelationModule,
   ],
   providers: [IsUniqueConstraint],
 })

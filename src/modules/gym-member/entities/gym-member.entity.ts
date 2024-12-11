@@ -10,8 +10,12 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   PrimaryGeneratedColumn,
+  ManyToMany,
+  JoinTable,
+  OneToMany,
 } from 'typeorm';
 import { userTypes } from 'src/modules/users/entities/user-type.entity';
+import { GymMemberRelation } from 'src/modules/gym-member-relation/entities/gym-member-relation.entity';
 
 @Entity('GymMember')
 export class GymMember {
@@ -59,4 +63,10 @@ export class GymMember {
 
   @UpdateDateColumn({ select: false, type: 'datetime' })
   updatedAt: Date;
+
+  @OneToMany(
+    () => GymMemberRelation,
+    (gymMemberRelation) => gymMemberRelation.gymMembers,
+  )
+  gymMemberRelations: GymMemberRelation[];
 }

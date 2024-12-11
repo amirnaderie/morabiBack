@@ -5,18 +5,18 @@ import {
   Patch,
   Param,
   Delete,
-  Controller,
   UseGuards,
-  UseInterceptors,
+  Controller,
   SetMetadata,
+  UseInterceptors,
 } from '@nestjs/common';
 
-import { UserTypeService } from './gym-member.service';
 import { AuthGuard } from 'src/guards/auth.guard';
-import { HttpResponseTransform } from 'src/interceptors/http-response-transform.interceptor';
 import { GymMember } from './entities/gym-member.entity';
+import { UserTypeService } from './gym-member.service';
 import { CreateGymMemberDto } from './dto/create-gym-member.dto';
 import { UpdateGymMemberDto } from './dto/update-gym-member.dto';
+import { HttpResponseTransform } from 'src/interceptors/http-response-transform.interceptor';
 
 @Controller('user-type')
 @UseGuards(AuthGuard)

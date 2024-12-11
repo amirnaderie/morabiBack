@@ -2,9 +2,9 @@ import { GymMember } from './entities/gym-member.entity';
 import { Repository } from 'typeorm';
 import { LogService } from '../log/providers/log.service';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateGymMemberDto } from './dto/create-gym-member.dto';
 import { UpdateGymMemberDto } from './dto/update-gym-member.dto';
+import { InternalServerErrorException, Injectable } from '@nestjs/common';
 
 @Injectable()
 export class UserTypeService {
