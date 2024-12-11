@@ -1,16 +1,17 @@
 import { Form } from '../entities/form.entity';
+import { User } from 'src/modules/users/entities/user.entity';
 import { Repository } from 'typeorm';
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { LogService } from 'src/modules/log/providers/log.service';
+import { QueryFormDto } from '../dto/query-params.dto';
 import { CreateFormDto } from '../dto/create-form.dto';
 import { UpdateFormDto } from '../dto/update-form.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/modules/users/entities/user.entity';
-import { LogService } from 'src/modules/log/providers/log.service';
-import { QueryFormDto } from '../dto/query-params.dto';
+
+import {
+  Injectable,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 
 @Injectable()
 export class FormService {
@@ -19,6 +20,39 @@ export class FormService {
     private readonly formRepository: Repository<Form>,
     private readonly logService: LogService,
   ) {}
+
+  async copy(user: User, id: string): Promise<Form> {
+    try {
+      const oldForm = await this.formRepository.findOne({
+        where: { id: id },
+        relations: ['questions'],
+      });
+      if (!oldForm) throw new NotFoundException();
+
+      const form = this.formRepository.create({
+        type: oldForm.type,
+        name: `${oldForm.name} کپی`,
+        creatorId: user.id,
+        realmId: oldForm.realmId,
+        questions: oldForm.questions,
+        description: oldForm.description,
+      });
+
+      return await this.formRepository.save(form);
+    } catch (error) {
+      console.log(error, 'error');
+      this.logService.logData(
+        'copy-form',
+        JSON.stringify({ id: id, user: user }),
+        error?.stack ? error.stack : 'error not have message!!',
+      );
+
+      if (error.message.includes('Violation of UNIQUE KEY constraint'))
+        throw new ConflictException('اطلاعات فرم تکراری است');
+
+      throw new Error(error);
+    }
+  }
 
   async create(
     createFormDto: CreateFormDto,

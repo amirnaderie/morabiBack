@@ -19,16 +19,22 @@ import { GetUser } from 'src/decorators/getUser.decorator';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { RolesGuard } from 'src/guards/role.guard';
 import { FormService } from './providers/form.service';
+import { QueryFormDto } from './dto/query-params.dto';
 import { UpdateFormDto } from './dto/update-form.dto';
 import { CreateFormDto } from './dto/create-form.dto';
 import { HttpResponseTransform } from 'src/interceptors/http-response-transform.interceptor';
-import { QueryFormDto } from './dto/query-params.dto';
 
 @Controller('form')
 @UseGuards(AuthGuard, RolesGuard)
 @UseInterceptors(HttpResponseTransform)
 export class FormController {
   constructor(private readonly formService: FormService) {}
+
+  @Post(':id/copy')
+  @SetMetadata('permission', 'create-form')
+  async copy(@GetUser() user: User, @Param('id') id: string): Promise<Form> {
+    return await this.formService.copy(user, id);
+  }
 
   @Post()
   @SetMetadata('permission', 'create-form')

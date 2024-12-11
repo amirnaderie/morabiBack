@@ -17,7 +17,7 @@ import {
 } from 'typeorm';
 
 @Entity('form')
-@Unique(['name', 'creatorId'])
+@Unique(['name'])
 export class Form {
   @PrimaryGeneratedColumn('uuid')
   id: string;
