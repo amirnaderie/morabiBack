@@ -1,3 +1,4 @@
+import { GymMember } from 'src/modules/gym-member/entities/gym-member.entity';
 import {
   Column,
   Entity,
@@ -27,4 +28,7 @@ export class Category {
   @OneToMany(() => Category, (category) => category.parent)
   @JoinColumn({ name: 'parentId' })
   children: Category[];
+
+  @OneToMany(() => GymMember, (gymMember) => gymMember.category)
+  gymMembers: GymMember;
 }
