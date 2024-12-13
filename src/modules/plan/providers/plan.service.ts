@@ -162,7 +162,9 @@ export class PlanService {
         error?.stack ? error.stack : 'error not have message!!',
       );
       if (error.message.includes('Violation of UNIQUE KEY constraint'))
-        throw new ConflictException('اطلاعات تکراری است');
+        throw new ConflictException(
+          `نام برنامه "${`کپی ${planName}`}" تکراری است`,
+        );
       else
         throw new InternalServerErrorException(
           'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
