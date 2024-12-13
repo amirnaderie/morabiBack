@@ -15,7 +15,6 @@ import {
   UpdateDateColumn,
   PrimaryGeneratedColumn,
   Unique,
-  OneToOne,
 } from 'typeorm';
 import { Realm } from 'src/modules/realm/entities/realm.entity';
 
