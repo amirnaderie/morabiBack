@@ -1,4 +1,5 @@
-import { GymMember } from 'src/modules/gym-member/entities/gym-member.entity';
+import { Athlete } from 'src/modules/athlete/entities/athlete.entity';
+import { Mentor } from 'src/modules/mentor/entities/mentor.entity';
 import {
   Column,
   Entity,
@@ -29,6 +30,13 @@ export class Category {
   @JoinColumn({ name: 'parentId' })
   children: Category[];
 
-  @OneToMany(() => GymMember, (gymMember) => gymMember.category)
-  gymMembers: GymMember;
+  @OneToMany(() => Athlete, (athlete) => athlete.category, {
+    cascade: true,
+  })
+  athletes: Athlete[];
+
+  @OneToMany(() => Athlete, (athlete) => athlete.category, {
+    cascade: true,
+  })
+  mentors: Mentor[];
 }

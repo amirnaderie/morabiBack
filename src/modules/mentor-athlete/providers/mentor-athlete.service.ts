@@ -1,28 +1,27 @@
 import { User } from '../../users/entities/user.entity';
 import { LogService } from '../../log/providers/log.service';
 import { Repository } from 'typeorm';
+import { MentorAthlete } from '../entities/mentor-athlete.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { GymMemberRelation } from '../entities/gym-member-relation.entity';
 import { InternalServerErrorException, Injectable } from '@nestjs/common';
 
 @Injectable()
-export class GymMemberRelationService {
+export class MentorAthleteService {
   constructor(
-    @InjectRepository(GymMemberRelation)
-    private readonly gymMemberRelationRepository: Repository<GymMemberRelation>,
+    @InjectRepository(MentorAthlete)
+    private readonly mentorAthleteRepository: Repository<MentorAthlete>,
     readonly logService: LogService,
   ) {}
 
   async findAllMentorAthletes({ user }: { user: User }) {
     try {
-      console.log(user, 'user');
-      const movements = await this.gymMemberRelationRepository.find({
+      const movements = await this.mentorAthleteRepository.find({
         relations: ['gymMemberMentors'],
         select: {
           id: true,
           createdAt: true,
           status: true,
-          gymMemberAthletes: {
+          mentors: {
             user: {
               profile: {
                 name: true,
@@ -32,7 +31,7 @@ export class GymMemberRelationService {
         },
         where: [
           {
-            gymMemberMentors: {
+            mentors: {
               userId: user.id,
             },
           },

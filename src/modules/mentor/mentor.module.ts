@@ -1,19 +1,19 @@
 import { LogModule } from '../log/log.module';
-import { GymMember } from './entities/gym-member.entity';
 import { AuthModule } from '../auth/auth.module';
 import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserTypeService } from './gym-member.service';
-import { UserTypeController } from './gym-member.controller';
+import { Mentor } from './entities/mentor.entity';
+import { MentorController } from './mentor.controller';
+import { MentorService } from './mentor.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([GymMember]),
+    TypeOrmModule.forFeature([Mentor]),
     forwardRef(() => AuthModule),
     forwardRef(() => LogModule),
   ],
-  controllers: [UserTypeController],
-  providers: [UserTypeService],
-  exports: [UserTypeService],
+  controllers: [MentorController],
+  providers: [MentorService],
+  exports: [MentorService],
 })
 export class UserTypeModule {}

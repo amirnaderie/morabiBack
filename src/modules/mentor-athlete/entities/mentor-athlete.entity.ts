@@ -1,16 +1,18 @@
-import { GymMember } from 'src/modules/gym-member/entities/gym-member.entity';
 import {
   Column,
   Entity,
   ManyToOne,
   JoinColumn,
-  UpdateDateColumn,
   CreateDateColumn,
+  UpdateDateColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-@Entity('GymMemberRelation')
-export class GymMemberRelation {
+import { Athlete } from 'src/modules/athlete/entities/athlete.entity';
+import { Mentor } from 'src/modules/mentor/entities/mentor.entity';
+
+@Entity('MentorAthlete')
+export class MentorAthlete {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -35,17 +37,11 @@ export class GymMemberRelation {
   @UpdateDateColumn({ select: false, type: 'datetime' })
   updatedAt: Date;
 
-  @ManyToOne(
-    () => GymMember,
-    (gymMember) => gymMember.gymMemberMentorsRelations,
-  )
+  @ManyToOne(() => Mentor, (mentor) => mentor.mentorAthlete)
   @JoinColumn({ name: 'mentorId' })
-  gymMemberMentors: GymMember[];
+  mentors: Mentor[];
 
-  @ManyToOne(
-    () => GymMember,
-    (gymMember) => gymMember.gymMemberAthletesRelations,
-  )
+  @ManyToOne(() => Mentor, (mentor) => mentor.mentorAthlete)
   @JoinColumn({ name: 'athleteId' })
-  gymMemberAthletes: GymMember[];
+  athletes: Athlete[];
 }
