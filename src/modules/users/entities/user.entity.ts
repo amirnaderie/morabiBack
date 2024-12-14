@@ -19,6 +19,8 @@ import { Tag } from 'src/modules/tag/entities/tag.entity';
 import { Realm } from 'src/modules/realm/entities/realm.entity';
 import { Plan } from 'src/modules/plan/entities/plan.entity';
 import { Profile } from './profile.entity';
+import { Athlete } from 'src/modules/athlete/entities/athlete.entity';
+import { Mentor } from 'src/modules/mentor/entities/mentor.entity';
 
 @Entity()
 @Unique(['userMobile', 'realmId'])
@@ -69,6 +71,16 @@ export class User {
 
   @OneToMany(() => File, (file) => file.user)
   files: File[];
+
+  @OneToMany(() => Athlete, (athlete) => athlete.user, {
+    cascade: true,
+  })
+  athletes: Athlete[];
+
+  @OneToMany(() => Mentor, (mentor) => mentor.user, {
+    cascade: true,
+  })
+  mentors: Mentor[];
 
   @ManyToOne(() => Realm, (realm) => realm.users)
   @JoinColumn({ name: 'realmId' })

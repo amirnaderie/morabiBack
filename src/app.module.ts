@@ -29,8 +29,9 @@ import {
 } from '@nestjs/common';
 import { PlanModule } from './modules/plan/plan.module';
 import { CategoryModule } from './modules/category/category.module';
-import { UserTypeModule } from './modules/gym-member/gym-member.module';
-import { GymMemberRelationModule } from './modules/gym-member-relation/gym-member-relation.module';
+import { UserTypeModule } from './modules/mentor/mentor.module';
+import { AthleteModule } from './modules/athlete/athlete.module';
+import { MentorAthleteModule } from './modules/mentor-athlete/mentor-athlete.module';
 
 @Module({
   imports: [
@@ -80,7 +81,8 @@ import { GymMemberRelationModule } from './modules/gym-member-relation/gym-membe
     PlanModule,
     CategoryModule,
     UserTypeModule,
-    GymMemberRelationModule,
+    MentorAthleteModule,
+    AthleteModule,
   ],
   providers: [IsUniqueConstraint],
 })

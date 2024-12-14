@@ -1,34 +1,32 @@
-import { GymMember } from './entities/gym-member.entity';
+import { Mentor } from './entities/mentor.entity';
 import { Repository } from 'typeorm';
 import { LogService } from '../log/providers/log.service';
+import { CreateMentorDto } from './dto/create-mentor.dto';
+import { UpdateMentorDto } from './dto/update-mentor.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateGymMemberDto } from './dto/create-gym-member.dto';
-import { UpdateGymMemberDto } from './dto/update-gym-member.dto';
 import { InternalServerErrorException, Injectable } from '@nestjs/common';
 
 @Injectable()
-export class UserTypeService {
+export class MentorService {
   constructor(
-    @InjectRepository(GymMember)
-    private readonly usertypeRepository: Repository<GymMember>,
+    @InjectRepository(Mentor)
+    private readonly mentorRepository: Repository<Mentor>,
     readonly logService: LogService,
   ) {}
 
-  async create(createUserTypeDto: CreateGymMemberDto): Promise<GymMember> {
+  async create(createMentorDto: CreateMentorDto): Promise<Mentor> {
     try {
-      const { categoryId, expireAt, type, userId } = createUserTypeDto;
-      const usertype = this.usertypeRepository.create({
-        type: type,
+      const { categoryId, userId } = createMentorDto;
+      const mentor = this.mentorRepository.create({
         userId: userId,
-        expireAt: expireAt,
         categoryId: categoryId,
       });
-      return await this.usertypeRepository.save(usertype);
+      return await this.mentorRepository.save(mentor);
     } catch (error) {
       console.log(error);
       this.logService.logData(
-        'create-usertype',
-        JSON.stringify({ createCategoryDto: createUserTypeDto }),
+        'create-mentor',
+        JSON.stringify({ createMentorDto }),
         error?.stack ? error.stack : 'error not have message!!',
       );
       throw new InternalServerErrorException(
@@ -45,22 +43,17 @@ export class UserTypeService {
     return `This action returns a #${id} userType`;
   }
 
-  async update(
-    id: string,
-    updateGymMemberDto: UpdateGymMemberDto,
-  ): Promise<GymMember> {
+  async update(id: string, updateMentorDto: UpdateMentorDto): Promise<Mentor> {
     try {
-      const { categoryId, expireAt, type, userId } = updateGymMemberDto;
-      const usertype = await this.usertypeRepository.findOneBy({ id });
+      const { categoryId, userId } = updateMentorDto;
+      const usertype = await this.mentorRepository.findOneBy({ id });
       usertype.categoryId = categoryId;
-      usertype.expireAt = expireAt;
-      usertype.type = type;
       usertype.userId = userId;
-      return await this.usertypeRepository.save(usertype);
+      return await this.mentorRepository.save(usertype);
     } catch (error) {
       this.logService.logData(
         'update-usertype',
-        JSON.stringify({ updateUserTypeDto: updateGymMemberDto, id: id }),
+        JSON.stringify({ updateMentorDto, id }),
         error?.stack ? error.stack : 'error not have message!!',
       );
       throw new InternalServerErrorException(

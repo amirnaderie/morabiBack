@@ -79,6 +79,10 @@ export const createPermissionSeed = async (AppDataSource: DataSource) => {
         { name: 'ایجاد برنامه', enName: 'create-plan' },
         { name: 'ویرایش برنامه', enName: 'update-plan' },
         { name: 'حذف برنامه', enName: 'delete-plan' },
+        {
+          name: 'مربی لیست ورزشکاران خود را ببیند',
+          enName: 'mentor-read-athletes',
+        },
       ])
       .execute();
   } catch (error) {
