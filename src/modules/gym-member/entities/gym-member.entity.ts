@@ -1,21 +1,20 @@
 import { User } from 'src/modules/users/entities/user.entity';
 import { UserType } from 'src/interfaces/user';
 import { Category } from 'src/modules/category/entities/category.entity';
+import { userTypes } from 'src/modules/users/entities/user-type.entity';
+import { GymMemberRelation } from 'src/modules/gym-member-relation/entities/gym-member-relation.entity';
 
 import {
   Column,
   Entity,
   ManyToOne,
+  JoinTable,
+  OneToMany,
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
   PrimaryGeneratedColumn,
-  ManyToMany,
-  JoinTable,
-  OneToMany,
 } from 'typeorm';
-import { userTypes } from 'src/modules/users/entities/user-type.entity';
-import { GymMemberRelation } from 'src/modules/gym-member-relation/entities/gym-member-relation.entity';
 
 @Entity('GymMember')
 export class GymMember {
@@ -66,7 +65,19 @@ export class GymMember {
 
   @OneToMany(
     () => GymMemberRelation,
-    (gymMemberRelation) => gymMemberRelation.gymMembers,
+    (gymMemberRelation) => gymMemberRelation.gymMemberMentors,
   )
-  gymMemberRelations: GymMemberRelation[];
+  @JoinTable({
+    name: 'GymMemberRelation',
+  })
+  gymMemberMentorsRelations: GymMemberRelation[];
+
+  @OneToMany(
+    () => GymMemberRelation,
+    (gymMemberRelation) => gymMemberRelation.gymMemberAthletes,
+  )
+  @JoinTable({
+    name: 'GymMemberRelation',
+  })
+  gymMemberAthletesRelations: GymMemberRelation[];
 }
