@@ -82,7 +82,12 @@ export class MFAService {
   async send2FAToken(sendOtpDto: SendOtpDto, req: Request): Promise<string> {
     const { userMobile } = sendOtpDto;
 
-    const user: User = await this.usersService.getUserByMobile(userMobile, req);
+    let user: User;
+    try {
+      user = await this.usersService.getUserByMobile(userMobile, req);
+    } catch (error) {
+      throw new Error('خطا در عملیات');
+    }
 
     if (user)
       throw new ConflictException('این شماره همراه پیش از این ثبت شده است');
