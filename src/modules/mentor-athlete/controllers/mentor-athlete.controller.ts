@@ -24,7 +24,7 @@ export class MentorAthleteController {
   constructor(private readonly mentorAthleteService: MentorAthleteService) {}
 
   @Get('/athletes')
-  // @SetMetadata('permission', 'mentor-read-athlet/es')
+  @SetMetadata('permission', 'create-form')
   findAll(@GetUser() user: User) {
     return this.mentorAthleteService.findAllMentorAthletes({ user: user });
   }

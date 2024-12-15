@@ -1,5 +1,7 @@
 import { User } from 'src/modules/users/entities/user.entity';
 import { Category } from 'src/modules/category/entities/category.entity';
+import { SportPackage } from 'src/modules/sport-package/entities/sport-package.entity';
+import { MentorAthlete } from 'src/modules/mentor-athlete/entities/mentor-athlete.entity';
 
 import {
   Column,
@@ -12,7 +14,6 @@ import {
   UpdateDateColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { MentorAthlete } from 'src/modules/mentor-athlete/entities/mentor-athlete.entity';
 
 @Entity('Mentor')
 export class Mentor {
@@ -54,4 +55,9 @@ export class Mentor {
   })
   @JoinColumn({ name: 'userId', referencedColumnName: 'id' })
   user: User;
+
+  @OneToMany(() => SportPackage, (sportPackage) => sportPackage.mentor, {
+    cascade: true,
+  })
+  sportPackages: SportPackage[];
 }

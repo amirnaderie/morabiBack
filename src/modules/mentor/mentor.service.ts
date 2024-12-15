@@ -36,7 +36,19 @@ export class MentorService {
   }
 
   findAll() {
-    return `This action returns all userType`;
+    try {
+      return this.mentorRepository.find();
+    } catch (error) {
+      console.log(error);
+      this.logService.logData(
+        'create-mentor',
+        'no input',
+        error?.stack ? error.stack : 'error not have message!!',
+      );
+      throw new InternalServerErrorException(
+        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
+      );
+    }
   }
 
   findOne(id: number) {

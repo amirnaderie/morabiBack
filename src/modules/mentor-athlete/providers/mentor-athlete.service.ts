@@ -3,8 +3,8 @@ import { LogService } from '../../log/providers/log.service';
 import { Repository } from 'typeorm';
 import { MentorAthlete } from '../entities/mentor-athlete.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { InternalServerErrorException, Injectable } from '@nestjs/common';
 import { CreateMentorAthleteDto } from '../dto/create-mentor-athlete.dto';
+import { InternalServerErrorException, Injectable } from '@nestjs/common';
 
 @Injectable()
 export class MentorAthleteService {
@@ -17,24 +17,16 @@ export class MentorAthleteService {
   async findAllMentorAthletes({ user }: { user: User }) {
     try {
       const movements = await this.mentorAthleteRepository.find({
-        relations: ['gymMemberMentors'],
+        relations: ['athletes'],
         select: {
           id: true,
           createdAt: true,
           // status: true,
-          mentors: {
-            user: {
-              profile: {
-                name: true,
-              },
-            },
-          },
+          athletes: true,
         },
         where: [
           {
-            mentors: {
-              userId: user.id,
-            },
+            mentorId: user.id,
           },
         ],
       });
@@ -60,11 +52,11 @@ export class MentorAthleteService {
     createMentorAthleteDto: CreateMentorAthleteDto,
   ): Promise<MentorAthlete> {
     try {
-      console.log(createMentorAthleteDto, 'createMentorAthleteDto');
       const { athleteId, mentorId } = createMentorAthleteDto;
+      console.log(createMentorAthleteDto, 'createMentorAthleteDto');
       const mentorAthlete = this.mentorAthleteRepository.create({
-        athleteId,
-        mentorId,
+        athleteId: athleteId,
+        mentorId: mentorId,
       });
 
       return await this.mentorAthleteRepository.save(mentorAthlete);

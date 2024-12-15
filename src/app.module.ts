@@ -32,7 +32,7 @@ import { CategoryModule } from './modules/category/category.module';
 import { UserTypeModule } from './modules/mentor/mentor.module';
 import { AthleteModule } from './modules/athlete/athlete.module';
 import { MentorAthleteModule } from './modules/mentor-athlete/mentor-athlete.module';
-import { MentorPackageModule } from './modules/mentor-package/mentor-package.module';
+import { SportPackageModule } from './modules/sport-package/sport-package.module';
 
 @Module({
   imports: [
@@ -84,7 +84,7 @@ import { MentorPackageModule } from './modules/mentor-package/mentor-package.mod
     UserTypeModule,
     MentorAthleteModule,
     AthleteModule,
-    MentorPackageModule,
+    SportPackageModule,
   ],
   providers: [IsUniqueConstraint],
 })

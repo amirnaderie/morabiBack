@@ -8,8 +8,8 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-import { Athlete } from 'src/modules/athlete/entities/athlete.entity';
 import { Mentor } from 'src/modules/mentor/entities/mentor.entity';
+import { Athlete } from 'src/modules/athlete/entities/athlete.entity';
 
 @Entity('MentorAthlete')
 export class MentorAthlete {
