@@ -9,6 +9,7 @@ import { User } from 'src/modules/users/entities/user.entity';
 import { lastValueFrom } from 'rxjs';
 import { UsersService } from 'src/modules/users/providers/users.service';
 import { ProfileService } from 'src/modules/users/providers/profile.service';
+import { LogService } from 'src/modules/log/providers/log.service';
 
 @Injectable()
 export class MFAService {
@@ -18,6 +19,7 @@ export class MFAService {
     @Inject('REDIS_CLIENT') private readonly redis: Redis,
     private usersService: UsersService,
     private profileService: ProfileService,
+    private readonly logService: LogService,
   ) {}
 
   // Function to generate a 2FA secret and OTP
@@ -62,20 +64,44 @@ export class MFAService {
     userMobile: string,
     req: Request,
   ): Promise<string> {
-    const user: User = await this.usersService.getUserByMobile(userMobile, req);
+    let user: User;
+    try {
+      user = await this.usersService.getUserByMobile(userMobile, req);
+    } catch (error) {
+      this.logService.logData(
+        'generate2FAForgetPassword',
+        JSON.stringify({ userMobile: userMobile }),
+        error?.stack ? error.stack : 'error not have message!!',
+      );
+      throw new Error('خطا در عملیات');
+    }
 
-    if (!user)
+    if (!user) {
+      this.logService.logData(
+        'generate2FAForgetPassword',
+        userMobile,
+        `${userMobile}این شماره همراه پیش از این ثبت نشده است`,
+      );
       throw new ConflictException('این شماره همراه پیش از این ثبت نشده است');
-
-    const profile = await this.profileService.get(user);
-    return this.sendSMS(
-      {
-        userName: profile.family,
-        userFamily: profile.name,
-        userMobile: user.userMobile,
-      },
-      req,
-    );
+    }
+    try {
+      const profile = await this.profileService.get(user);
+      return this.sendSMS(
+        {
+          userName: profile.family,
+          userFamily: profile.name,
+          userMobile: user.userMobile,
+        },
+        req,
+      );
+    } catch (error) {
+      this.logService.logData(
+        'generate2FAForgetPassword',
+        JSON.stringify({ userMobile: userMobile }),
+        error?.stack ? error.stack : 'error not have message!!',
+      );
+      throw new Error('خطا در عملیات');
+    }
   }
 
   // Send SMS using Twilio
@@ -86,6 +112,11 @@ export class MFAService {
     try {
       user = await this.usersService.getUserByMobile(userMobile, req);
     } catch (error) {
+      this.logService.logData(
+        'send2FAToken',
+        JSON.stringify({ userMobile: userMobile }),
+        error?.stack ? error.stack : 'error not have message!!',
+      );
       throw new Error('خطا در عملیات');
     }
 
@@ -93,8 +124,16 @@ export class MFAService {
       throw new ConflictException('این شماره همراه پیش از این ثبت شده است');
 
     // const profile = await this.profileService.get(user);
-
-    return this.sendSMS(sendOtpDto, req);
+    try {
+      return this.sendSMS(sendOtpDto, req);
+    } catch (error) {
+      this.logService.logData(
+        'send2FAToken',
+        JSON.stringify({ userMobile: userMobile }),
+        error?.stack ? error.stack : 'error not have message!!',
+      );
+      throw new Error('خطا در عملیات');
+    }
   }
 
   private sendSMS = async (sendOtpDto: SendOtpDto, req: Request) => {
@@ -114,43 +153,50 @@ export class MFAService {
     const secret = this.generate2FASecret(); // Save this secret in your user record in DB
     const token = this.generate2FAToken(secret);
     const smsUrl = `${this.configService.get<string>('PROVIDER_URL')}&receptor=${userMobile}&token=${token}`;
+    try {
+      const response = await lastValueFrom(this.httpService.post(smsUrl, null));
 
-    const response = await lastValueFrom(this.httpService.post(smsUrl, null));
+      if (response.status === 200) {
+        await this.redis.set(
+          `${token}${secret}`,
+          JSON.stringify({ userMobile, userFamily, userName, secret }),
+          'EX',
+          parseInt(this.configService.get<string>('OTP_EXPIRESIN')) + 4,
+        );
 
-    if (response.status === 200) {
-      await this.redis.set(
-        `${token}${secret}`,
-        JSON.stringify({ userMobile, userFamily, userName, secret }),
-        'EX',
-        parseInt(this.configService.get<string>('OTP_EXPIRESIN')) + 4,
+        await this.redis.set(
+          secret,
+          parseInt(this.configService.get<string>('OTP_COUNT')),
+          'EX',
+          parseInt(this.configService.get<string>('OTP_EXPIRESIN')),
+        );
+
+        await this.redis.set(
+          userMobile,
+          'true',
+          'EX',
+          parseInt(this.configService.get<string>('OTP_EXPIRESIN')),
+        );
+
+        await this.redis.set(
+          requestIp,
+          'true',
+          'EX',
+          parseInt(this.configService.get<string>('OTP_EXPIRESIN')),
+        );
+
+        return secret;
+        //console.log('SMS sent successfully:', response.data);
+        //return response.data;
+      } else {
+        throw new Error('خطا در ارسال پیامک');
+      }
+    } catch (error) {
+      this.logService.logData(
+        'sendSMS',
+        JSON.stringify({ userMobile: userMobile }),
+        error?.stack ? error.stack : 'error not have message!!',
       );
-
-      await this.redis.set(
-        secret,
-        parseInt(this.configService.get<string>('OTP_COUNT')),
-        'EX',
-        parseInt(this.configService.get<string>('OTP_EXPIRESIN')),
-      );
-
-      await this.redis.set(
-        userMobile,
-        'true',
-        'EX',
-        parseInt(this.configService.get<string>('OTP_EXPIRESIN')),
-      );
-
-      await this.redis.set(
-        requestIp,
-        'true',
-        'EX',
-        parseInt(this.configService.get<string>('OTP_EXPIRESIN')),
-      );
-
-      return secret;
-      //console.log('SMS sent successfully:', response.data);
-      //return response.data;
-    } else {
-      throw new Error('خطا در عملیات');
     }
   };
 }
