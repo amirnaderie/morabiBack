@@ -86,7 +86,9 @@ export class User {
   @JoinColumn({ name: 'realmId' })
   realm: Realm;
 
-  @OneToOne(() => Profile, (profile) => profile.user) // specify inverse side as a second parameter
+  @OneToOne(() => Profile, (profile) => profile.user, {
+    cascade: true,
+  }) // specify inverse side as a second parameter
   @JoinColumn({ name: 'profileId' })
   profile: Profile;
 }
