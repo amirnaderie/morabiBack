@@ -28,15 +28,22 @@ export class LogService {
       const decodedAccessToken = this.tokenService.decodeToken(accessToken);
       userId = decodedAccessToken.id;
     } else userId = null;
-    const log = this.LogsRepository.create({
-      methodName,
-      request,
-      userId,
-      logMessage,
-      correlationId,
-      requestIp,
-      realmId,
-    });
-    await this.LogsRepository.save(log);
+    try {
+      const log = this.LogsRepository.create({
+        methodName,
+        request,
+        userId,
+        logMessage,
+        correlationId,
+        requestIp,
+        realmId,
+      });
+      await this.LogsRepository.save(log);
+    } catch (error) {
+    } finally {
+      console.log(
+        `requestIp:${requestIp} userId:${userId} methodName:${methodName} request:${request} logMessage:${logMessage}`,
+      );
+    }
   }
 }
