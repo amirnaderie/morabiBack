@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { MentorAthlete } from '../entities/mentor-athlete.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { InternalServerErrorException, Injectable } from '@nestjs/common';
+import { CreateMentorAthleteDto } from '../dto/create-mentor-athlete.dto';
 
 @Injectable()
 export class MentorAthleteService {
@@ -20,7 +21,7 @@ export class MentorAthleteService {
         select: {
           id: true,
           createdAt: true,
-          status: true,
+          // status: true,
           mentors: {
             user: {
               profile: {
@@ -55,5 +56,28 @@ export class MentorAthleteService {
     }
   }
 
-  async assignAthlete() {}
+  async create(
+    createMentorAthleteDto: CreateMentorAthleteDto,
+  ): Promise<MentorAthlete> {
+    try {
+      console.log(createMentorAthleteDto, 'createMentorAthleteDto');
+      const { athleteId, mentorId } = createMentorAthleteDto;
+      const mentorAthlete = this.mentorAthleteRepository.create({
+        athleteId,
+        mentorId,
+      });
+
+      return await this.mentorAthleteRepository.save(mentorAthlete);
+    } catch (error) {
+      console.log(error, 'error');
+      this.logService.logData(
+        'create-mentorAthlete',
+        'no input',
+        error?.stack ? error.stack : 'error not have message!!',
+      );
+      throw new InternalServerErrorException(
+        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
+      );
+    }
+  }
 }

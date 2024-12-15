@@ -22,10 +22,10 @@ export class MentorAthlete {
   @Column()
   athleteId: string;
 
-  @Column({
-    type: 'bit',
-  })
-  status: boolean;
+  // @Column({
+  //   type: 'bit',
+  // })
+  // status: boolean;
 
   @CreateDateColumn({
     type: 'datetime',
