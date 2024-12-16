@@ -31,7 +31,6 @@ import { PlanModule } from './modules/plan/plan.module';
 import { CategoryModule } from './modules/category/category.module';
 import { UserTypeModule } from './modules/mentor/mentor.module';
 import { AthleteModule } from './modules/athlete/athlete.module';
-import { MentorAthleteModule } from './modules/mentor-athlete/mentor-athlete.module';
 import { SportPackageModule } from './modules/sport-package/sport-package.module';
 
 @Module({
@@ -82,7 +81,6 @@ import { SportPackageModule } from './modules/sport-package/sport-package.module
     PlanModule,
     CategoryModule,
     UserTypeModule,
-    MentorAthleteModule,
     AthleteModule,
     SportPackageModule,
   ],

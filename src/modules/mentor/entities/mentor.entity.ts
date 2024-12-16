@@ -1,13 +1,11 @@
 import { User } from 'src/modules/users/entities/user.entity';
 import { Category } from 'src/modules/category/entities/category.entity';
 import { SportPackage } from 'src/modules/sport-package/entities/sport-package.entity';
-import { MentorAthlete } from 'src/modules/mentor-athlete/entities/mentor-athlete.entity';
 
 import {
   Column,
   Entity,
   ManyToOne,
-  JoinTable,
   OneToMany,
   JoinColumn,
   CreateDateColumn,
@@ -42,13 +40,13 @@ export class Mentor {
   @JoinColumn({ name: 'categoryId', referencedColumnName: 'id' })
   category: Category;
 
-  @OneToMany(() => MentorAthlete, (mentorAthlete) => mentorAthlete.mentors, {
-    cascade: true,
-  })
-  @JoinTable({
-    name: 'MentorAthlete',
-  })
-  mentorAthlete: MentorAthlete[];
+  // @OneToMany(() => MentorAthlete, (mentorAthlete) => mentorAthlete.mentors, {
+  //   cascade: true,
+  // })
+  // @JoinTable({
+  //   name: 'MentorAthlete',
+  // })
+  // mentorAthlete: MentorAthlete[];
 
   @ManyToOne(() => User, (user) => user.movements, {
     onDelete: 'CASCADE',
