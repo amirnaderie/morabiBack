@@ -44,7 +44,7 @@ export const createPermissionSeed = async (AppDataSource: DataSource) => {
         { name: 'مشاهده منوی فرم های ابتدایی', enName: 'elementary' }, // 25
         { name: 'مشاهده منوی فرم های کنترل', enName: 'control' },
         {
-          name: 'توانایی ساخت حرکت پیش‌ فرض',
+          name: 'توانایی ساخت حرکت پیش‌ فرض (مخصوص ادمین)',
           enName: 'create-movement-default',
         },
         { name: 'ایجاد فرم', enName: 'create-form' },
