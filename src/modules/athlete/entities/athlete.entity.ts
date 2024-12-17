@@ -8,11 +8,13 @@ import {
   PrimaryGeneratedColumn,
   ManyToMany,
   JoinTable,
+  OneToMany,
 } from 'typeorm';
 
 import { User } from 'src/modules/users/entities/user.entity';
 import { Category } from 'src/modules/category/entities/category.entity';
 import { Mentor } from 'src/modules/mentor/entities/mentor.entity';
+import { AthleteSportPackage } from '../../athlete-sport-package/entities/athlete-sport-package.entity';
 // import { MentorAthlete } from 'src/modules/mentor-athlete/entities/mentor-athlete.entity';
 
 @Entity('Athlete')
@@ -43,4 +45,10 @@ export class Athlete {
   @ManyToOne(() => Category, (category) => category.athletes)
   @JoinColumn({ name: 'categoryId' })
   category: Category;
+
+  @OneToMany(
+    () => AthleteSportPackage,
+    (athleteSportPackage) => athleteSportPackage.athlete,
+  )
+  athleteSportPackages: AthleteSportPackage[];
 }

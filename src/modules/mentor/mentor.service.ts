@@ -18,6 +18,7 @@ export class MentorService {
   constructor(
     @InjectRepository(Mentor)
     private readonly mentorRepository: Repository<Mentor>,
+
     readonly logService: LogService,
     readonly athleteService: AthleteService,
   ) {}

@@ -13,8 +13,10 @@ import {
 @Injectable()
 export class AthleteService {
   constructor(
+    // AthleteSportPackage
     @InjectRepository(Athlete)
     readonly athleteRepository: Repository<Athlete>,
+
     readonly logService: LogService,
   ) {}
 

@@ -15,6 +15,7 @@ import {
   JoinTable,
 } from 'typeorm';
 import { Athlete } from 'src/modules/athlete/entities/athlete.entity';
+import { AthleteSportPackage } from 'src/modules/athlete-sport-package/entities/athlete-sport-package.entity';
 
 @Entity('Mentor')
 export class Mentor {
@@ -59,4 +60,10 @@ export class Mentor {
     cascade: true,
   })
   sportPackages: SportPackage[];
+
+  @OneToMany(
+    () => AthleteSportPackage,
+    (athleteSportPackage) => athleteSportPackage.mentor,
+  )
+  mentorSportPackages: AthleteSportPackage[];
 }
