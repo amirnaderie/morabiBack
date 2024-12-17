@@ -1,10 +1,14 @@
 import { Athlete } from './entities/athlete.entity';
 import { LogService } from '../log/providers/log.service';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateAthleteDto } from './dto/update-athlete.dto';
 import { CreateAthleteDto } from './dto/create-athlete.dto';
-import { InternalServerErrorException, Injectable } from '@nestjs/common';
+import {
+  InternalServerErrorException,
+  Injectable,
+  BadRequestException,
+} from '@nestjs/common';
 
 @Injectable()
 export class AthleteService {
@@ -56,10 +60,27 @@ export class AthleteService {
   }
 
   update(id: number, updateAthleteDto: UpdateAthleteDto) {
-    return `This action updates a #${id} athlete`;
+    return `This action updates a #${id} ${updateAthleteDto} athlete`;
   }
 
   remove(id: number) {
     return `This action removes a #${id} athlete`;
+  }
+
+  async findById(ids: string[]): Promise<Athlete[]> {
+    try {
+      return await this.athleteRepository.find({
+        where: { id: In([...ids]) },
+      });
+    } catch (error) {
+      this.logService.logData(
+        'findById-athlete',
+        JSON.stringify({}),
+        error?.stack ? error.stack : 'error not have message!!',
+      );
+      if (error.message) {
+        throw new BadRequestException(error.message);
+      }
+    }
   }
 }

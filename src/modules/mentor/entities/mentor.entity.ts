@@ -11,7 +11,10 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   PrimaryGeneratedColumn,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
+import { Athlete } from 'src/modules/athlete/entities/athlete.entity';
 
 @Entity('Mentor')
 export class Mentor {
@@ -40,13 +43,11 @@ export class Mentor {
   @JoinColumn({ name: 'categoryId', referencedColumnName: 'id' })
   category: Category;
 
-  // @OneToMany(() => MentorAthlete, (mentorAthlete) => mentorAthlete.mentors, {
-  //   cascade: true,
-  // })
-  // @JoinTable({
-  //   name: 'MentorAthlete',
-  // })
-  // mentorAthlete: MentorAthlete[];
+  @ManyToMany(() => Athlete, (athlete) => athlete.mentors, { cascade: true })
+  @JoinTable({
+    name: 'MentorAthlete',
+  })
+  athletes: Athlete[];
 
   @ManyToOne(() => User, (user) => user.movements, {
     onDelete: 'CASCADE',

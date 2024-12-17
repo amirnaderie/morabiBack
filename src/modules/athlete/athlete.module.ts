@@ -14,5 +14,6 @@ import { LogModule } from '../log/log.module';
   ],
   controllers: [AthleteController],
   providers: [AthleteService],
+  exports: [AthleteService],
 })
 export class AthleteModule {}
