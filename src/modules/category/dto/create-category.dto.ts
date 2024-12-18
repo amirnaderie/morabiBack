@@ -13,7 +13,7 @@ export class CreateCategoryDto {
   @ValidateIf((object, value) => value !== undefined)
   @ValidateIf(
     (object, value) => /^[\u0600-\u06FFA-Za-z0-9._/,-\s\u200C]*$/.test(value),
-    { message: 'نام باید متن نوشتاری باشد' },
+    { message: 'مقادیر ورودی معتبر نیست' },
   )
   readonly name: string;
 
@@ -22,12 +22,12 @@ export class CreateCategoryDto {
       allowNaN: false,
       allowInfinity: false,
     },
-    { message: 'دسته‌بندی‌والد باید عدد باشد' },
+    { message: 'دسته‌بندی‌ والد باید عدد باشد' },
   )
   @ValidateIf((object, value) => value !== null)
   @ValidateIf(
     (object, value) => /^[\u0600-\u06FFA-Za-z0-9._/,-\s\u200C]*$/.test(value),
-    { message: 'دسته‌بندی‌والد باید عدد باشد' },
+    { message: 'دسته‌بندی‌ والد باید عدد باشد' },
   )
   readonly parentId: number;
 }

@@ -16,10 +16,18 @@ export class CreateMovementDto {
   //   message: 'حرکتی با این نام موجود است',
   // })
   @IsString()
+  @ValidateIf(
+    (object, value) => /^[\u0600-\u06FFA-Za-z0-9._/,-\s\u200C]*$/.test(value),
+    { message: 'مقادیر ورودی معتبر نیست' },
+  )
   readonly name: string;
 
   @IsString()
   @ValidateIf((object, value) => value !== undefined)
+  @ValidateIf(
+    (object, value) => /^[\u0600-\u06FFA-Za-z0-9._/,-\s\u200C]*$/.test(value),
+    { message: 'مقادیر ورودی معتبر نیست' },
+  )
   readonly description: string;
 
   @IsNumber()

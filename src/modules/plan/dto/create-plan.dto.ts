@@ -9,6 +9,7 @@ import {
   Max,
   MaxLength,
   IsNotEmpty,
+  ValidateIf,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { User } from 'src/modules/users/entities/user.entity';
@@ -20,11 +21,19 @@ export class BasePlanDto {
   @IsString()
   @MaxLength(150)
   @IsNotEmpty({ message: 'نام برنامه را وارد نمایید' })
+  @ValidateIf(
+    (object, value) => /^[\u0600-\u06FFA-Za-z0-9._/,-\s\u200C]*$/.test(value),
+    { message: 'مقادیر ورودی معتبر نیست' },
+  )
   planName: string;
 
   @IsString()
   @MaxLength(500)
   @IsNotEmpty({ message: 'توضیحات برنامه را وارد نمایید' })
+  @ValidateIf(
+    (object, value) => /^[\u0600-\u06FFA-Za-z0-9._/,-\s\u200C]*$/.test(value),
+    { message: 'مقادیر ورودی معتبر نیست' },
+  )
   planDescription: string;
 
   @IsNumber()

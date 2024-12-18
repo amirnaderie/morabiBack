@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { SportPackageService } from './sport-package.service';
 import { CreateSportPackageDto } from './dto/create-sport-package.dto';
 import { UpdateSportPackageDto } from './dto/update-sport-package.dto';
+import { SportPackageService } from './providers/sport-package.service';
 
 @Controller('sport-package')
 export class SportPackageController {

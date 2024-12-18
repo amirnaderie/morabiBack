@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { CreateSportPackageDto } from './dto/create-sport-package.dto';
-import { UpdateSportPackageDto } from './dto/update-sport-package.dto';
+import { CreateSportPackageDto } from '../dto/create-sport-package.dto';
+import { UpdateSportPackageDto } from '../dto/update-sport-package.dto';
+
 
 @Injectable()
 export class SportPackageService {

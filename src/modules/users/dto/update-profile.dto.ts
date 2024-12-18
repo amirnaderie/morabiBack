@@ -15,7 +15,7 @@ export class UpdateProfileDto {
   @ValidateIf((object, value) => value !== undefined)
   @ValidateIf(
     (object, value) => /^[\u0600-\u06FFA-Za-z0-9._/,-\s\u200C]*$/.test(value),
-    { message: 'نام باید متن نوشتاری باشد' },
+    { message: 'مقادیر ورودی معتبر نیست' },
   )
   readonly name: string;
 
@@ -25,7 +25,7 @@ export class UpdateProfileDto {
   @ValidateIf((object, value) => value !== undefined)
   @ValidateIf(
     (object, value) => /^[\u0600-\u06FFA-Za-z0-9._/,-\s\u200C]*$/.test(value),
-    { message: 'نام‌خانوادگی باید متن نوشتاری باشد' },
+    { message: 'مقادیر ورودی معتبر نیست' },
   )
   readonly family: string;
 
@@ -35,7 +35,7 @@ export class UpdateProfileDto {
   @ValidateIf((object, value) => value !== undefined)
   @ValidateIf(
     (object, value) => /^[\u0600-\u06FFA-Za-z0-9._/,-\s\u200C]*$/.test(value),
-    { message: 'توضیحات باید متن نوشتاری باشد' },
+    { message: 'مقادیر ورودی معتبر نیست' },
   )
   readonly info: string;
 
@@ -45,7 +45,7 @@ export class UpdateProfileDto {
   @ValidateIf((object, value) => value !== undefined)
   @ValidateIf(
     (object, value) => /^[\u0600-\u06FFA-Za-z0-9._/,-\s\u200C]*$/.test(value),
-    { message: 'توضیحات‌بیماری باید متن نوشتاری باشد' },
+    { message: 'مقادیر ورودی معتبر نیست' },
   )
   readonly descriptionDisease: string;
 
@@ -55,7 +55,7 @@ export class UpdateProfileDto {
   @ValidateIf((object, value) => value !== undefined)
   @ValidateIf(
     (object, value) => /^[\u0600-\u06FFA-Za-z0-9._/,-\s\u200C]*$/.test(value),
-    { message: 'سابقه‌ورزشی باید متن نوشتاری باشد' },
+    { message: 'مقادیر ورودی معتبر نیست' },
   )
   readonly sportsBackground: string;
 

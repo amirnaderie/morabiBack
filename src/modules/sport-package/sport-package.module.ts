@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { SportPackageService } from './sport-package.service';
 import { SportPackageController } from './sport-package.controller';
+import { SportPackageService } from './providers/sport-package.service';
 
 @Module({
   controllers: [SportPackageController],
