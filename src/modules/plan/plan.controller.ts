@@ -10,6 +10,7 @@ import {
   UseGuards,
   UseInterceptors,
   Put,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { CreatePlanDto } from './dto/create-plan.dto';
 import { UpdatePlanDto } from './dto/update-plan.dto';
@@ -41,7 +42,7 @@ export class PlanController {
   @SetMetadata('permission', 'create-plan')
   async copy(
     @GetUser() user: User,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Req() req: Request,
   ): Promise<{ message: string; data: DeepPartial<Plan> }> {
     return await this.planService.copy(id, user, req);
@@ -55,14 +56,14 @@ export class PlanController {
 
   @Get(':id')
   @SetMetadata('permission', 'plan')
-  findOne(@Param('id') id: string, @GetUser() user: User, @Req() req: Request) {
+  findOne(@Param('id', new ParseUUIDPipe()) id: string, @GetUser() user: User, @Req() req: Request) {
     return this.planService.findOne(id, user.id, req);
   }
 
   @Put(':id')
   @SetMetadata('permission', 'update-plan')
   update(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Body() updatePlanDto: UpdatePlanDto,
     @GetUser() user: User,
     @Req() req: Request,
@@ -72,7 +73,7 @@ export class PlanController {
 
   @Delete(':id')
   @SetMetadata('permission', 'delete-plan')
-  remove(@Param('id') id: string, @GetUser() user: User, @Req() req: Request) {
+  remove(@Param('id', new ParseUUIDPipe()) id: string, @GetUser() user: User, @Req() req: Request) {
     return this.planService.remove(id, user, req);
   }
 }

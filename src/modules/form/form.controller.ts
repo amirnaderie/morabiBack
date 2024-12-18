@@ -11,6 +11,7 @@ import {
   Controller,
   SetMetadata,
   UseInterceptors,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 
 import { User } from '../users/entities/user.entity';
@@ -32,7 +33,10 @@ export class FormController {
 
   @Post(':id/copy')
   @SetMetadata('permission', 'create-form')
-  async copy(@GetUser() user: User, @Param('id') id: string): Promise<Form> {
+  async copy(
+    @GetUser() user: User,
+    @Param('id', new ParseUUIDPipe()) id: string,
+  ): Promise<Form> {
     return await this.formService.copy(user, id);
   }
 
@@ -69,7 +73,7 @@ export class FormController {
   @Get(':id')
   @SetMetadata('permission', 'read-form')
   findOne(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Req() req: Request,
     @GetUser() user: User,
   ): Promise<Form> {
@@ -79,7 +83,7 @@ export class FormController {
   @Get('/:id/question')
   @SetMetadata('permission', 'form-questions')
   findQuestions(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Req() req: Request,
     @GetUser() user: User,
   ): Promise<Form> {
@@ -91,7 +95,7 @@ export class FormController {
   update(
     @Req() req: Request,
     @GetUser() user: User,
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Body() updateFormDto: UpdateFormDto,
   ) {
     return this.formService.update(id, req, user, updateFormDto);
@@ -100,7 +104,7 @@ export class FormController {
   @Delete(':id')
   @SetMetadata('permission', 'delete-form')
   remove(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Req() req: Request,
     @GetUser() user: User,
   ): Promise<any> {

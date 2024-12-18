@@ -10,6 +10,7 @@ import {
   UseInterceptors,
   SetMetadata,
   Req,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 
 import { User } from '../users/entities/user.entity';
@@ -46,14 +47,14 @@ export class MovementController {
 
   @Get(':id')
   @SetMetadata('permission', 'movement')
-  findOne(@Param('id') id: string, @Req() req: Request) {
+  findOne(@Param('id', new ParseUUIDPipe()) id: string, @Req() req: Request) {
     return this.movementService.findOne(id, req);
   }
 
   @Patch(':id')
   @SetMetadata('permission', 'update-movement')
   async update(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @GetUser() user: User,
     @Body() updateMovementDto: UpdateMovementDto,
     @Req() req: Request,
@@ -63,7 +64,7 @@ export class MovementController {
 
   @Delete(':id')
   @SetMetadata('permission', 'delete-movement')
-  remove(@Param('id') id: string, @GetUser() user: User, @Req() req: Request) {
+  remove(@Param('id', new ParseUUIDPipe()) id: string, @GetUser() user: User, @Req() req: Request) {
     return this.movementService.remove(id, user, req);
   }
 }
