@@ -5,7 +5,12 @@ import { FormQuestion } from '../entities/form-question.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateFormQuestionDto } from '../dto/create-form-question.dto';
 import { UpdateFormQuestionDto } from '../dto/update-form-question.dto';
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+} from '@nestjs/common';
+import { UtilityService } from 'src/utility/providers/utility.service';
 
 @Injectable()
 export class FormQuestionService {
@@ -13,6 +18,7 @@ export class FormQuestionService {
     @InjectRepository(FormQuestion)
     private readonly formQuestionRepository: Repository<FormQuestion>,
     private readonly logService: LogService,
+    private readonly utilityService: UtilityService,
   ) {}
 
   async create(
@@ -22,7 +28,8 @@ export class FormQuestionService {
   ): Promise<FormQuestion> {
     try {
       const { text, formId } = createFormQuestionDto;
-
+      if (!this.utilityService.onlyLettersAndNumbers(text))
+        throw new BadRequestException('مقادیر ورودی معتبر نیست');
       const formQuestion = this.formQuestionRepository.create({
         text: text,
         formId: formId,
@@ -93,6 +100,9 @@ export class FormQuestionService {
   ) {
     try {
       const { text } = updateFormQuestionDto;
+      if (!this.utilityService.onlyLettersAndNumbers(text))
+        throw new BadRequestException('مقادیر ورودی معتبر نیست');
+
       const form = await this.formQuestionRepository.findOne({
         where: {
           id: id,
