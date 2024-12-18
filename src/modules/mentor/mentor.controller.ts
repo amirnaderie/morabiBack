@@ -11,11 +11,14 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 
+import { User } from '../users/entities/user.entity';
 import { Mentor } from './entities/mentor.entity';
+import { GetUser } from 'src/decorators/getUser.decorator';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { MentorService } from './mentor.service';
 import { CreateMentorDto } from './dto/create-mentor.dto';
 import { UpdateMentorDto } from './dto/update-mentor.dto';
+// import { AssignAthletesDto } from './dto/assign-athlete.dto';
 import { HttpResponseTransform } from 'src/interceptors/http-response-transform.interceptor';
 
 @Controller('mentors')
@@ -30,9 +33,18 @@ export class MentorController {
     return this.mentorService.create(createMentorDto);
   }
 
-  @Get()
-  findAll() {
-    return this.mentorService.findAll();
+  // @Post('assign-athletes')
+  // @SetMetadata('permission', 'create-mentor')
+  // async assignAthletes(
+  //   @GetUser() user: User,
+  //   @Body() assignAthletesDto: AssignAthletesDto,
+  // ): Promise<Mentor> {
+  //   return this.mentorService.assignAthletes(assignAthletesDto, user);
+  // }
+
+  @Get('/athletes')
+  getAthletes(@GetUser() user: User) {
+    return this.mentorService.getAthletes(user);
   }
 
   @Get(':id')

@@ -1,18 +1,21 @@
 import { User } from 'src/modules/users/entities/user.entity';
 import { Category } from 'src/modules/category/entities/category.entity';
+import { SportPackage } from 'src/modules/sport-package/entities/sport-package.entity';
 
 import {
   Column,
   Entity,
   ManyToOne,
-  JoinTable,
   OneToMany,
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
   PrimaryGeneratedColumn,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
-import { MentorAthlete } from 'src/modules/mentor-athlete/entities/mentor-athlete.entity';
+import { Athlete } from 'src/modules/athlete/entities/athlete.entity';
+import { AthleteSportPackage } from 'src/modules/athlete-sport-package/entities/athlete-sport-package.entity';
 
 @Entity('Mentor')
 export class Mentor {
@@ -41,17 +44,26 @@ export class Mentor {
   @JoinColumn({ name: 'categoryId', referencedColumnName: 'id' })
   category: Category;
 
-  @OneToMany(() => MentorAthlete, (mentorAthlete) => mentorAthlete.mentors, {
-    cascade: true,
-  })
+  @ManyToMany(() => Athlete, (athlete) => athlete.mentors, { cascade: true })
   @JoinTable({
     name: 'MentorAthlete',
   })
-  mentorAthlete: MentorAthlete[];
+  athletes: Athlete[];
 
   @ManyToOne(() => User, (user) => user.movements, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'userId', referencedColumnName: 'id' })
   user: User;
+
+  @OneToMany(() => SportPackage, (sportPackage) => sportPackage.mentor, {
+    cascade: true,
+  })
+  sportPackages: SportPackage[];
+
+  @OneToMany(
+    () => AthleteSportPackage,
+    (athleteSportPackage) => athleteSportPackage.mentor,
+  )
+  mentorSportPackages: AthleteSportPackage[];
 }
