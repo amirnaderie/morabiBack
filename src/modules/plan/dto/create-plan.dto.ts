@@ -90,7 +90,7 @@ export class CreatePlanDto extends BasePlanDto {
   // @IsUUID('4')
   @IsString()
   @IsNotEmpty({ message: 'تصویر برنامه را وارد نمایید' })
-  logo?: string;
+  logo?: string | null;
 
   @IsArray()
   // @IsUUID('4', { each: true })
@@ -103,7 +103,7 @@ export class CreatePlanDto extends BasePlanDto {
 export class UpdatePlanDto extends PartialType(BasePlanDto) {
   @IsUUID('4')
   @IsOptional()
-  logo?: string;
+  logo?: string | null;
 
   @IsArray()
   @IsUUID('4', { each: true })

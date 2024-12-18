@@ -16,7 +16,6 @@ import { FileService } from 'src/modules/file/providers/file.service';
 import { LogService } from 'src/modules/log/providers/log.service';
 import { User } from 'src/modules/users/entities/user.entity';
 import { UtilityService } from 'src/utility/providers/utility.service';
-import { Tag } from 'src/modules/tag/entities/tag.entity';
 import { MovementService } from 'src/modules/movement/providers/movement.service';
 
 @Injectable()
@@ -54,14 +53,15 @@ export class PlanService {
     )
       throw new BadRequestException('مقادیر ورودی معتبر نیست');
     try {
-      const tagsEntity = await this.tagService.findById(tags);
-      const fileEntity = await this.fileService.findById([logo]);
+      const tagsEntity =
+        tags.length > 0 ? await this.tagService.findById(tags) : null;
+      const fileEntity = logo ? await this.fileService.findById([logo]) : null;
 
       const plan = this.planRepository.create({
         user: user,
         planName,
         tags: tagsEntity,
-        logo: fileEntity[0],
+        logo: logo ? fileEntity[0] : null,
         planDescription,
         gender,
         level,
@@ -121,7 +121,7 @@ export class PlanService {
     try {
       const plan = this.planRepository.create({
         user,
-        planName: `کپی ${planName}`,
+        planName: `${planName}`,
         tags,
         logo,
         planDescription,
@@ -144,10 +144,12 @@ export class PlanService {
           id: result.id,
           planName: `کپی ${planName}`,
           tags: result.tags,
-          logo: {
-            storedName: result.logo.storedName,
-            realmId: result.logo.realmId,
-          },
+          logo: result.logo
+            ? {
+                storedName: result.logo.storedName,
+                realmId: result.logo.realmId,
+              }
+            : null,
           gender,
           level,
           place,
@@ -332,15 +334,16 @@ export class PlanService {
     });
     if (!plan) throw new NotFoundException('موردی یافت نشد');
     try {
-      const tagsEntity = await this.tagService.findById(tags);
-      const fileEntity = await this.fileService.findById([logo]);
+      const tagsEntity =
+        tags.length > 0 ? await this.tagService.findById(tags) : null;
+      const fileEntity = logo ? await this.fileService.findById([logo]) : null;
 
       const updatedPlan = await this.planRepository.save({
         id,
         user: user,
         planName,
         tags: tagsEntity,
-        logo: fileEntity[0],
+        logo: logo ? fileEntity[0] : null,
         planDescription,
         gender,
         level,
@@ -391,7 +394,8 @@ export class PlanService {
         .getMany();
 
       return retVal.length;
-    } catch (error) {
+    } catch (error: any) {
+      console.log(error);
       return 0;
     }
   }

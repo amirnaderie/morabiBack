@@ -14,12 +14,11 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   PrimaryGeneratedColumn,
-  Unique,
 } from 'typeorm';
 import { Realm } from 'src/modules/realm/entities/realm.entity';
 
 @Entity()
-@Unique(['planName', 'creatorId'])
+// @Unique(['planName', 'creatorId'])
 export class Plan {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -93,6 +92,8 @@ export class Plan {
   @ManyToOne(() => File, (file) => file.plans, { cascade: true })
   @JoinColumn({ name: 'logoId', referencedColumnName: 'id' })
   logo: File;
+
+  @Column({ nullable: true }) logoId: string;
 
   @ManyToOne(() => User, (user) => user.plans)
   @JoinColumn({ name: 'creatorId', referencedColumnName: 'id' })
