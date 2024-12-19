@@ -54,7 +54,7 @@ export class PlanService {
       throw new BadRequestException('مقادیر ورودی معتبر نیست');
     try {
       const tagsEntity =
-        tags.length > 0 ? await this.tagService.findById(tags) : null;
+        !tags || tags.length === 0 ? null : await this.tagService.findById(tags);
       const fileEntity = logo ? await this.fileService.findById([logo]) : null;
 
       const plan = this.planRepository.create({
@@ -142,7 +142,7 @@ export class PlanService {
         message: `عملیات با موفقیت انجام پذیرفت`,
         data: {
           id: result.id,
-          planName: `کپی ${planName}`,
+          planName: `${planName}`,
           tags: result.tags,
           logo: result.logo
             ? {
@@ -335,7 +335,9 @@ export class PlanService {
     if (!plan) throw new NotFoundException('موردی یافت نشد');
     try {
       const tagsEntity =
-        tags.length > 0 ? await this.tagService.findById(tags) : null;
+        !tags || tags.length === 0
+          ? null
+          : await this.tagService.findById(tags);
       const fileEntity = logo ? await this.fileService.findById([logo]) : null;
 
       const updatedPlan = await this.planRepository.save({

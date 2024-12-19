@@ -89,7 +89,8 @@ export class BasePlanDto {
 export class CreatePlanDto extends BasePlanDto {
   // @IsUUID('4')
   @IsString()
-  @IsNotEmpty({ message: 'تصویر برنامه را وارد نمایید' })
+  @IsOptional()
+  // @IsNotEmpty({ message: 'تصویر برنامه را وارد نمایید' })
   logo?: string | null;
 
   @IsArray()

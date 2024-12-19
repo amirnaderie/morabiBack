@@ -59,6 +59,7 @@ import { AthleteSportPackageModule } from './modules/athlete-sport-package/athle
               ? true
               : false,
           autoLoadEntities: true,
+          logging: false,//just for debugging in change data model
           options: {
             encrypt: true,
             trustServerCertificate: true,
