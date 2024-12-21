@@ -39,7 +39,7 @@ export const createPermissionSeed = async (AppDataSource: DataSource) => {
         { name: 'مشاهده برنامه', enName: 'plan' }, // 20
         { name: 'مشاهده منوی ورزشکاران', enName: 'athletes' },
         { name: 'مشاهده ورزشکار', enName: 'athlete' },
-        { name: 'مشاهده منوی پکیج ها', enName: 'packages' },
+        { name: 'مشاهده لیست پکیج ها', enName: 'packages' },
         { name: 'مشاهده پکیج', enName: 'package' },
         { name: 'مشاهده منوی فرم های ابتدایی', enName: 'elementary' }, // 25
         { name: 'مشاهده منوی فرم های کنترل', enName: 'control' },
@@ -73,10 +73,9 @@ export const createPermissionSeed = async (AppDataSource: DataSource) => {
         { name: 'ایجاد برنامه', enName: 'create-plan' },
         { name: 'ویرایش برنامه', enName: 'update-plan' },
         { name: 'حذف برنامه', enName: 'delete-plan' }, // 45
-        // {
-        //   name: 'مربی لیست ورزشکاران خود را ببیند',
-        //   enName: 'mentor-read-athletes',
-        // },
+        { name: 'ایجاد پکیج', enName: 'create-package' }, // 1
+        { name: 'ویرایش پکیج', enName: 'update-package' },
+        { name: 'حذف پکیج', enName: 'delete-package' },
       ])
       .execute();
   } catch (error) {
