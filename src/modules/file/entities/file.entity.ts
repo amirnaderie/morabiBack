@@ -1,21 +1,20 @@
+import { Plan } from 'src/modules/plan/entities/plan.entity';
 import { User } from 'src/modules/users/entities/user.entity';
-import { Exclude } from 'class-transformer';
+import { Realm } from 'src/modules/realm/entities/realm.entity';
 import { Movement } from 'src/modules/movement/entities/movement.entity';
+import { BaseEntity } from 'src/modules/base/base.entity';
+
 import {
   Column,
   Entity,
   ManyToOne,
   JoinColumn,
   ManyToMany,
-  CreateDateColumn,
-  UpdateDateColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Realm } from 'src/modules/realm/entities/realm.entity';
-import { Plan } from 'src/modules/plan/entities/plan.entity';
 
 @Entity('File')
-export class File {
+export class File extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -27,14 +26,6 @@ export class File {
 
   @Column({ nullable: true, length: 100 })
   storedName: string;
-
-  @CreateDateColumn({ name: 'created_at', default: () => 'CURRENT_TIMESTAMP' })
-  @Exclude({ toPlainOnly: true })
-  createdAt?: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  @Exclude({ toPlainOnly: true })
-  updatedAt: Date;
 
   @ManyToMany(() => Movement, (movement) => movement.files, {
     onDelete: 'CASCADE',

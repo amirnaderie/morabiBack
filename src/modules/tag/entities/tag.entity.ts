@@ -1,23 +1,19 @@
 import { User } from 'src/modules/users/entities/user.entity';
-import { Exclude } from 'class-transformer';
 import { Movement } from 'src/modules/movement/entities/movement.entity';
 
 import {
   Column,
   Entity,
-  JoinTable,
   ManyToOne,
   JoinColumn,
   ManyToMany,
-  CreateDateColumn,
-  UpdateDateColumn,
-  DeleteDateColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Plan } from 'src/modules/plan/entities/plan.entity';
+import { BaseEntity } from 'src/modules/base/base.entity';
 
 @Entity('Tag')
-export class Tag {
+export class Tag extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -27,17 +23,6 @@ export class Tag {
     unique: true,
   })
   name: string;
-
-  @CreateDateColumn()
-  createdA: Date;
-
-  @UpdateDateColumn()
-  @Exclude({ toPlainOnly: true })
-  updatedAt: Date;
-
-  @DeleteDateColumn()
-  @Exclude({ toPlainOnly: true })
-  deletedAt: Date;
 
   @ManyToMany(() => Movement, (movement) => movement.tags, {
     onDelete: 'CASCADE',

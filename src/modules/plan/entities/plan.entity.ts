@@ -1,7 +1,8 @@
 import { Tag } from 'src/modules/tag/entities/tag.entity';
 import { File } from 'src/modules/file/entities/file.entity';
 import { User } from 'src/modules/users/entities/user.entity';
-import { Exclude } from 'class-transformer';
+import { Realm } from 'src/modules/realm/entities/realm.entity';
+import { BaseEntity } from 'src/modules/base/base.entity';
 
 import {
   Column,
@@ -10,16 +11,12 @@ import {
   ManyToOne,
   ManyToMany,
   JoinColumn,
-  DeleteDateColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Realm } from 'src/modules/realm/entities/realm.entity';
 
 @Entity('Plan')
 // @Unique(['planName', 'creatorId'])
-export class Plan {
+export class Plan extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -77,17 +74,6 @@ export class Plan {
     nullable: true,
   })
   weekDays: string;
-
-  @CreateDateColumn({ select: false })
-  createdA: Date;
-
-  @UpdateDateColumn({ select: false })
-  @Exclude({ toPlainOnly: true })
-  updatedAt: Date;
-
-  @DeleteDateColumn({ select: false })
-  @Exclude({ toPlainOnly: true })
-  deletedAt: Date;
 
   @ManyToOne(() => File, (file) => file.plans, { cascade: true })
   @JoinColumn({ name: 'logoId', referencedColumnName: 'id' })

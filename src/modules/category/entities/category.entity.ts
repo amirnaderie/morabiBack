@@ -1,5 +1,7 @@
-import { Athlete } from 'src/modules/athlete/entities/athlete.entity';
 import { Mentor } from 'src/modules/mentor/entities/mentor.entity';
+import { Athlete } from 'src/modules/athlete/entities/athlete.entity';
+import { BaseEntity } from 'src/modules/base/base.entity';
+
 import {
   Column,
   Entity,
@@ -10,7 +12,7 @@ import {
 } from 'typeorm';
 
 @Entity('Category')
-export class Category {
+export class Category extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 

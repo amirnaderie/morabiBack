@@ -4,15 +4,14 @@ import {
   Unique,
   OneToOne,
   JoinColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from './user.entity';
+import { BaseEntity } from 'src/modules/base/base.entity';
 
 @Entity('Profile')
 @Unique(['userId'])
-export class Profile {
+export class Profile extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -65,17 +64,6 @@ export class Profile {
     nullable: true,
   })
   sportsBackground: string | null;
-
-  @CreateDateColumn({
-    name: 'created_at',
-    default: () => 'CURRENT_TIMESTAMP',
-    select: false,
-    type: 'date',
-  })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at', select: false, type: 'date' })
-  updatedAt: Date;
 
   @OneToOne(() => User, (user) => user.profile, {
     onDelete: 'CASCADE',

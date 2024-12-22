@@ -1,26 +1,23 @@
+import { User } from 'src/modules/users/entities/user.entity';
 import { Tag } from 'src/modules/tag/entities/tag.entity';
 import { File } from 'src/modules/file/entities/file.entity';
-import { User } from 'src/modules/users/entities/user.entity';
-import { Exclude } from 'class-transformer';
+import { Realm } from 'src/modules/realm/entities/realm.entity';
+import { BaseEntity } from 'src/modules/base/base.entity';
 
 import {
   Column,
   Entity,
+  Unique,
   JoinTable,
   ManyToOne,
   ManyToMany,
   JoinColumn,
-  DeleteDateColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
   PrimaryGeneratedColumn,
-  Unique,
 } from 'typeorm';
-import { Realm } from 'src/modules/realm/entities/realm.entity';
 
 @Entity('Movement')
 @Unique(['name', 'creatorId'])
-export class Movement {
+export class Movement extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -45,17 +42,6 @@ export class Movement {
     nullable: true,
   })
   screenSeconds: number;
-
-  @CreateDateColumn({ select: false })
-  createdA: Date;
-
-  @UpdateDateColumn({ select: false })
-  @Exclude({ toPlainOnly: true })
-  updatedAt: Date;
-
-  @DeleteDateColumn({ select: false })
-  @Exclude({ toPlainOnly: true })
-  deletedAt: Date;
 
   @ManyToMany(() => File, (file) => file.movements, { cascade: true })
   @JoinTable({

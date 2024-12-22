@@ -38,7 +38,7 @@ export class SportPackageService {
             },
           },
         ],
-        order: { createdA: 'DESC' },
+        order: { createdAt: 'DESC' },
       });
 
       return {

@@ -1,14 +1,8 @@
-import {
-  Column,
-  Entity,
-  CreateDateColumn,
-  UpdateDateColumn,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
-import { Exclude } from 'class-transformer';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity } from './base.entity';
 
 @Entity('Realm')
-export class RealmSeed {
+export class RealmSeed extends BaseEntity {
   @PrimaryGeneratedColumn() id: number;
 
   @Column({
@@ -16,11 +10,4 @@ export class RealmSeed {
     length: 150,
   })
   name: string;
-
-  @CreateDateColumn({ select: false })
-  createdA: Date;
-
-  @UpdateDateColumn({ select: false })
-  @Exclude({ toPlainOnly: true })
-  updatedAt: Date;
 }
