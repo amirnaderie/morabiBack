@@ -106,7 +106,7 @@ export const addPermissionToRole = async (ADS: DataSource) => {
 
     for (let i = 0; i < arr.length; i++) {
       await ADS.query(
-        `INSERT INTO [role-permission] (roleId,permissionId) VALUES(${arr[i]})`,
+        `INSERT INTO [RolePermission] (roleId,permissionId) VALUES(${arr[i]})`,
       );
     }
   } catch (error) {
