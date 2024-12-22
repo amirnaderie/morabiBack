@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateSportPackageDto } from '../dto/create-sport-package.dto';
 import { UpdateSportPackageDto } from '../dto/update-sport-package.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -65,7 +69,39 @@ export class SportPackageService {
     return `This action updates a #${id} sportPackage`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} sportPackage`;
+  async remove(id: number, userId: string) {
+    const packages = await this.sportPackageRepository.find({
+      where: {
+        id: id,
+        mentor: {
+          user: {
+            id: userId,
+          },
+        },
+      },
+    });
+    if (packages.length > 0) {
+      try {
+        await this.sportPackageRepository.remove(packages);
+        return {
+          message: `عملیات با موفقیت انجام پذیرفت`,
+        };
+      } catch (error) {
+        this.logService.logData(
+          'remove-package',
+          JSON.stringify({ id: id }),
+          error?.stack ? error.stack : 'error not have message!!',
+        );
+        throw new InternalServerErrorException(
+          'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
+        );
+      }
+    }
+    this.logService.logData(
+      'remove-package',
+      JSON.stringify({ id: id }),
+      'package not found!',
+    );
+    throw new NotFoundException('پکیجی یافت نشد');
   }
 }

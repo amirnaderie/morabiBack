@@ -7,7 +7,6 @@ import {
   Param,
   Delete,
   SetMetadata,
-  Req,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -51,7 +50,8 @@ export class SportPackageController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.sportPackageService.remove(+id);
+  @SetMetadata('permission', 'delete-package')
+  remove(@Param('id') id: string, @GetUser() user: User) {
+    return this.sportPackageService.remove(+id, user.id);
   }
 }
