@@ -54,7 +54,9 @@ export class PlanService {
       throw new BadRequestException('مقادیر ورودی معتبر نیست');
     try {
       const tagsEntity =
-        !tags || tags.length === 0 ? null : await this.tagService.findById(tags);
+        !tags || tags.length === 0
+          ? null
+          : await this.tagService.findById(tags);
       const fileEntity = logo ? await this.fileService.findById([logo]) : null;
 
       const plan = this.planRepository.create({
@@ -244,34 +246,37 @@ export class PlanService {
           if (week.isRest) return week;
 
           const circuits = await Promise.all(
-            week.circuits.map(async (circuit: any) => {
-              const circuitExercises = await Promise.all(
-                circuit.circuitExercises.map(async (circuitExercise: any) => {
-                  try {
-                    const { data: exerciseData } =
-                      await this.movementService.findOne(
-                        circuitExercise.movementId,
-                        req,
-                      );
+            week.circuits
+              .filter((circuit: any) => circuit)
+              .map(async (circuit: any) => {
+                const circuitExercises = await Promise.all(
+                  circuit.circuitExercises.map(async (circuitExercise: any) => {
+                    try {
+                      const { data: exerciseData } =
+                        await this.movementService.findOne(
+                          circuitExercise.movementId,
+                          req,
+                        );
 
-                    return {
-                      ...circuitExercise,
-                      movementMovie: (exerciseData as any).files[0]?.storedName,
-                      movementPoster: (exerciseData as any).files[1]
-                        ?.storedName,
-                      movieRealmId: (exerciseData as any).files[0]?.realmId,
-                      posterRealmId: (exerciseData as any).files[1]?.realmId,
-                      exerciseName: exerciseData.name,
-                    };
-                  } catch (error) {
-                    console.error(`Error fetching exercise data: ${error}`);
-                    return circuitExercise;
-                  }
-                }),
-              );
+                      return {
+                        ...circuitExercise,
+                        movementMovie: (exerciseData as any).files[0]
+                          ?.storedName,
+                        movementPoster: (exerciseData as any).files[1]
+                          ?.storedName,
+                        movieRealmId: (exerciseData as any).files[0]?.realmId,
+                        posterRealmId: (exerciseData as any).files[1]?.realmId,
+                        exerciseName: exerciseData.name,
+                      };
+                    } catch (error) {
+                      console.error(`Error fetching exercise data: ${error}`);
+                      return circuitExercise;
+                    }
+                  }),
+                );
 
-              return { ...circuit, circuitExercises };
-            }),
+                return { ...circuit, circuitExercises };
+              }),
           );
 
           return { ...week, circuits };

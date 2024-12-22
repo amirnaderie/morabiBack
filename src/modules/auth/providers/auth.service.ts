@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   ForbiddenException,
   Inject,
@@ -50,7 +51,9 @@ export class AuthService {
       secret,
     });
     if (!isVerified) {
-      throw new UnauthorizedException();
+      throw new BadRequestException(
+        'خطا در عملیات مجددا اقدام به ثبت نام نمایید',
+      );
     }
 
     const userData = await this.redis.get(`${token}${secret}`);
@@ -60,7 +63,10 @@ export class AuthService {
       userName,
       secret: savedSecret,
     } = JSON.parse(userData);
-    if (savedSecret !== secret) throw new UnauthorizedException();
+    if (savedSecret !== secret)
+      throw new BadRequestException(
+        'خطا در عملیات مجددا اقدام به ثبت نام نمایید',
+      );
 
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(password, salt);

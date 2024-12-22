@@ -53,7 +53,7 @@ export class MFAService {
       return speakeasy.totp.verify({
         secret: secret,
         encoding: 'base32',
-        token: token,
+        token: token.toString().padStart(6, '0'),
         window: 3, // Allow a small drift time
         steps: parseInt(this.configService.get<string>('OTP_EXPIRESIN')),
       });
