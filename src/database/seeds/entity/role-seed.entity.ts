@@ -1,18 +1,16 @@
 import {
   Column,
-  CreateDateColumn,
-  DeleteDateColumn,
   Entity,
   JoinTable,
   ManyToMany,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
 } from 'typeorm';
 import { UserSeed } from './user-seed.entity';
 import { PermissionSeed } from './permission-seed.entity';
+import { BaseEntity } from './base.entity';
 
-@Entity('role')
-export class RoleSeed {
+@Entity('Role')
+export class RoleSeed extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -22,15 +20,6 @@ export class RoleSeed {
   @Column()
   enName: string;
 
-  @CreateDateColumn()
-  createdA: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
-
-  @DeleteDateColumn()
-  deletedA: Date;
-
   @ManyToMany(() => UserSeed, (user) => user.roles)
   users: UserSeed[];
 
@@ -39,7 +28,7 @@ export class RoleSeed {
     onDelete: 'CASCADE',
   })
   @JoinTable({
-    name: 'role-permission',
+    name: 'RolePermission',
   })
   permissions: PermissionSeed[];
 }

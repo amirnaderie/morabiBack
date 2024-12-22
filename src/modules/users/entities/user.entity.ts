@@ -1,6 +1,5 @@
 import {
   Column,
-  CreateDateColumn,
   Entity,
   JoinColumn,
   JoinTable,
@@ -8,10 +7,10 @@ import {
   ManyToOne,
   OneToMany,
   OneToOne,
-  PrimaryGeneratedColumn,
   Unique,
-  UpdateDateColumn,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
+
 import { Role } from 'src/modules/role/entities/role.entity';
 import { Movement } from 'src/modules/movement/entities/movement.entity';
 import { File } from 'src/modules/file/entities/file.entity';
@@ -21,10 +20,11 @@ import { Plan } from 'src/modules/plan/entities/plan.entity';
 import { Profile } from './profile.entity';
 import { Athlete } from 'src/modules/athlete/entities/athlete.entity';
 import { Mentor } from 'src/modules/mentor/entities/mentor.entity';
+import { BaseEntity } from 'src/modules/base/base.entity';
 
-@Entity()
+@Entity('User')
 @Unique(['userMobile', 'realmId'])
-export class User {
+export class User extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -41,20 +41,10 @@ export class User {
   @Column({ length: 12 })
   userMobile: string;
 
-  @CreateDateColumn({
-    name: 'created_at',
-    default: () => 'CURRENT_TIMESTAMP',
-    select: false,
-  })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at', select: false })
-  updatedAt: Date;
-
   @ManyToMany(() => Role, (role) => role.users, {
     onDelete: 'CASCADE',
   })
-  @JoinTable({ name: 'user_roles' })
+  @JoinTable({ name: 'UserRoles' })
   roles: Role[];
 
   @ManyToMany(() => Role, (role) => role.permissions)

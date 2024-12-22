@@ -1,5 +1,6 @@
 import { User } from 'src/modules/users/entities/user.entity';
 import { Realm } from 'src/modules/realm/entities/realm.entity';
+import { BaseEntity } from 'src/modules/base/base.entity';
 import { Permission } from 'src/modules/permission/entities/permission.entity';
 
 import {
@@ -9,14 +10,11 @@ import {
   ManyToOne,
   JoinColumn,
   ManyToMany,
-  UpdateDateColumn,
-  CreateDateColumn,
-  DeleteDateColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-@Entity()
-export class Role {
+@Entity('Role')
+export class Role extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -25,15 +23,6 @@ export class Role {
 
   @Column()
   enName: string;
-
-  @CreateDateColumn()
-  createdA: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
-
-  @DeleteDateColumn()
-  deletedA: Date;
 
   @ManyToOne(() => Realm, (realm) => realm.roles)
   @JoinColumn({ name: 'realmId' })
@@ -50,7 +39,7 @@ export class Role {
     onDelete: 'CASCADE',
   })
   @JoinTable({
-    name: 'role-permission',
+    name: 'RolePermission',
   })
   permissions: Permission[];
 }

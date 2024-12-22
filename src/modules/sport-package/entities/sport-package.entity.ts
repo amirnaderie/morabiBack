@@ -1,19 +1,17 @@
-import { Exclude } from 'class-transformer';
-import { AthleteSportPackage } from 'src/modules/athlete-sport-package/entities/athlete-sport-package.entity';
 import { Mentor } from 'src/modules/mentor/entities/mentor.entity';
+import { BaseEntity } from 'src/modules/base/base.entity';
+import { AthleteSportPackage } from 'src/modules/athlete-sport-package/entities/athlete-sport-package.entity';
+
 import {
   Column,
-  CreateDateColumn,
-  DeleteDateColumn,
   Entity,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity('SportPackage')
-export class SportPackage {
+export class SportPackage extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -59,15 +57,4 @@ export class SportPackage {
     (athleteSportPackage) => athleteSportPackage.sportPackage,
   )
   athleteSportPackages: AthleteSportPackage[];
-
-  @CreateDateColumn({ select: false, type: 'date' })
-  createdA: Date;
-
-  @UpdateDateColumn({ select: false, type: 'date' })
-  @Exclude({ toPlainOnly: true })
-  updatedAt: Date;
-
-  @DeleteDateColumn({ select: false, type: 'date' })
-  @Exclude({ toPlainOnly: true })
-  deletedAt: Date;
 }

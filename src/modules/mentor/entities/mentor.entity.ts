@@ -1,24 +1,23 @@
 import { User } from 'src/modules/users/entities/user.entity';
+import { Athlete } from 'src/modules/athlete/entities/athlete.entity';
 import { Category } from 'src/modules/category/entities/category.entity';
+import { BaseEntity } from 'src/modules/base/base.entity';
 import { SportPackage } from 'src/modules/sport-package/entities/sport-package.entity';
+import { AthleteSportPackage } from 'src/modules/athlete-sport-package/entities/athlete-sport-package.entity';
 
 import {
   Column,
   Entity,
   ManyToOne,
   OneToMany,
-  JoinColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
-  PrimaryGeneratedColumn,
-  ManyToMany,
   JoinTable,
+  JoinColumn,
+  ManyToMany,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Athlete } from 'src/modules/athlete/entities/athlete.entity';
-import { AthleteSportPackage } from 'src/modules/athlete-sport-package/entities/athlete-sport-package.entity';
 
 @Entity('Mentor')
-export class Mentor {
+export class Mentor extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -27,16 +26,6 @@ export class Mentor {
 
   @Column()
   categoryId: number;
-
-  @CreateDateColumn({
-    type: 'datetime',
-    select: false,
-    default: () => 'CURRENT_TIMESTAMP',
-  })
-  createdAt: Date;
-
-  @UpdateDateColumn({ select: false, type: 'datetime' })
-  updatedAt: Date;
 
   @ManyToOne(() => Category, (category) => category.mentors, {
     onDelete: 'CASCADE',

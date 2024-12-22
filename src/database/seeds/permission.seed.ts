@@ -9,7 +9,7 @@ export const createPermissionSeed = async (AppDataSource: DataSource) => {
     await queryRunner.startTransaction();
 
     await AppDataSource.query(
-      `DELETE FROM [permission] DBCC CHECKIDENT ([permission], RESEED, 0)`,
+      `DELETE FROM [Permission] DBCC CHECKIDENT ([Permission], RESEED, 0)`,
     );
 
     // const roleRepository = queryRunner.manager.getRepository(RoleSeed);

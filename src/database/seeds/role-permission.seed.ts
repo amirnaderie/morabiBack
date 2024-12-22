@@ -6,7 +6,7 @@ export const addPermissionToRole = async (ADS: DataSource) => {
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
-    await ADS.query(`DELETE FROM [role-permission]`);
+    await ADS.query(`DELETE FROM [RolePermission]`);
 
     //  first number is roleId
     //  second number is permissionId
@@ -106,7 +106,7 @@ export const addPermissionToRole = async (ADS: DataSource) => {
 
     for (let i = 0; i < arr.length; i++) {
       await ADS.query(
-        `INSERT INTO [role-permission] (roleId,permissionId) VALUES(${arr[i]})`,
+        `INSERT INTO [RolePermission] (roleId,permissionId) VALUES(${arr[i]})`,
       );
     }
   } catch (error) {

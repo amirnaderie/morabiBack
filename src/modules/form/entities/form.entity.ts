@@ -1,6 +1,5 @@
 import { User } from 'src/modules/users/entities/user.entity';
 import { Realm } from 'src/modules/realm/entities/realm.entity';
-import { Exclude } from 'class-transformer';
 import { FormQuestion } from 'src/modules/form-question/entities/form-question.entity';
 
 import {
@@ -10,15 +9,13 @@ import {
   OneToMany,
   ManyToOne,
   JoinColumn,
-  DeleteDateColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { BaseEntity } from 'src/modules/base/base.entity';
 
-@Entity('form')
+@Entity('Form')
 @Unique(['name'])
-export class Form {
+export class Form extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -53,17 +50,6 @@ export class Form {
     type: 'varchar',
   })
   type: string;
-
-  @CreateDateColumn({ select: false })
-  createdAt: Date;
-
-  @UpdateDateColumn({ select: false })
-  @Exclude({ toPlainOnly: true })
-  updatedAt: Date;
-
-  @DeleteDateColumn({ select: false })
-  @Exclude({ toPlainOnly: true })
-  deletedAt: Date;
 
   @ManyToOne(() => User, (user) => user.movements)
   @JoinColumn({ name: 'creatorId', referencedColumnName: 'id' })

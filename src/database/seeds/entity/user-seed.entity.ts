@@ -3,14 +3,13 @@ import {
   Entity,
   JoinTable,
   ManyToMany,
-  UpdateDateColumn,
-  CreateDateColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { RoleSeed } from './role-seed.entity';
+import { BaseEntity } from './base.entity';
 
-@Entity('user')
-export class UserSeed {
+@Entity('User')
+export class UserSeed extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: number;
 
@@ -30,12 +29,6 @@ export class UserSeed {
     eager: true,
     onDelete: 'CASCADE',
   })
-  @JoinTable({ name: 'user_roles' })
+  @JoinTable({ name: 'UserRoles' })
   roles: RoleSeed[];
-
-  @CreateDateColumn({ name: 'created_at', default: () => 'CURRENT_TIMESTAMP' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
 }

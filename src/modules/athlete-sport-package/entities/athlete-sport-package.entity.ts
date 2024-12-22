@@ -1,6 +1,6 @@
 import { Mentor } from 'src/modules/mentor/entities/mentor.entity';
 import { Athlete } from '../../athlete/entities/athlete.entity';
-import { Exclude } from 'class-transformer';
+import { BaseEntity } from 'src/modules/base/base.entity';
 import { SportPackage } from 'src/modules/sport-package/entities/sport-package.entity';
 
 import {
@@ -8,31 +8,17 @@ import {
   Entity,
   ManyToOne,
   JoinColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
-  DeleteDateColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
 @Entity('AthleteSportPackage')
-export class AthleteSportPackage {
+export class AthleteSportPackage extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column() athleteId: string;
   @Column() mentorId: string;
   @Column() sportPackageId: number;
-
-  @CreateDateColumn({ select: false })
-  createdA: Date;
-
-  @UpdateDateColumn({ select: false })
-  @Exclude({ toPlainOnly: true })
-  updatedAt: Date;
-
-  @DeleteDateColumn({ select: false })
-  @Exclude({ toPlainOnly: true })
-  deletedAt: Date;
 
   @ManyToOne(() => Athlete, (athlete) => athlete.athleteSportPackages)
   @JoinColumn({ name: 'athleteId' })

@@ -1,23 +1,15 @@
 import { Form } from 'src/modules/form/entities/form.entity';
 import { User } from 'src/modules/users/entities/user.entity';
 import { Role } from 'src/modules/role/entities/role.entity';
-import { Exclude } from 'class-transformer';
-import { Movement } from 'src/modules/movement/entities/movement.entity';
-import { FormQuestion } from 'src/modules/form-question/entities/form-question.entity';
-
-import {
-  Column,
-  Entity,
-  OneToMany,
-  CreateDateColumn,
-  UpdateDateColumn,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
 import { File } from 'src/modules/file/entities/file.entity';
 import { Plan } from 'src/modules/plan/entities/plan.entity';
+import { Movement } from 'src/modules/movement/entities/movement.entity';
+import { BaseEntity } from 'src/modules/base/base.entity';
+import { FormQuestion } from 'src/modules/form-question/entities/form-question.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity()
-export class Realm {
+@Entity('Realm')
+export class Realm extends BaseEntity {
   @PrimaryGeneratedColumn() id: number;
 
   @Column({
@@ -44,7 +36,7 @@ export class Realm {
     onDelete: 'CASCADE',
   })
   movements: Movement[];
- 
+
   @OneToMany(() => Plan, (plan) => plan.realm, {
     onDelete: 'CASCADE',
   })
@@ -54,11 +46,4 @@ export class Realm {
     onDelete: 'CASCADE',
   })
   files: File[];
-
-  @CreateDateColumn({ select: false })
-  createdA: Date;
-
-  @UpdateDateColumn({ select: false })
-  @Exclude({ toPlainOnly: true })
-  updatedAt: Date;
 }

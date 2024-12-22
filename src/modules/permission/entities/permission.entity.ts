@@ -1,20 +1,16 @@
-import { Realm } from 'src/modules/realm/entities/realm.entity';
+import { BaseEntity } from 'src/modules/base/base.entity';
 import { Role } from 'src/modules/role/entities/role.entity';
+
 import {
   Column,
-  CreateDateColumn,
-  DeleteDateColumn,
   Entity,
-  JoinColumn,
   JoinTable,
   ManyToMany,
-  ManyToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
 } from 'typeorm';
 
-@Entity()
-export class Permission {
+@Entity('Permission')
+export class Permission extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -24,18 +20,9 @@ export class Permission {
   @Column()
   enName: string;
 
-  @CreateDateColumn()
-  createdA: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
-
-  @DeleteDateColumn()
-  deletedA: Date;
-
   @ManyToMany(() => Role, (role) => role.permissions)
   @JoinTable({
-    name: 'role-permission',
+    name: 'RolePermission',
   })
   roles: Role[];
 }

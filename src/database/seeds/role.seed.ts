@@ -9,7 +9,7 @@ export const createRoleSeed = async (AppDataSource: DataSource) => {
     await queryRunner.startTransaction();
 
     await AppDataSource.query(
-      `DELETE FROM [role] DBCC CHECKIDENT ([role], RESEED, 0)`,
+      `DELETE FROM [Role] DBCC CHECKIDENT ([Role], RESEED, 0)`,
     );
 
     await queryBuilder
