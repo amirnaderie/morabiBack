@@ -16,7 +16,7 @@ import {
 } from 'typeorm';
 import { Plan } from 'src/modules/plan/entities/plan.entity';
 
-@Entity()
+@Entity('Tag')
 export class Tag {
   @PrimaryGeneratedColumn('uuid')
   id: string;

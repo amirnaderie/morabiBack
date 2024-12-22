@@ -11,7 +11,7 @@ import {
 import { UserSeed } from './user-seed.entity';
 import { PermissionSeed } from './permission-seed.entity';
 
-@Entity('role')
+@Entity('Role')
 export class RoleSeed {
   @PrimaryGeneratedColumn()
   id: number;
@@ -39,7 +39,7 @@ export class RoleSeed {
     onDelete: 'CASCADE',
   })
   @JoinTable({
-    name: 'role-permission',
+    name: 'RolePermission',
   })
   permissions: PermissionSeed[];
 }

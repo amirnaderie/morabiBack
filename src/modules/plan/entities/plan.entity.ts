@@ -17,7 +17,7 @@ import {
 } from 'typeorm';
 import { Realm } from 'src/modules/realm/entities/realm.entity';
 
-@Entity()
+@Entity('Plan')
 // @Unique(['planName', 'creatorId'])
 export class Plan {
   @PrimaryGeneratedColumn('uuid')
@@ -103,7 +103,7 @@ export class Plan {
 
   @ManyToMany(() => Tag, (tag) => tag.plans, { cascade: true })
   @JoinTable({
-    name: 'plan-tag',
+    name: 'PlanTag',
   })
   tags: Tag[];
 

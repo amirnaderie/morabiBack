@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 
-@Entity('realm')
+@Entity('Realm')
 export class RealmSeed {
   @PrimaryGeneratedColumn() id: number;
 

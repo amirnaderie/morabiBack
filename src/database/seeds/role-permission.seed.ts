@@ -6,7 +6,7 @@ export const addPermissionToRole = async (ADS: DataSource) => {
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
-    await ADS.query(`DELETE FROM [role-permission]`);
+    await ADS.query(`DELETE FROM [RolePermission]`);
 
     //  first number is roleId
     //  second number is permissionId

@@ -10,7 +10,7 @@ import {
 } from 'typeorm';
 import { RoleSeed } from './role-seed.entity';
 
-@Entity('permission')
+@Entity('Permission')
 export class PermissionSeed {
   @PrimaryGeneratedColumn()
   id: number;
@@ -34,7 +34,7 @@ export class PermissionSeed {
     onDelete: 'CASCADE',
   })
   @JoinTable({
-    name: 'role-permission',
+    name: 'RolePermission',
   })
   roles: RoleSeed[];
 }

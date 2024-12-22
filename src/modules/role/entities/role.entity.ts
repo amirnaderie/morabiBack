@@ -15,7 +15,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-@Entity()
+@Entity('Role')
 export class Role {
   @PrimaryGeneratedColumn()
   id: number;
@@ -50,7 +50,7 @@ export class Role {
     onDelete: 'CASCADE',
   })
   @JoinTable({
-    name: 'role-permission',
+    name: 'RolePermission',
   })
   permissions: Permission[];
 }

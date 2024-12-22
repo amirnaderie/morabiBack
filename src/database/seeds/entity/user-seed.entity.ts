@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 import { RoleSeed } from './role-seed.entity';
 
-@Entity('user')
+@Entity('User')
 export class UserSeed {
   @PrimaryGeneratedColumn('uuid')
   id: number;
@@ -30,7 +30,7 @@ export class UserSeed {
     eager: true,
     onDelete: 'CASCADE',
   })
-  @JoinTable({ name: 'user_roles' })
+  @JoinTable({ name: 'UserRoles' })
   roles: RoleSeed[];
 
   @CreateDateColumn({ name: 'created_at', default: () => 'CURRENT_TIMESTAMP' })

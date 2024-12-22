@@ -22,7 +22,7 @@ import { Profile } from './profile.entity';
 import { Athlete } from 'src/modules/athlete/entities/athlete.entity';
 import { Mentor } from 'src/modules/mentor/entities/mentor.entity';
 
-@Entity()
+@Entity('User')
 @Unique(['userMobile', 'realmId'])
 export class User {
   @PrimaryGeneratedColumn('uuid')
@@ -54,7 +54,7 @@ export class User {
   @ManyToMany(() => Role, (role) => role.users, {
     onDelete: 'CASCADE',
   })
-  @JoinTable({ name: 'user_roles' })
+  @JoinTable({ name: 'UserRoles' })
   roles: Role[];
 
   @ManyToMany(() => Role, (role) => role.permissions)

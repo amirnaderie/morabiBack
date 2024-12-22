@@ -16,7 +16,7 @@ import {
 import { File } from 'src/modules/file/entities/file.entity';
 import { Plan } from 'src/modules/plan/entities/plan.entity';
 
-@Entity()
+@Entity('Realm')
 export class Realm {
   @PrimaryGeneratedColumn() id: number;
 

@@ -18,7 +18,7 @@ import {
 } from 'typeorm';
 import { Realm } from 'src/modules/realm/entities/realm.entity';
 
-@Entity()
+@Entity('Movement')
 @Unique(['name', 'creatorId'])
 export class Movement {
   @PrimaryGeneratedColumn('uuid')
@@ -59,7 +59,7 @@ export class Movement {
 
   @ManyToMany(() => File, (file) => file.movements, { cascade: true })
   @JoinTable({
-    name: 'file-movement',
+    name: 'FileMovement',
   })
   files: File[];
 
@@ -71,7 +71,7 @@ export class Movement {
 
   @ManyToMany(() => Tag, (tag) => tag.movements, { cascade: true })
   @JoinTable({
-    name: 'movement-tag',
+    name: 'MovementTag',
   })
   tags: Tag[];
 

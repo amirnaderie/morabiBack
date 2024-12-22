@@ -13,7 +13,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity()
+@Entity('Permission')
 export class Permission {
   @PrimaryGeneratedColumn()
   id: number;
@@ -35,7 +35,7 @@ export class Permission {
 
   @ManyToMany(() => Role, (role) => role.permissions)
   @JoinTable({
-    name: 'role-permission',
+    name: 'RolePermission',
   })
   roles: Role[];
 }

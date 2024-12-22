@@ -14,7 +14,7 @@ import {
 import { Realm } from 'src/modules/realm/entities/realm.entity';
 import { Plan } from 'src/modules/plan/entities/plan.entity';
 
-@Entity()
+@Entity('File')
 export class File {
   @PrimaryGeneratedColumn('uuid')
   id: string;

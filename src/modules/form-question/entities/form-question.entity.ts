@@ -15,7 +15,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-@Entity('form-question')
+@Entity('FormQuestion')
 export class FormQuestion {
   @PrimaryGeneratedColumn('uuid')
   id: string;

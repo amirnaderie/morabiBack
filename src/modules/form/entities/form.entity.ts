@@ -16,7 +16,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-@Entity('form')
+@Entity('Form')
 @Unique(['name'])
 export class Form {
   @PrimaryGeneratedColumn('uuid')
