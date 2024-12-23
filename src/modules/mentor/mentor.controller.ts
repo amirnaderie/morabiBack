@@ -15,11 +15,11 @@ import { User } from '../users/entities/user.entity';
 import { Mentor } from './entities/mentor.entity';
 import { GetUser } from 'src/decorators/getUser.decorator';
 import { AuthGuard } from 'src/guards/auth.guard';
-import { MentorService } from './mentor.service';
 import { CreateMentorDto } from './dto/create-mentor.dto';
 import { UpdateMentorDto } from './dto/update-mentor.dto';
 // import { AssignAthletesDto } from './dto/assign-athlete.dto';
 import { HttpResponseTransform } from 'src/interceptors/http-response-transform.interceptor';
+import { MentorService } from './providers/mentor.service';
 
 @Controller('mentors')
 @UseGuards(AuthGuard)
@@ -42,7 +42,7 @@ export class MentorController {
   //   return this.mentorService.assignAthletes(assignAthletesDto, user);
   // }
 
-  @Get('/athletes')
+  @Get('/mentors')
   getAthletes(@GetUser() user: User) {
     return this.mentorService.getAthletes(user);
   }

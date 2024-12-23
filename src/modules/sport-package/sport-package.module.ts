@@ -6,6 +6,8 @@ import { SportPackage } from './entities/sport-package.entity';
 import { AuthModule } from '../auth/auth.module';
 import { LogModule } from '../log/log.module';
 import { UtilityModule } from 'src/utility/utility.module';
+import { Mentor } from '../mentor/entities/mentor.entity';
+import { MentorModule } from '../mentor/mentor.module';
 
 @Module({
   imports: [
@@ -13,6 +15,7 @@ import { UtilityModule } from 'src/utility/utility.module';
     AuthModule,
     LogModule,
     UtilityModule,
+    MentorModule,
   ],
   controllers: [SportPackageController],
   providers: [SportPackageService],

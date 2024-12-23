@@ -9,6 +9,7 @@ import {
   SetMetadata,
   UseGuards,
   UseInterceptors,
+  Put,
 } from '@nestjs/common';
 import { CreateSportPackageDto } from './dto/create-sport-package.dto';
 import { UpdateSportPackageDto } from './dto/update-sport-package.dto';
@@ -26,8 +27,12 @@ export class SportPackageController {
   constructor(private readonly sportPackageService: SportPackageService) {}
 
   @Post()
-  create(@Body() createSportPackageDto: CreateSportPackageDto) {
-    return this.sportPackageService.create(createSportPackageDto);
+  @SetMetadata('permission', 'create-package')
+  create(
+    @Body() createSportPackageDto: CreateSportPackageDto,
+    @GetUser() user: User,
+  ) {
+    return this.sportPackageService.create(createSportPackageDto, user.id);
   }
 
   @Get()
@@ -37,21 +42,34 @@ export class SportPackageController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.sportPackageService.findOne(+id);
+  @SetMetadata('permission', 'package')
+  findOne(@Param('id') id: number, @GetUser() user: User) {
+    return this.sportPackageService.findOne(id, user.id);
   }
 
   @Patch(':id')
+  @SetMetadata('permission', 'update-package')
+  updateOneCol(
+    @Param('id') id: number,
+    @Body('addedToSite') addedToSite: boolean,
+    @GetUser() user: User,
+  ) {
+    return this.sportPackageService.updateOneCol(id, addedToSite, user.id);
+  }
+
+  @Put(':id')
+  @SetMetadata('permission', 'update-package')
   update(
     @Param('id') id: string,
     @Body() updateSportPackageDto: UpdateSportPackageDto,
+    @GetUser() user: User,
   ) {
-    return this.sportPackageService.update(+id, updateSportPackageDto);
+    return this.sportPackageService.update(+id, user.id, updateSportPackageDto);
   }
 
   @Delete(':id')
   @SetMetadata('permission', 'delete-package')
-  remove(@Param('id') id: string, @GetUser() user: User) {
+  remove(@Param('id') id: number, @GetUser() user: User) {
     return this.sportPackageService.remove(+id, user.id);
   }
 }

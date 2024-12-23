@@ -44,6 +44,7 @@ export class SportPackage extends BaseEntity {
   @Column({
     type: 'bit',
     nullable: true,
+    default: false,
   })
   isAddedToSite: boolean;
 
@@ -51,6 +52,9 @@ export class SportPackage extends BaseEntity {
     onDelete: 'CASCADE',
   })
   mentor: Mentor;
+
+  @Column()
+  mentorId: string;
 
   @OneToMany(
     () => AthleteSportPackage,

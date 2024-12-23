@@ -1,24 +1,23 @@
-import { Mentor } from './entities/mentor.entity';
+import { Mentor } from '../entities/mentor.entity';
 import { Repository } from 'typeorm';
-import { LogService } from '../log/providers/log.service';
-import { CreateMentorDto } from './dto/create-mentor.dto';
-import { UpdateMentorDto } from './dto/update-mentor.dto';
+import { LogService } from '../../log/providers/log.service';
+import { CreateMentorDto } from '../dto/create-mentor.dto';
+import { UpdateMentorDto } from '../dto/update-mentor.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   InternalServerErrorException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { AssignAthletesDto } from './dto/assign-athlete.dto';
-import { User } from '../users/entities/user.entity';
-import { AthleteService } from '../athlete/athlete.service';
+import { AssignAthletesDto } from '../dto/assign-athlete.dto';
+import { User } from '../../users/entities/user.entity';
+import { AthleteService } from '../../athlete/athlete.service';
 
 @Injectable()
 export class MentorService {
   constructor(
     @InjectRepository(Mentor)
     private readonly mentorRepository: Repository<Mentor>,
-
     readonly logService: LogService,
     readonly athleteService: AthleteService,
   ) {}
@@ -124,5 +123,29 @@ export class MentorService {
 
   remove(id: number) {
     return `This action removes a #${id} userType`;
+  }
+
+  async findByIdAndCategory(userId: string, categoryId: number) {
+    try {
+      const mentor = await this.mentorRepository.findOne({
+        select: {
+          id: true,
+        },
+        where: [
+          {
+            userId: userId,
+            categoryId: categoryId,
+          },
+        ],
+      });
+      return mentor;
+    } catch (error) {
+      this.logService.logData(
+        'findByIdAndCategory-mentor',
+        JSON.stringify({ userId, categoryId }),
+        error?.stack ? error.stack : 'error not have message!!',
+      );
+      throw new error();
+    }
   }
 }

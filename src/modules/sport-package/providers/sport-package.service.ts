@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -10,6 +11,7 @@ import { SportPackage } from '../entities/sport-package.entity';
 import { Repository } from 'typeorm';
 import { LogService } from 'src/modules/log/providers/log.service';
 import { UtilityService } from 'src/utility/providers/utility.service';
+import { MentorService } from 'src/modules/mentor/providers/mentor.service';
 
 @Injectable()
 export class SportPackageService {
@@ -18,10 +20,45 @@ export class SportPackageService {
     private readonly sportPackageRepository: Repository<SportPackage>,
     private readonly logService: LogService,
     private readonly utilityService: UtilityService,
+    private readonly mentorService: MentorService,
   ) {}
 
-  create(createSportPackageDto: CreateSportPackageDto) {
-    return 'This action adds a new sportPackage';
+  async create(createSportPackageDto: CreateSportPackageDto, userId: string) {
+    const { cost, duration, durationType, name, categoryId } =
+      createSportPackageDto;
+
+    if (!this.utilityService.onlyLettersAndNumbers(name))
+      throw new BadRequestException('مقادیر ورودی معتبر نیست');
+
+    try {
+      const mentor = await this.mentorService.findByIdAndCategory(
+        userId,
+        categoryId,
+      );
+
+      const createdPackage = this.sportPackageRepository.create({
+        cost,
+        duration,
+        durationType,
+        name,
+        mentorId: mentor.id,
+      });
+      const result = await this.sportPackageRepository.save(createdPackage);
+
+      return {
+        message: `عملیات با موفقیت انجام پذیرفت`,
+      };
+    } catch (error) {
+      this.logService.logData(
+        'create-SportPackage',
+        JSON.stringify({ createSportPackageDto, userId }),
+        error?.stack ? error.stack : 'error not have message!!',
+      );
+
+      throw new InternalServerErrorException(
+        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
+      );
+    }
   }
 
   async findAll(userId: string) {
@@ -61,16 +98,8 @@ export class SportPackageService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} sportPackage`;
-  }
-
-  update(id: number, updateSportPackageDto: UpdateSportPackageDto) {
-    return `This action updates a #${id} sportPackage`;
-  }
-
-  async remove(id: number, userId: string) {
-    const packages = await this.sportPackageRepository.find({
+  async findOne(id: number, userId: string) {
+    const selectedPackage = await this.sportPackageRepository.findOne({
       where: {
         id: id,
         mentor: {
@@ -80,9 +109,105 @@ export class SportPackageService {
         },
       },
     });
-    if (packages.length > 0) {
+    delete selectedPackage.mentorId;
+    return {
+      message: `عملیات با موفقیت انجام پذیرفت`,
+      data: selectedPackage,
+    };
+  }
+
+  async update(
+    id: number,
+    userId: string,
+    updateSportPackageDto: UpdateSportPackageDto,
+  ) {
+    try {
+      const { cost, duration, durationType, name } = updateSportPackageDto;
+
+      if (!this.utilityService.onlyLettersAndNumbers(name))
+        throw new BadRequestException('مقادیر ورودی معتبر نیست');
+
+      const selectedPackage = await this.sportPackageRepository.find({
+        where: {
+          id: id,
+          mentor: {
+            user: {
+              id: userId,
+            },
+          },
+        },
+      });
+      if (selectedPackage.length > 0) {
+        await this.sportPackageRepository.update(id, {
+          cost,
+          duration,
+          durationType,
+          name,
+        });
+
+        return {
+          message: `عملیات با موفقیت انجام پذیرفت`,
+          // data: updatedPackage,
+        };
+      }
+    } catch (error) {
+      this.logService.logData(
+        'update-package',
+        JSON.stringify({ id: id, updateSportPackageDto }),
+        error?.stack ? error.stack : 'error not have message!!',
+      );
+      throw new InternalServerErrorException(
+        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
+      );
+    }
+  }
+
+  async updateOneCol(id: number, addedToSite: boolean, userId: string) {
+    const selectedPackage = await this.sportPackageRepository.find({
+      where: {
+        id: id,
+        mentor: {
+          user: {
+            id: userId,
+          },
+        },
+      },
+    });
+    if (selectedPackage.length > 0) {
       try {
-        await this.sportPackageRepository.remove(packages);
+        await this.sportPackageRepository.update(id, {
+          isAddedToSite: addedToSite,
+        });
+        return {
+          message: `عملیات با موفقیت انجام پذیرفت`,
+        };
+      } catch (error) {
+        this.logService.logData(
+          'update-package',
+          JSON.stringify({ id: id, addedToSite }),
+          error?.stack ? error.stack : 'error not have message!!',
+        );
+        throw new InternalServerErrorException(
+          'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
+        );
+      }
+    }
+  }
+
+  async remove(id: number, userId: string) {
+    const selectedPackage = await this.sportPackageRepository.find({
+      where: {
+        id: id,
+        mentor: {
+          user: {
+            id: userId,
+          },
+        },
+      },
+    });
+    if (selectedPackage.length > 0) {
+      try {
+        await this.sportPackageRepository.remove(selectedPackage);
         return {
           message: `عملیات با موفقیت انجام پذیرفت`,
         };
