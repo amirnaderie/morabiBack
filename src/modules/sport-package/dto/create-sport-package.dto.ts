@@ -17,14 +17,14 @@ export class CreateSportPackageDto {
   )
   readonly name: string;
 
-  @IsNumber({}, { message: 'مدت پگیج باید عدد انگلیسی باشد' })
+  @IsNumber({}, { message: 'مدت پکیج باید عدد انگلیسی باشد' })
   @IsNotEmpty({ message: 'مدت پکیج را وارد نمایید!' })
   @Min(1, { message: 'مدت پکیج معتبر نیست!' })
   @Max(180, { message: 'مدت پکیج معتبر نیست!' })
   @Type(() => Number)
   duration?: number;
 
-  @IsNumber({}, { message: 'نوع پگیج باید عدد انگلیسی باشد' })
+  @IsNumber({}, { message: 'نوع پکیج باید عدد انگلیسی باشد' })
   @IsNotEmpty({ message: 'نوع پکیج را وارد نمایید!' })
   @Min(1)
   @Max(5)
