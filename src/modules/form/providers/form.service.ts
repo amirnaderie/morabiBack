@@ -222,6 +222,32 @@ export class FormService {
     }
   }
 
+  async changeStatus(user: User, id: string, req: Request) {
+    try {
+      const form = await this.formRepository.findOne({
+        where: {
+          id: id,
+          creatorId: user.id,
+          realmId: (req as any).subdomainId || 1,
+        },
+      });
+      form.status = Number(!form.status);
+
+      return await this.formRepository.save(form);
+    } catch (error) {
+      this.logService.logData(
+        'changeStatus-form',
+        JSON.stringify({
+          id: id,
+          req: req,
+          user: user,
+        }),
+        error?.stack ? error.stack : 'error not have message!!',
+      );
+      throw new Error(error);
+    }
+  }
+
   async remove(id: string, req: Request, user: User) {
     try {
       return this.formRepository.delete({
