@@ -17,14 +17,14 @@ export class CreateSportPackageDto {
   )
   readonly name: string;
 
-  @IsNumber()
+  @IsNumber({}, { message: 'مدت پگیج باید عدد انگلیسی باشد' })
   @IsNotEmpty({ message: 'مدت پکیج را وارد نمایید!' })
   @Min(1, { message: 'مدت پکیج معتبر نیست!' })
   @Max(180, { message: 'مدت پکیج معتبر نیست!' })
   @Type(() => Number)
   duration?: number;
 
-  @IsNumber()
+  @IsNumber({}, { message: 'نوع پگیج باید عدد انگلیسی باشد' })
   @IsNotEmpty({ message: 'نوع پکیج را وارد نمایید!' })
   @Min(1)
   @Max(5)
@@ -32,14 +32,14 @@ export class CreateSportPackageDto {
   durationType?: number;
 
   @IsNotEmpty({ message: 'مبلغ پکیج را وارد نمایید!' })
-  @IsNumber()
+  @IsNumber({}, { message: 'مبلغ ورزش باید عدد انگلیسی باشد' })
   @Type(() => Number)
   @ValidateIf((object, value) => /^\d+$/.test(value), {
     message: 'مقادیر ورودی معتبر نیست',
   })
   readonly cost: number;
 
-  @IsNumber()
+  @IsNumber({}, { message: 'نوع ورزش باید عدد انگلیسی باشد' })
   @IsNotEmpty({ message: 'نوع ورزش را وارد نمایید!' })
   @Min(1)
   @Max(200)
