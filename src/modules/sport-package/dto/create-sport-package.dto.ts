@@ -19,8 +19,8 @@ export class CreateSportPackageDto {
 
   @IsNumber()
   @IsNotEmpty({ message: 'مدت پکیج را وارد نمایید!' })
-  @Min(1)
-  @Max(180)
+  @Min(1, { message: 'مدت پکیج معتبر نیست!' })
+  @Max(180, { message: 'مدت پکیج معتبر نیست!' })
   @Type(() => Number)
   duration?: number;
 
