@@ -6,6 +6,7 @@ import { Mentor } from './entities/mentor.entity';
 import { MentorController } from './mentor.controller';
 import { AthleteModule } from '../athlete/athlete.module';
 import { MentorService } from './providers/mentor.service';
+import { AthleteSportPackageModule } from '../athlete-sport-package/athlete-sport-package.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { MentorService } from './providers/mentor.service';
     forwardRef(() => AuthModule),
     forwardRef(() => LogModule),
     forwardRef(() => AthleteModule),
+    forwardRef(() => AthleteSportPackageModule),
   ],
   controllers: [MentorController],
   providers: [MentorService],

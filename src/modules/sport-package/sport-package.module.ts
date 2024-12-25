@@ -19,5 +19,6 @@ import { MentorModule } from '../mentor/mentor.module';
   ],
   controllers: [SportPackageController],
   providers: [SportPackageService],
+  exports: [SportPackageService],
 })
 export class SportPackageModule {}

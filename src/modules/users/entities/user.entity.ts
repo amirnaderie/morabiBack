@@ -21,6 +21,7 @@ import { Profile } from './profile.entity';
 import { Athlete } from 'src/modules/athlete/entities/athlete.entity';
 import { Mentor } from 'src/modules/mentor/entities/mentor.entity';
 import { BaseEntity } from 'src/modules/base/base.entity';
+import { Payment } from 'src/modules/payment/entities/payment.entity';
 
 @Entity('User')
 @Unique(['userMobile', 'realmId'])
@@ -81,4 +82,7 @@ export class User extends BaseEntity {
   }) // specify inverse side as a second parameter
   @JoinColumn({ name: 'profileId' })
   profile: Profile;
+
+  @OneToMany(() => Payment, (payment) => payment.user)
+  payments: Payment[];
 }

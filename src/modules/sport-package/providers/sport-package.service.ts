@@ -110,10 +110,7 @@ export class SportPackageService {
       },
     });
     delete selectedPackage.mentorId;
-    return {
-      message: `عملیات با موفقیت انجام پذیرفت`,
-      data: selectedPackage,
-    };
+    return selectedPackage;
   }
 
   async update(

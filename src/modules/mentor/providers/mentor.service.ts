@@ -12,6 +12,7 @@ import {
 import { AssignAthletesDto } from '../dto/assign-athlete.dto';
 import { User } from '../../users/entities/user.entity';
 import { AthleteService } from '../../athlete/athlete.service';
+import { AthleteSportPackageService } from 'src/modules/athlete-sport-package/athlete-sport-package.service';
 
 @Injectable()
 export class MentorService {
@@ -20,6 +21,7 @@ export class MentorService {
     private readonly mentorRepository: Repository<Mentor>,
     readonly logService: LogService,
     readonly athleteService: AthleteService,
+    readonly athleteSportPackageService: AthleteSportPackageService,
   ) {}
 
   async create(createMentorDto: CreateMentorDto): Promise<Mentor> {
@@ -75,20 +77,25 @@ export class MentorService {
       );
     }
   }
-
-  async getAthletes(user: User) {
+  //  (user , category) -> mentor -> athletePacageMentor -> athlete
+  async getAthletes(user: User, categoryId: number) {
     try {
-      return await this.mentorRepository.find({
+      const userId = user.id;
+      const mentor = await this.mentorRepository.findOne({
         where: {
-          user: {
-            id: user.id,
-          },
+          userId: userId,
+          categoryId: categoryId,
         },
       });
+
+      const athletes = await this.athleteSportPackageService.findAllByMentorId(
+        mentor.id,
+      );
+      console.log(athletes, 'athletes');
+      return athletes;
     } catch (error) {
-      console.log(error);
       this.logService.logData(
-        'create-mentor',
+        'getAthletes-mentor',
         'no input',
         error?.stack ? error.stack : 'error not have message!!',
       );
