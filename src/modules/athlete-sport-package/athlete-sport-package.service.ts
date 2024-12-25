@@ -44,7 +44,9 @@ export class AthleteSportPackageService {
     try {
       return await this.athleteSportPackageRepository.find({
         where: {
-          mentorId: mentorId,
+          mentor: {
+            id: mentorId,
+          },
         },
       });
     } catch (error) {

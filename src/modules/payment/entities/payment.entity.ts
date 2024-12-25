@@ -1,8 +1,14 @@
-import { User } from 'src/modules/users/entities/user.entity';
 import { SportPackage } from 'src/modules/sport-package/entities/sport-package.entity';
+import { User } from 'src/modules/users/entities/user.entity';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
-import { Column, ManyToOne, JoinColumn, PrimaryGeneratedColumn } from 'typeorm';
-
+@Entity('Payment')
 export class Payment {
   @PrimaryGeneratedColumn('uuid')
   id: string;

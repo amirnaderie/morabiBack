@@ -1,6 +1,5 @@
 import {
   Get,
-  Post,
   Body,
   Patch,
   Param,
@@ -8,16 +7,18 @@ import {
   UseGuards,
   Controller,
   UseInterceptors,
+  Post,
+  SetMetadata,
 } from '@nestjs/common';
 
-import { User } from '../users/entities/user.entity';
-import { GetUser } from 'src/decorators/getUser.decorator';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { RolesGuard } from 'src/guards/role.guard';
 import { PaymentService } from './providers/payment.service';
-import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
 import { HttpResponseTransform } from 'src/interceptors/http-response-transform.interceptor';
+import { GetUser } from 'src/decorators/getUser.decorator';
+import { CreatePaymentDto } from './dto/create-payment.dto';
+import { User } from '../users/entities/user.entity';
 
 @Controller('payment')
 @UseGuards(AuthGuard, RolesGuard)
@@ -26,6 +27,7 @@ export class PaymentController {
   constructor(private readonly paymentService: PaymentService) {}
 
   @Post()
+  @SetMetadata('permission', 'create-payment')
   async create(
     @Body() createPaymentDto: CreatePaymentDto,
     @GetUser() user: User,

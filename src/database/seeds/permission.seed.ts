@@ -76,6 +76,8 @@ export const createPermissionSeed = async (AppDataSource: DataSource) => {
         { name: 'ایجاد پکیج', enName: 'create-package' }, // 1
         { name: 'ویرایش پکیج', enName: 'update-package' },
         { name: 'حذف پکیج', enName: 'delete-package' },
+
+        { name: 'ایجاد پرداخت', enName: 'create-payment' },
       ])
       .execute();
   } catch (error) {

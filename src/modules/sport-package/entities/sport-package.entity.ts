@@ -61,10 +61,8 @@ export class SportPackage extends BaseEntity {
   @Column()
   mentorId: string;
 
-  @ManyToOne(() => Category, (category) => category.sportPackages, {
-    onDelete: 'CASCADE',
-  })
-  category: SportPackage;
+  @ManyToOne(() => Category, (category) => category.sportPackages)
+  category: Category;
 
   @Column()
   categoryId: number;
