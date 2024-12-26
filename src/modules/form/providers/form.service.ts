@@ -31,7 +31,7 @@ export class FormService {
 
       const form = this.formRepository.create({
         type: oldForm.type,
-        name: `${oldForm.name} کپی`,
+        name: `${oldForm.name}`,
         creatorId: user.id,
         realmId: oldForm.realmId,
         questions: oldForm.questions,
