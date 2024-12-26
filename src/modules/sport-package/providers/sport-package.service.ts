@@ -43,7 +43,7 @@ export class SportPackageService {
         name,
         mentorId: mentor.id,
       });
-      const result = await this.sportPackageRepository.save(createdPackage);
+      await this.sportPackageRepository.save(createdPackage);
 
       return {
         message: `عملیات با موفقیت انجام پذیرفت`,
