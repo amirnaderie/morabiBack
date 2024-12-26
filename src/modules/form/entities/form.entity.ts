@@ -5,7 +5,6 @@ import { FormQuestion } from 'src/modules/form-question/entities/form-question.e
 import {
   Column,
   Entity,
-  Unique,
   OneToMany,
   ManyToOne,
   JoinColumn,
@@ -14,7 +13,6 @@ import {
 import { BaseEntity } from 'src/modules/base/base.entity';
 
 @Entity('Form')
-@Unique(['name'])
 export class Form extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
