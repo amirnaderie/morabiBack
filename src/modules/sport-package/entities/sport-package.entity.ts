@@ -9,6 +9,8 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Category } from 'src/modules/category/entities/category.entity';
+import { Payment } from 'src/modules/payment/entities/payment.entity';
 
 @Entity('SportPackage')
 export class SportPackage extends BaseEntity {
@@ -48,6 +50,9 @@ export class SportPackage extends BaseEntity {
   })
   isAddedToSite: boolean;
 
+  @OneToMany(() => Payment, (payment) => payment.sportPackage)
+  payments: Payment[];
+
   @ManyToOne(() => Mentor, (mentor) => mentor.sportPackages, {
     onDelete: 'CASCADE',
   })
@@ -55,6 +60,12 @@ export class SportPackage extends BaseEntity {
 
   @Column()
   mentorId: string;
+
+  @ManyToOne(() => Category, (category) => category.sportPackages)
+  category: Category;
+
+  @Column()
+  categoryId: number;
 
   @OneToMany(
     () => AthleteSportPackage,

@@ -61,6 +61,26 @@ export class AthleteService {
     return `This action returns a #${id} athlete`;
   }
 
+  async findOneByUserIdAndCategoryId(userId: string, categoryId: number) {
+    try {
+      return await this.athleteRepository.findOne({
+        where: {
+          userId: userId,
+          categoryId: categoryId,
+        },
+      });
+    } catch (error) {
+      this.logService.logData(
+        'findOneByUserIdAndCategoryId-athlete',
+        JSON.stringify({ userId: userId, categoryId: categoryId }),
+        error?.stack ? error.stack : 'error not have message!!',
+      );
+      throw new InternalServerErrorException(
+        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
+      );
+    }
+  }
+
   update(id: number, updateAthleteDto: UpdateAthleteDto) {
     return `This action updates a #${id} ${updateAthleteDto} athlete`;
   }

@@ -42,12 +42,9 @@ export class SportPackageService {
         durationType,
         name,
         mentorId: mentor.id,
+        categoryId: categoryId,
       });
-      await this.sportPackageRepository.save(createdPackage);
-
-      return {
-        message: `عملیات با موفقیت انجام پذیرفت`,
-      };
+      return await this.sportPackageRepository.save(createdPackage);
     } catch (error) {
       this.logService.logData(
         'create-SportPackage',
@@ -102,18 +99,10 @@ export class SportPackageService {
     const selectedPackage = await this.sportPackageRepository.findOne({
       where: {
         id: id,
-        mentor: {
-          user: {
-            id: userId,
-          },
-        },
       },
     });
-    delete selectedPackage.mentorId;
-    return {
-      message: `عملیات با موفقیت انجام پذیرفت`,
-      data: selectedPackage,
-    };
+    // delete selectedPackage.mentorId;
+    return selectedPackage;
   }
 
   async update(

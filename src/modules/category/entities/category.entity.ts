@@ -1,6 +1,7 @@
 import { Mentor } from 'src/modules/mentor/entities/mentor.entity';
 import { Athlete } from 'src/modules/athlete/entities/athlete.entity';
 import { BaseEntity } from 'src/modules/base/base.entity';
+import { SportPackage } from 'src/modules/sport-package/entities/sport-package.entity';
 
 import {
   Column,
@@ -41,4 +42,9 @@ export class Category extends BaseEntity {
     cascade: true,
   })
   mentors: Mentor[];
+
+  @OneToMany(() => SportPackage, (sportPackage) => sportPackage.category, {
+    cascade: true,
+  })
+  sportPackages: SportPackage[];
 }

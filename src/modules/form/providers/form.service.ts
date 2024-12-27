@@ -60,7 +60,7 @@ export class FormService {
     user: User,
   ): Promise<{ data: Form }> {
     try {
-      const { name, description, type } = createFormDto;
+      const { name, description, type, status } = createFormDto;
 
       const form = this.formRepository.create({
         name: name,
@@ -68,6 +68,7 @@ export class FormService {
         creatorId: user.id,
         realmId: (req as any).subdomainId || 1,
         type: type,
+        status: status ? 1 : 0,
       });
 
       const formSaved = await this.formRepository.save(form);

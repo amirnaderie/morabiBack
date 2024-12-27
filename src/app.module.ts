@@ -33,6 +33,7 @@ import { MentorModule } from './modules/mentor/mentor.module';
 import { AthleteModule } from './modules/athlete/athlete.module';
 import { SportPackageModule } from './modules/sport-package/sport-package.module';
 import { AthleteSportPackageModule } from './modules/athlete-sport-package/athlete-sport-package.module';
+import { PaymentModule } from './modules/payment/payment.module';
 
 @Module({
   imports: [
@@ -59,7 +60,7 @@ import { AthleteSportPackageModule } from './modules/athlete-sport-package/athle
               ? true
               : false,
           autoLoadEntities: true,
-          logging: false, //just for debugging in change data model
+          logging: true, //just for debugging in change data model
           options: {
             encrypt: true,
             trustServerCertificate: true,
@@ -86,6 +87,7 @@ import { AthleteSportPackageModule } from './modules/athlete-sport-package/athle
     AthleteModule,
     SportPackageModule,
     AthleteSportPackageModule,
+    PaymentModule,
   ],
   providers: [IsUniqueConstraint],
 })

@@ -4,7 +4,9 @@ import {
   IsNumber,
   IsString,
   Max,
+  MaxLength,
   Min,
+  MinLength,
   ValidateIf,
 } from 'class-validator';
 
@@ -45,4 +47,9 @@ export class CreateSportPackageDto {
   @Max(200)
   @Type(() => Number)
   categoryId?: number;
+
+  @IsString({ message: 'شناسه‌مربی صحیح نمیباشد' })
+  @MaxLength(36, { message: 'شناسه‌مربی صحیح نمیباشد' })
+  @MinLength(36, { message: 'شناسه‌مربی صحیح نمیباشد' })
+  readonly mentorId: string;
 }
