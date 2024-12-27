@@ -15,6 +15,7 @@ import { LogModule } from '../log/log.module';
 import { RealmModule } from '../realm/realm.module';
 import { UtilityModule } from 'src/utility/utility.module';
 import { AlsModule } from 'src/middleware/als.module';
+import { MentorModule } from '../mentor/mentor.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { AlsModule } from 'src/middleware/als.module';
     RealmModule,
     UtilityModule,
     AlsModule,
+    MentorModule,
     TypeOrmModule.forFeature([User, Role]),
     JwtModule.registerAsync({
       imports: [ConfigModule],

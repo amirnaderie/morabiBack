@@ -25,14 +25,16 @@ import { ConfigService } from '@nestjs/config';
 import { UtilityService } from 'src/utility/providers/utility.service';
 import { AsyncLocalStorage } from 'async_hooks';
 import { ProfileService } from 'src/modules/users/providers/profile.service';
+import { MentorService } from 'src/modules/mentor/providers/mentor.service';
 // import { JwtPayload } from './jwt-payload.interface';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User) // You can inject without using forFeature()
-    private readonly usresRepository: Repository<User>,
+    private readonly usersRepository: Repository<User>,
     private rolesService: RolesService,
+    private mentorService: MentorService,
     private jwtService: JwtService,
     private mFAService: MFAService,
     private readonly profileService: ProfileService,
@@ -72,30 +74,39 @@ export class AuthService {
     const hashedPassword = await bcrypt.hash(password, salt);
     const role = await this.rolesService.findOne(2, req);
 
-    const user = this.usresRepository.create({
+    const user = this.usersRepository.create({
       password: hashedPassword,
       userMobile,
       realmId: (req as any).subdomainId || 1,
     });
     try {
       user.roles = [role];
-      const newUser = await this.usresRepository.save(user);
+      const newUser = await this.usersRepository.save(user);
       const profile = await this.profileService.create({
         name: userName,
         family: userFamily,
         userId: newUser.id,
       });
       user.profileId = profile.id;
-      await this.usresRepository.save(user);
+      await this.usersRepository.save(user);
     } catch (error) {
       this.logService.logData(
-        'signUp',
+        'signUp for saving profile',
         JSON.stringify({ userMobile }),
         error.stack,
       );
       if (error.number === 2627)
         throw new ConflictException('نام کاربری تکراری است');
       else throw new InternalServerErrorException();
+    }
+    try {
+      await this.mentorService.create({ categoryId: 1, userId: user.id });
+    } catch (error) {
+      this.logService.logData(
+        'signUp for saving Mentor',
+        JSON.stringify({ categoryId: 1, userId: user.id }),
+        error.stack,
+      );
     }
   }
 
@@ -121,14 +132,14 @@ export class AuthService {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     try {
-      const user = await this.usresRepository.findOneBy({
+      const user = await this.usersRepository.findOneBy({
         userMobile,
         realmId: (req as any).subdomainId || 1,
       });
       user.password = hashedPassword;
       // user.updatedAt = new Date();
       if (user) {
-        await this.usresRepository.save(user);
+        await this.usersRepository.save(user);
       }
     } catch (error) {
       throw new InternalServerErrorException(error);
@@ -149,7 +160,7 @@ export class AuthService {
   }
   async signIn(signInDto: SignInDto, response: Response, req: Request) {
     const { userMobile, password } = signInDto;
-    const user = await this.usresRepository.findOne({
+    const user = await this.usersRepository.findOne({
       where: {
         userMobile: userMobile,
         realmId: (req as any).subdomainId,
