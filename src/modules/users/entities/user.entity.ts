@@ -79,7 +79,7 @@ export class User extends BaseEntity {
 
   @OneToOne(() => Profile, (profile) => profile.user, {
     cascade: true,
-  }) // specify inverse side as a second parameter
+  })
   @JoinColumn({ name: 'profileId' })
   profile: Profile;
 

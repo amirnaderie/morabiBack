@@ -36,11 +36,14 @@ export class PaymentService {
       });
       const payment = await this.paymentService.save(paymentInstance);
 
+      // get sport package
       const sportPackage = await this.sportPackageService.findOne(
         packageId,
         userId,
       );
+      console.log(sportPackage, 'sportPackage');
 
+      // get athlete
       let athlete = await this.athleteService.findOneByUserIdAndCategoryId(
         userId,
         packageId,
@@ -52,7 +55,8 @@ export class PaymentService {
           userId: userId,
         });
       }
-
+      // save
+      console.log(sportPackage, 'sportPackage');
       this.athleteSportPackageService.create({
         athleteId: athlete.id,
         mentorId: sportPackage.mentorId,

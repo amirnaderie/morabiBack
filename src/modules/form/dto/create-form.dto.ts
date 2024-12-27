@@ -1,9 +1,13 @@
+import { Type } from 'class-transformer';
 import {
   IsString,
   MaxLength,
   MinLength,
   ValidateIf,
   IsNotEmpty,
+  IsNumber,
+  Min,
+  Max,
 } from 'class-validator';
 
 export class CreateFormDto {
@@ -22,6 +26,13 @@ export class CreateFormDto {
   @MaxLength(10)
   @MinLength(3)
   type?: string;
+
+  @ValidateIf((object, value) => value !== undefined)
+  @IsNumber({}, { message: 'وضعیت باید عدد انگلیسی باشد' })
+  @Min(0, { message: 'وضعیت معتبر نیست' })
+  @Max(1, { message: 'وضعیت معتبر نیست!' })
+  @Type(() => Number)
+  status?: number;
 
   @ValidateIf((object, value) => value !== undefined)
   @IsString({ message: 'توضیحات فرم باید متن باشد' })

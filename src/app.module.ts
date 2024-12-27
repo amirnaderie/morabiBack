@@ -60,7 +60,7 @@ import { PaymentModule } from './modules/payment/payment.module';
               ? true
               : false,
           autoLoadEntities: true,
-          logging: false, //just for debugging in change data model
+          logging: true, //just for debugging in change data model
           options: {
             encrypt: true,
             trustServerCertificate: true,
