@@ -8,7 +8,6 @@ import { SendOtpDto } from '../dto/sendOtp.dto';
 import { User } from 'src/modules/users/entities/user.entity';
 import { lastValueFrom } from 'rxjs';
 import { UsersService } from 'src/modules/users/providers/users.service';
-import { ProfileService } from 'src/modules/users/providers/profile.service';
 import { LogService } from 'src/modules/log/providers/log.service';
 
 @Injectable()
@@ -18,7 +17,6 @@ export class MFAService {
     private readonly configService: ConfigService,
     @Inject('REDIS_CLIENT') private readonly redis: Redis,
     private usersService: UsersService,
-    private profileService: ProfileService,
     private readonly logService: LogService,
   ) {}
 
@@ -85,11 +83,11 @@ export class MFAService {
       throw new ConflictException('این شماره همراه پیش از این ثبت نشده است');
     }
     try {
-      const profile = await this.profileService.get(user);
+      // const user = await this.usersService.findOne(user.id);
       return this.sendSMS(
         {
-          userName: profile.family,
-          userFamily: profile.name,
+          userName: user.family,
+          userFamily: user.name,
           userMobile: user.userMobile,
         },
         req,
@@ -123,7 +121,6 @@ export class MFAService {
     if (user)
       throw new ConflictException('این شماره همراه پیش از این ثبت شده است');
 
-    // const profile = await this.profileService.get(user);
     try {
       return this.sendSMS(sendOtpDto, req);
     } catch (error) {
@@ -138,6 +135,7 @@ export class MFAService {
 
   private sendSMS = async (sendOtpDto: SendOtpDto, req: Request) => {
     const { userMobile, userFamily, userName } = sendOtpDto;
+
     const requestIp: string =
       (req as any).ip || (req as any).connection.remodeAddress;
 

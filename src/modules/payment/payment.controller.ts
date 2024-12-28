@@ -27,7 +27,7 @@ export class PaymentController {
   constructor(private readonly paymentService: PaymentService) {}
 
   @Post()
-  @SetMetadata('permission', 'create-payment')
+  @SetMetadata('permission', 'create-package')
   async create(
     @Body() createPaymentDto: CreatePaymentDto,
     @GetUser() user: User,

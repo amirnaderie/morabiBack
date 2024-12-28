@@ -6,7 +6,7 @@ import {
   ManyToMany,
   ManyToOne,
   OneToMany,
-  OneToOne,
+  // OneToOne,
   Unique,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -17,7 +17,7 @@ import { File } from 'src/modules/file/entities/file.entity';
 import { Tag } from 'src/modules/tag/entities/tag.entity';
 import { Realm } from 'src/modules/realm/entities/realm.entity';
 import { Plan } from 'src/modules/plan/entities/plan.entity';
-import { Profile } from './profile.entity';
+// import { Profile } from './profile.entity';
 import { Athlete } from 'src/modules/athlete/entities/athlete.entity';
 import { Mentor } from 'src/modules/mentor/entities/mentor.entity';
 import { BaseEntity } from 'src/modules/base/base.entity';
@@ -31,13 +31,19 @@ export class User extends BaseEntity {
 
   @Column({ default: 1 }) realmId: number;
 
-  @Column({
-    nullable: true,
-  })
-  profileId: string;
+  // @Column({
+  //   nullable: true,
+  // })
+  // profileId: string;
 
   @Column({ length: 100, select: false })
   password: string;
+
+  @Column({ length: 100, nullable: true })
+  family: string;
+
+  @Column({ length: 100, nullable: true })
+  name: string;
 
   @Column({ length: 12 })
   userMobile: string;
@@ -76,12 +82,6 @@ export class User extends BaseEntity {
   @ManyToOne(() => Realm, (realm) => realm.users)
   @JoinColumn({ name: 'realmId' })
   realm: Realm;
-
-  @OneToOne(() => Profile, (profile) => profile.user, {
-    cascade: true,
-  })
-  @JoinColumn({ name: 'profileId' })
-  profile: Profile;
 
   @OneToMany(() => Payment, (payment) => payment.user)
   payments: Payment[];

@@ -32,6 +32,6 @@ export class AthleteSportPackage extends BaseEntity {
     () => SportPackage,
     (sportPackage) => sportPackage.athleteSportPackages,
   )
-  @JoinColumn({ name: 'packageId' })
+  @JoinColumn({ name: 'sportPackageId' })
   sportPackage: SportPackage;
 }

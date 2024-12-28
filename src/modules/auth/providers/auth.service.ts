@@ -24,7 +24,6 @@ import { CookieOptions, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { UtilityService } from 'src/utility/providers/utility.service';
 import { AsyncLocalStorage } from 'async_hooks';
-import { ProfileService } from 'src/modules/users/providers/profile.service';
 // import { JwtPayload } from './jwt-payload.interface';
 
 @Injectable()
@@ -35,7 +34,6 @@ export class AuthService {
     private rolesService: RolesService,
     private jwtService: JwtService,
     private mFAService: MFAService,
-    private readonly profileService: ProfileService,
     private readonly logService: LogService,
     private readonly configService: ConfigService,
     private readonly utilityService: UtilityService,
@@ -76,16 +74,11 @@ export class AuthService {
       password: hashedPassword,
       userMobile,
       realmId: (req as any).subdomainId || 1,
+      name: userName,
+      family: userFamily,
     });
     try {
       user.roles = [role];
-      const newUser = await this.usresRepository.save(user);
-      const profile = await this.profileService.create({
-        name: userName,
-        family: userFamily,
-        userId: newUser.id,
-      });
-      user.profileId = profile.id;
       await this.usresRepository.save(user);
     } catch (error) {
       this.logService.logData(

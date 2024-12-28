@@ -43,21 +43,17 @@ export class AthleteSportPackageService {
   async findAllByMentorId(mentorId: string): Promise<AthleteSportPackage[]> {
     try {
       return await this.athleteSportPackageRepository.find({
-        relations: ['athlete', 'athlete.user.profile'],
+        relations: ['athlete', 'athlete.user'],
         where: {
           mentorId,
         },
-
         select: {
           athlete: {
             id: true,
             user: {
               id: true,
-              profile: {
-                id: true,
-                name: true,
-                family: true,
-              },
+              name: true,
+              family: true,
             },
           },
         },
