@@ -118,7 +118,7 @@ export class MentorService {
       return await this.mentorRepository.save(usertype);
     } catch (error) {
       this.logService.logData(
-        'update-usertype',
+        'update-mentor',
         JSON.stringify({ updateMentorDto, id }),
         error?.stack ? error.stack : 'error not have message!!',
       );
