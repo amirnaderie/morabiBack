@@ -48,8 +48,8 @@ export class CreateSportPackageDto {
   @Type(() => Number)
   categoryId?: number;
 
-  @IsString({ message: 'شناسه‌مربی صحیح نمیباشد' })
-  @MaxLength(36, { message: 'شناسه‌مربی صحیح نمیباشد' })
-  @MinLength(36, { message: 'شناسه‌مربی صحیح نمیباشد' })
-  readonly mentorId: string;
+  // @IsString({ message: 'شناسه‌مربی صحیح نمیباشد' })
+  // @MaxLength(36, { message: 'شناسه‌مربی صحیح نمیباشد' })
+  // @MinLength(36, { message: 'شناسه‌مربی صحیح نمیباشد' })
+  // readonly mentorId: string;
 }
