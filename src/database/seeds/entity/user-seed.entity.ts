@@ -19,6 +19,12 @@ export class UserSeed extends BaseEntity {
   // @Column({ length: 40 })
   // userFamily: string;
 
+  @Column({ length: 100, nullable: true })
+  family: string;
+
+  @Column({ length: 100, nullable: true })
+  name: string;
+
   @Column({ length: 100 })
   password: string;
 
