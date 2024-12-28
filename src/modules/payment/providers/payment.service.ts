@@ -41,22 +41,22 @@ export class PaymentService {
         packageId,
         userId,
       );
-      console.log(sportPackage, 'sportPackage');
+      // console.log(sportPackage, 'sportPackage');
 
       // get athlete
-      let athlete = await this.athleteService.findOneByUserIdAndCategoryId(
+      const athlete = await this.athleteService.findOneByUserIdAndCategoryId(
         userId,
         packageId,
       );
 
-      if (!athlete) {
-        athlete = await this.athleteService.create({
-          categoryId: sportPackage.categoryId,
-          userId: userId,
-        });
-      }
+      // if (!athlete) {
+      //          athlete = await this.athleteService.create({
+      //     categoryId: sportPackage.categoryId,
+      //     userId: userId,
+      //   });
+      // }
       // save
-      console.log(sportPackage, 'sportPackage');
+      // console.log(sportPackage, 'sportPackage');
       this.athleteSportPackageService.create({
         athleteId: athlete.id,
         mentorId: sportPackage.mentorId,

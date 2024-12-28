@@ -23,7 +23,7 @@ export class AthleteService {
   async create(createAthleteDto: CreateAthleteDto): Promise<Athlete> {
     try {
       const { categoryId, userId } = createAthleteDto;
-      console.log(categoryId, userId, 'categoryId, userId');
+      // console.log(categoryId, userId, 'categoryId, userId');
       const athlete = this.athleteRepository.create({
         userId,
         categoryId,

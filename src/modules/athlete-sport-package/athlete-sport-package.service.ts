@@ -28,7 +28,7 @@ export class AthleteSportPackageService {
 
       return await this.athleteSportPackageRepository.save(p);
     } catch (error) {
-      console.log(error, 'error');
+      // console.log(error, 'error');
       this.logService.logData(
         'assignSportPackage',
         JSON.stringify({ createAthleteSportPackageDto }),
@@ -59,7 +59,7 @@ export class AthleteSportPackageService {
         },
       });
     } catch (error) {
-      console.log(error, 'error');
+      // console.log(error, 'error');
       this.logService.logData(
         'findAllByMentorId',
         JSON.stringify({ mentorId }),

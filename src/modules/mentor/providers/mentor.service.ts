@@ -66,7 +66,7 @@ export class MentorService {
 
       return mentor;
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       this.logService.logData(
         'assign-athletes',
         JSON.stringify({ assignAthletesDto, user }),

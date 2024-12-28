@@ -61,11 +61,11 @@ export class SportPackage extends BaseEntity {
   @Column()
   mentorId: string;
 
-  @ManyToOne(() => Category, (category) => category.sportPackages)
-  category: Category;
+  // @ManyToOne(() => Category, (category) => category.sportPackages)
+  // category: Category;
 
-  @Column()
-  categoryId: number;
+  // @Column()
+  // categoryId: number;
 
   @OneToMany(
     () => AthleteSportPackage,

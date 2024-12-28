@@ -42,7 +42,7 @@ export class SportPackageService {
         durationType,
         name,
         mentorId: mentor.id,
-        categoryId: categoryId,
+        // categoryId: categoryId,
       });
       return await this.sportPackageRepository.save(createdPackage);
     } catch (error) {

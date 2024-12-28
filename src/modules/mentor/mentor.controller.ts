@@ -46,7 +46,7 @@ export class MentorController {
 
   @Get('/athletes')
   getAthletes(@GetUser() user: User, @Query('category') category?: number) {
-    console.log(category, 'category');
+    // console.log(category, 'category');
     return this.mentorService.getAthletes(user, category);
   }
 
