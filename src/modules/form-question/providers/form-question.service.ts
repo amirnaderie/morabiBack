@@ -11,6 +11,7 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { UtilityService } from 'src/utility/providers/utility.service';
+import { FormService } from 'src/modules/form/providers/form.service';
 
 @Injectable()
 export class FormQuestionService {
@@ -19,6 +20,7 @@ export class FormQuestionService {
     private readonly formQuestionRepository: Repository<FormQuestion>,
     private readonly logService: LogService,
     private readonly utilityService: UtilityService,
+    private readonly formService: FormService,
   ) {}
 
   async create(
@@ -36,6 +38,8 @@ export class FormQuestionService {
         creatorId: user.id,
         realmId: (req as any).subdomainId || 1,
       });
+
+      await this.formService.unPublish(formId);
 
       return await this.formQuestionRepository.save(formQuestion);
     } catch (error) {
@@ -111,6 +115,7 @@ export class FormQuestionService {
         },
       });
       form.text = text;
+      await this.formService.unPublish(form.formId);
 
       return await this.formQuestionRepository.save(form);
     } catch (error) {

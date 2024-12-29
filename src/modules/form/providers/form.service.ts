@@ -180,6 +180,7 @@ export class FormService {
       });
       form.name = name;
       form.description = description;
+      form.status = 0;
 
       return await this.formRepository.save(form);
     } catch (error) {
@@ -216,6 +217,28 @@ export class FormService {
           id: id,
           req: req,
           user: user,
+        }),
+        error?.stack ? error.stack : 'error not have message!!',
+      );
+      throw new Error(error);
+    }
+  }
+
+  async unPublish(id: string) {
+    try {
+      const form = await this.formRepository.findOne({
+        where: {
+          id: id,
+        },
+      });
+      form.status = 0;
+
+      return await this.formRepository.save(form);
+    } catch (error) {
+      this.logService.logData(
+        'publish-form',
+        JSON.stringify({
+          id: id,
         }),
         error?.stack ? error.stack : 'error not have message!!',
       );
