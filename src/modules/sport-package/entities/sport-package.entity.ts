@@ -9,7 +9,6 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Category } from 'src/modules/category/entities/category.entity';
 import { Payment } from 'src/modules/payment/entities/payment.entity';
 
 @Entity('SportPackage')
@@ -28,14 +27,14 @@ export class SportPackage extends BaseEntity {
     type: 'tinyint',
     nullable: false,
   })
-  duration: number;
+  duration: number; // day
 
   @Column({
     type: 'tinyint',
     nullable: false,
     default: 1,
   })
-  durationType: number;
+  durationType: number; // i recommend to have one type . just DAY
 
   @Column({
     type: 'bigint',

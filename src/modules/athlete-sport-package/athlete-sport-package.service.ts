@@ -42,24 +42,53 @@ export class AthleteSportPackageService {
 
   async findAllByMentorId(mentorId: string): Promise<AthleteSportPackage[]> {
     try {
-      return await this.athleteSportPackageRepository.find({
-        relations: ['athlete', 'athlete.user'],
-        where: {
-          mentorId,
-        },
-        select: {
-          athlete: {
-            id: true,
-            user: {
+      const athleteSportPackage = await this.athleteSportPackageRepository.find(
+        {
+          relations: ['athlete', 'athlete.user', 'sportPackage'],
+          where: {
+            mentorId,
+          },
+          select: {
+            createdAt: true,
+            athlete: {
               id: true,
-              name: true,
-              family: true,
+              user: {
+                id: true,
+                name: true,
+                family: true,
+              },
+            },
+            sportPackage: {
+              id: true,
+              duration: true,
             },
           },
         },
-      });
+      );
+
+      const result = athleteSportPackage.reduce(
+        (acc, { athlete, sportPackage, createdAt }) => {
+          const existingAthlete = acc.find(
+            (item) => item.athlete.id === athlete.id,
+          );
+          if (existingAthlete) {
+            existingAthlete.athlete.packages.push({ ...sportPackage });
+          } else {
+            acc.push({
+              id: athlete.id,
+              name: athlete.user.name,
+              family: athlete.user.family,
+              packages: [{ ...sportPackage, buyPackageAt: createdAt }],
+            });
+          }
+
+          return acc;
+        },
+        [],
+      );
+      console.log(result, 'result');
+      return result;
     } catch (error) {
-      // console.log(error, 'error');
       this.logService.logData(
         'findAllByMentorId',
         JSON.stringify({ mentorId }),

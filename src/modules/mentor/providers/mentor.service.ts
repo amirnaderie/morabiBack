@@ -13,6 +13,7 @@ import { AssignAthletesDto } from '../dto/assign-athlete.dto';
 import { User } from '../../users/entities/user.entity';
 import { AthleteService } from '../../athlete/athlete.service';
 import { AthleteSportPackageService } from 'src/modules/athlete-sport-package/athlete-sport-package.service';
+import { AthleteSportPackage } from 'src/modules/athlete-sport-package/entities/athlete-sport-package.entity';
 
 @Injectable()
 export class MentorService {
@@ -88,11 +89,40 @@ export class MentorService {
         },
       });
 
-      const athletes = await this.athleteSportPackageService.findAllByMentorId(
-        mentor.id,
-      );
-      console.log(athletes, 'athletes');
-      return athletes;
+      const athletes: AthleteSportPackage[] =
+        await this.athleteSportPackageService.findAllByMentorId(mentor.id);
+
+      const result = athletes.map((athlete: any) => {
+        return {
+          name: athlete.name,
+          family: athlete.family,
+          status: !!athlete.packages.find((pkg) => {
+            const date = new Date(pkg.buyPackageAt);
+            date.setDate(date.getDate() + pkg.duration);
+            return date > new Date();
+          }),
+          ...athlete.packages.reduce(
+            (acc, { buyPackageAt, duration }) => {
+              const createdDate = new Date(buyPackageAt);
+
+              const date = new Date(buyPackageAt);
+              date.setDate(date.getDate() + duration);
+              const expireDate = date;
+
+              if (!acc.startedAt || createdDate < acc.startedAt.buyPackageAt) {
+                acc.startedAt = createdDate;
+              }
+              if (!acc.expireAt || expireDate > acc.expireAt.buyPackageAt) {
+                acc.expireAt = expireDate;
+              }
+
+              return acc;
+            },
+            { startedAt: null, expireAt: null },
+          ),
+        };
+      });
+      return result;
     } catch (error) {
       this.logService.logData(
         'getAthletes-mentor',
