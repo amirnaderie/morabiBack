@@ -28,7 +28,6 @@ export class AthleteSportPackageService {
 
       return await this.athleteSportPackageRepository.save(p);
     } catch (error) {
-      // console.log(error, 'error');
       this.logService.logData(
         'assignSportPackage',
         JSON.stringify({ createAthleteSportPackageDto }),
@@ -68,11 +67,12 @@ export class AthleteSportPackageService {
 
       const result = athleteSportPackage.reduce(
         (acc, { athlete, sportPackage, createdAt }) => {
-          const existingAthlete = acc.find(
-            (item) => item.athlete.id === athlete.id,
-          );
+          const existingAthlete = acc.find((item) => {
+            return item.id === athlete.id;
+          });
+
           if (existingAthlete) {
-            existingAthlete.athlete.packages.push({ ...sportPackage });
+            existingAthlete.packages.push({ ...sportPackage });
           } else {
             acc.push({
               id: athlete.id,
@@ -86,7 +86,6 @@ export class AthleteSportPackageService {
         },
         [],
       );
-      console.log(result, 'result');
       return result;
     } catch (error) {
       this.logService.logData(
