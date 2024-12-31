@@ -8,7 +8,7 @@ import { User } from 'src/modules/users/entities/user.entity';
 import { Payment } from '../entities/payment.entity';
 import { Repository } from 'typeorm';
 import { LogService } from 'src/modules/log/providers/log.service';
-import { AthleteService } from 'src/modules/athlete/athlete.service';
+import { AthleteService } from 'src/modules/athlete/providers/athlete.service';
 import { CreatePaymentDto } from '../dto/create-payment.dto';
 import { UpdatePaymentDto } from '../dto/update-payment.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -57,6 +57,8 @@ export class PaymentService {
       // }
       // save
       // console.log(sportPackage, 'sportPackage');
+      console.log(8888);
+      console.log(athlete, 'athlete');
       this.athleteSportPackageService.create({
         athleteId: athlete.id,
         mentorId: sportPackage.mentorId,
@@ -65,6 +67,7 @@ export class PaymentService {
 
       return payment;
     } catch (error) {
+      console.log(error, 'error');
       this.logService.logData(
         'create-payment',
         JSON.stringify({ createPaymentDto: createPaymentDto, user: user }),

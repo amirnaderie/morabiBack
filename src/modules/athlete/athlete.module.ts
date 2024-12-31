@@ -3,7 +3,7 @@ import { LogModule } from '../log/log.module';
 import { AuthModule } from '../auth/auth.module';
 import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AthleteService } from './athlete.service';
+import { AthleteService } from './providers/athlete.service';
 import { AthleteController } from './athlete.controller';
 
 @Module({

@@ -1,9 +1,9 @@
-import { User } from '../users/entities/user.entity';
-import { Athlete } from './entities/athlete.entity';
-import { LogService } from '../log/providers/log.service';
+import { User } from '../../users/entities/user.entity';
+import { Athlete } from '../entities/athlete.entity';
+import { LogService } from '../../log/providers/log.service';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UpdateAthleteDto } from './dto/update-athlete.dto';
-import { CreateAthleteDto } from './dto/create-athlete.dto';
+import { UpdateAthleteDto } from '../dto/update-athlete.dto';
+import { CreateAthleteDto } from '../dto/create-athlete.dto';
 import { In, Repository } from 'typeorm';
 import {
   Injectable,
@@ -134,6 +134,7 @@ export class AthleteService {
 
   async findOneByUserIdAndCategoryId(userId: string, categoryId: number) {
     try {
+      console.log(userId, categoryId, 'dvd');
       return await this.athleteRepository.findOne({
         where: {
           userId: userId,

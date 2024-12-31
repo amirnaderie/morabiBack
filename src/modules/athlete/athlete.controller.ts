@@ -13,7 +13,7 @@ import {
 
 import { Athlete } from './entities/athlete.entity';
 import { AuthGuard } from 'src/guards/auth.guard';
-import { AthleteService } from './athlete.service';
+import { AthleteService } from './providers/athlete.service';
 import { CreateAthleteDto } from './dto/create-athlete.dto';
 import { UpdateAthleteDto } from './dto/update-athlete.dto';
 import { HttpResponseTransform } from 'src/interceptors/http-response-transform.interceptor';

@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { AssignAthletesDto } from '../dto/assign-athlete.dto';
 import { User } from '../../users/entities/user.entity';
-import { AthleteService } from '../../athlete/athlete.service';
+import { AthleteService } from '../../athlete/providers/athlete.service';
 import { AthleteSportPackageService } from 'src/modules/athlete-sport-package/athlete-sport-package.service';
 import { AthleteSportPackage } from 'src/modules/athlete-sport-package/entities/athlete-sport-package.entity';
 
