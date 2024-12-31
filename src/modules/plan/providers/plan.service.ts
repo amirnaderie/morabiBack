@@ -179,7 +179,7 @@ export class PlanService {
   async findAll(userId: string, req: Request) {
     try {
       const plans = await this.planRepository.find({
-        relations: ['logo', 'user'],
+        relations: ['logo'],
         select: {
           id: true,
           planName: true,
