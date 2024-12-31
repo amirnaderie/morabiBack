@@ -75,9 +75,10 @@ export const createPermissionSeed = async (AppDataSource: DataSource) => {
         { name: 'حذف برنامه', enName: 'delete-plan' }, // 45
         { name: 'ایجاد پکیج', enName: 'create-package' }, // 1
         { name: 'ویرایش پکیج', enName: 'update-package' },
-        { name: 'حذف پکیج', enName: 'delete-package' },
+        { name: 'حذف پکیج', enName: 'delete-package' }, // read-athlete
 
         { name: 'ایجاد پرداخت', enName: 'create-payment' },
+        { name: 'مشاهده ورزشکار', enName: 'read-athlete' },
       ])
       .execute();
   } catch (error) {

@@ -62,10 +62,9 @@ export class AthleteService {
     try {
       const athleteOfMentor = await this.athleteRepository.findOne({
         relations: [
-          'athleteSportPackages',
-          'athleteSportPackages.mentor',
-          'athleteSportPackages.sportPackage',
           'user',
+          'athleteSportPackages',
+          'athleteSportPackages.sportPackage',
         ],
         where: {
           id: athleteId,
@@ -73,10 +72,54 @@ export class AthleteService {
             mentor: { userId: mentorUser.id },
           },
         },
+        select: {
+          id: true,
+          user: {
+            id: true,
+            name: true,
+            family: true,
+          },
+          athleteSportPackages: {
+            id: true,
+            createdAt: true,
+            sportPackage: {
+              id: true,
+              duration: true,
+            },
+          },
+        },
       });
-      console.log(mentorUser.id, 'mentorUser.id');
-      console.log(athleteOfMentor, 'athleteOfMentor');
-      return athleteOfMentor;
+
+      const status = !!athleteOfMentor.athleteSportPackages.find((pkg) => {
+        const date = new Date(pkg.createdAt);
+        date.setDate(date.getDate() + pkg.sportPackage.duration);
+        return date > new Date();
+      });
+
+      const result = athleteOfMentor.athleteSportPackages.reduce(
+        (acc, { createdAt, sportPackage: { duration } }) => {
+          const createdDate = new Date(createdAt);
+
+          const date = new Date(createdAt);
+          date.setDate(date.getDate() + duration);
+          const expireDate = date;
+
+          if (!acc.startedAt || createdDate < acc.startedAt.createdAt) {
+            acc.startedAt = createdDate;
+          }
+          if (!acc.expireAt || expireDate > acc.expireAt.createdAt) {
+            acc.expireAt = expireDate;
+          }
+
+          return acc;
+        },
+        { startedAt: null, expireAt: null },
+      );
+      return {
+        ...result,
+        ...athleteOfMentor.user,
+        status,
+      };
     } catch (error) {
       this.logService.logData(
         'findOne-athlete',
