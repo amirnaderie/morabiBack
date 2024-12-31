@@ -1,13 +1,14 @@
+import { User } from '../users/entities/user.entity';
 import { Athlete } from './entities/athlete.entity';
 import { LogService } from '../log/providers/log.service';
-import { In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateAthleteDto } from './dto/update-athlete.dto';
 import { CreateAthleteDto } from './dto/create-athlete.dto';
+import { In, Repository } from 'typeorm';
 import {
-  InternalServerErrorException,
   Injectable,
   BadRequestException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 
 @Injectable()
@@ -57,8 +58,35 @@ export class AthleteService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} athlete`;
+  async findOne(athleteId: string, mentorUser: User) {
+    try {
+      const athleteOfMentor = await this.athleteRepository.findOne({
+        relations: [
+          'athleteSportPackages',
+          'athleteSportPackages.mentor',
+          'athleteSportPackages.sportPackage',
+          'user',
+        ],
+        where: {
+          id: athleteId,
+          athleteSportPackages: {
+            mentor: { userId: mentorUser.id },
+          },
+        },
+      });
+      console.log(mentorUser.id, 'mentorUser.id');
+      console.log(athleteOfMentor, 'athleteOfMentor');
+      return athleteOfMentor;
+    } catch (error) {
+      this.logService.logData(
+        'findOne-athlete',
+        JSON.stringify({ findOne: 'findOne' }),
+        error?.stack ? error.stack : 'error not have message!!',
+      );
+      throw new InternalServerErrorException(
+        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
+      );
+    }
   }
 
   async findOneByUserIdAndCategoryId(userId: string, categoryId: number) {

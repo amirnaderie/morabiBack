@@ -17,6 +17,8 @@ import { AthleteService } from './athlete.service';
 import { CreateAthleteDto } from './dto/create-athlete.dto';
 import { UpdateAthleteDto } from './dto/update-athlete.dto';
 import { HttpResponseTransform } from 'src/interceptors/http-response-transform.interceptor';
+import { GetUser } from 'src/decorators/getUser.decorator';
+import { User } from '../users/entities/user.entity';
 
 @Controller('athletes')
 @UseGuards(AuthGuard)
@@ -36,8 +38,9 @@ export class AthleteController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.athleteService.findOne(+id);
+  @SetMetadata('permission', 'read-athlete')
+  findOne(@Param('id') id: string, @GetUser() user: User) {
+    return this.athleteService.findOne(id, user);
   }
 
   @Patch(':id')

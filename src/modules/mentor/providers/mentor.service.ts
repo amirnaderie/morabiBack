@@ -93,6 +93,7 @@ export class MentorService {
         await this.athleteSportPackageService.findAllByMentorId(mentor.id);
       const result = athletes.map((athlete: any) => {
         return {
+          id: athlete.id,
           name: athlete.name,
           family: athlete.family,
           status: !!athlete.packages.find((pkg) => {
