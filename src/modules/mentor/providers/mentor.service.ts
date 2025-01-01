@@ -7,9 +7,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import {
   InternalServerErrorException,
   Injectable,
-  NotFoundException,
+  // NotFoundException,
 } from '@nestjs/common';
-import { AssignAthletesDto } from '../dto/assign-athlete.dto';
+// import { AssignAthletesDto } from '../dto/assign-athlete.dto';
 import { User } from '../../users/entities/user.entity';
 import { AthleteService } from '../../athlete/providers/athlete.service';
 import { AthleteSportPackageService } from 'src/modules/athlete-sport-package/athlete-sport-package.service';
@@ -46,38 +46,38 @@ export class MentorService {
     }
   }
 
-  async assignAthletes(
-    assignAthletesDto: AssignAthletesDto,
-    user: User,
-  ): Promise<Mentor> {
-    try {
-      const { athleteIds } = assignAthletesDto;
-      const { id } = user;
+  // async assignAthletes(
+  //   assignAthletesDto: AssignAthletesDto,
+  //   user: User,
+  // ): Promise<Mentor> {
+  //   try {
+  //     const { athleteIds } = assignAthletesDto;
+  //     const { id } = user;
 
-      const athletes = await this.athleteService.findById(athleteIds);
-      const mentor = await this.mentorRepository.findOne({
-        where: {
-          userId: id,
-        },
-      });
+  //     const athletes = await this.athleteService.findById(athleteIds);
+  //     const mentor = await this.mentorRepository.findOne({
+  //       where: {
+  //         userId: id,
+  //       },
+  //     });
 
-      if (!mentor) throw new NotFoundException();
+  //     if (!mentor) throw new NotFoundException();
 
-      mentor.athletes = athletes;
+  //     mentor.athletes = athletes;
 
-      return mentor;
-    } catch (error) {
-      // console.log(error);
-      this.logService.logData(
-        'assign-athletes',
-        JSON.stringify({ assignAthletesDto, user }),
-        error?.stack ? error.stack : 'error not have message!!',
-      );
-      throw new InternalServerErrorException(
-        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
-      );
-    }
-  }
+  //     return mentor;
+  //   } catch (error) {
+  //     // console.log(error);
+  //     this.logService.logData(
+  //       'assign-athletes',
+  //       JSON.stringify({ assignAthletesDto, user }),
+  //       error?.stack ? error.stack : 'error not have message!!',
+  //     );
+  //     throw new InternalServerErrorException(
+  //       'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
+  //     );
+  //   }
+  // }
   //  (user , category) -> mentor -> athletePacageMentor -> athlete
   async getAthletes(user: User, categoryId: number) {
     try {

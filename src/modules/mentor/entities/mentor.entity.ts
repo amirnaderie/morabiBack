@@ -1,5 +1,4 @@
 import { User } from 'src/modules/users/entities/user.entity';
-import { Athlete } from 'src/modules/athlete/entities/athlete.entity';
 import { Category } from 'src/modules/category/entities/category.entity';
 import { BaseEntity } from 'src/modules/base/base.entity';
 import { SportPackage } from 'src/modules/sport-package/entities/sport-package.entity';
@@ -10,9 +9,7 @@ import {
   Entity,
   ManyToOne,
   OneToMany,
-  JoinTable,
   JoinColumn,
-  ManyToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -32,12 +29,6 @@ export class Mentor extends BaseEntity {
   })
   @JoinColumn({ name: 'categoryId', referencedColumnName: 'id' })
   category: Category;
-
-  @ManyToMany(() => Athlete, (athlete) => athlete.mentors, { cascade: true })
-  @JoinTable({
-    name: 'MentorAthlete',
-  })
-  athletes: Athlete[];
 
   @ManyToOne(() => User, (user) => user.movements, {
     onDelete: 'CASCADE',

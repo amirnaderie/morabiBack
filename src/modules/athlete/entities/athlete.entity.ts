@@ -10,7 +10,7 @@ import {
 } from 'typeorm';
 
 import { User } from 'src/modules/users/entities/user.entity';
-import { Mentor } from 'src/modules/mentor/entities/mentor.entity';
+import { Plan } from 'src/modules/plan/entities/plan.entity';
 import { Category } from 'src/modules/category/entities/category.entity';
 import { BaseEntity } from 'src/modules/base/base.entity';
 import { AthleteSportPackage } from '../../athlete-sport-package/entities/athlete-sport-package.entity';
@@ -28,13 +28,13 @@ export class Athlete extends BaseEntity {
   })
   categoryId: number;
 
-  @ManyToMany(() => Mentor, (mentor) => mentor.athletes, {
+  @ManyToMany(() => Plan, (plan) => plan.athletes, {
     onDelete: 'CASCADE',
   })
   @JoinTable({
-    name: 'MentorAthlete',
+    name: 'AthletePlan',
   })
-  mentors: Mentor[];
+  plans: Plan[];
 
   @ManyToOne(() => User, (user) => user.athletes)
   @JoinColumn({ name: 'userId' })

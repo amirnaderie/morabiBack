@@ -10,6 +10,8 @@ import {
   BadRequestException,
   InternalServerErrorException,
 } from '@nestjs/common';
+import { AssignPlanDto } from '../dto/assign-plan.dto';
+import { PlanService } from 'src/modules/plan/providers/plan.service';
 
 @Injectable()
 export class AthleteService {
@@ -19,6 +21,7 @@ export class AthleteService {
     readonly athleteRepository: Repository<Athlete>,
 
     readonly logService: LogService,
+    readonly planService: PlanService,
   ) {}
 
   async create(createAthleteDto: CreateAthleteDto): Promise<Athlete> {
@@ -35,6 +38,31 @@ export class AthleteService {
       this.logService.logData(
         'create-athlete',
         JSON.stringify({ createAthleteDto }),
+        error?.stack ? error.stack : 'error not have message!!',
+      );
+      throw new InternalServerErrorException(
+        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
+      );
+    }
+  }
+
+  async assignPlan(assignPlanDto: AssignPlanDto): Promise<void> {
+    try {
+      const { athleteId, planId } = assignPlanDto;
+
+      const plan = await this.planService.findOnePlan(planId);
+
+      const athlete = await this.athleteRepository.findOneBy({ id: athleteId });
+      athlete.plans = [
+        ...athlete.plans.filter((existingPlan) => existingPlan.id !== plan.id),
+        plan,
+      ];
+
+      await this.athleteRepository.save(athlete);
+    } catch (error) {
+      this.logService.logData(
+        'assignPlan-athlete',
+        JSON.stringify({ assignPlanDto }),
         error?.stack ? error.stack : 'error not have message!!',
       );
       throw new InternalServerErrorException(

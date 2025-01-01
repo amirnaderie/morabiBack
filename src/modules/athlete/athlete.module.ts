@@ -11,6 +11,7 @@ import { AthleteController } from './athlete.controller';
     TypeOrmModule.forFeature([Athlete]),
     forwardRef(() => AuthModule),
     forwardRef(() => LogModule),
+    // forwardRef(() => LogModule),
   ],
   controllers: [AthleteController],
   providers: [AthleteService],

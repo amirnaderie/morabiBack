@@ -1,16 +1,16 @@
 import {
-  Controller,
   Get,
+  Put,
+  Req,
   Post,
   Body,
   Param,
   Delete,
-  Req,
-  SetMetadata,
   UseGuards,
-  UseInterceptors,
-  Put,
+  Controller,
+  SetMetadata,
   ParseUUIDPipe,
+  UseInterceptors,
 } from '@nestjs/common';
 import { CreatePlanDto } from './dto/create-plan.dto';
 import { UpdatePlanDto } from './dto/update-plan.dto';
@@ -56,7 +56,11 @@ export class PlanController {
 
   @Get(':id')
   @SetMetadata('permission', 'plan')
-  findOne(@Param('id', new ParseUUIDPipe()) id: string, @GetUser() user: User, @Req() req: Request) {
+  findOne(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @GetUser() user: User,
+    @Req() req: Request,
+  ) {
     return this.planService.findOne(id, user.id, req);
   }
 
@@ -73,7 +77,11 @@ export class PlanController {
 
   @Delete(':id')
   @SetMetadata('permission', 'delete-plan')
-  remove(@Param('id', new ParseUUIDPipe()) id: string, @GetUser() user: User, @Req() req: Request) {
+  remove(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @GetUser() user: User,
+    @Req() req: Request,
+  ) {
     return this.planService.remove(id, user, req);
   }
 }

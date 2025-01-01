@@ -406,4 +406,8 @@ export class PlanService {
       return 0;
     }
   }
+
+  async findOnePlan(planId: string): Promise<Plan> {
+    return await this.planRepository.findOneBy({ id: planId });
+  }
 }

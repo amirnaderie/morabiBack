@@ -13,6 +13,7 @@ import {
   JoinColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Athlete } from 'src/modules/athlete/entities/athlete.entity';
 
 @Entity('Plan')
 // @Unique(['planName', 'creatorId'])
@@ -99,4 +100,12 @@ export class Plan extends BaseEntity {
 
   @Column({ default: 1 })
   realmId: number;
+
+  @ManyToMany(() => Athlete, (athlete) => athlete.plans, {
+    cascade: true,
+  })
+  @JoinTable({
+    name: 'AthletePlan',
+  })
+  athletes: Athlete[];
 }
