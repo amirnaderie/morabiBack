@@ -86,3 +86,35 @@ export class User extends BaseEntity {
   @OneToMany(() => Payment, (payment) => payment.user)
   payments: Payment[];
 }
+
+
+// USE [morabiDb]
+// GO
+// /****** Object:  StoredProcedure [dbo].[getAthletesOfMentor]    Script Date: 1/1/2025 4:58:42 PM ******/
+// SET ANSI_NULLS ON
+// GO
+// SET QUOTED_IDENTIFIER ON
+// GO
+// -- =============================================
+// -- Author:		<Author,,Name>
+// -- Create date: <Create Date,,>
+// -- Description:	<Description,,>
+// -- =============================================
+// create PROCEDURE [dbo].[getAthletesOfMentor] 
+// 	@userId uniqueidentifier='990C5626-59C0-EF11-935F-60DD8E0D6339'
+// AS
+// BEGIN
+// 	-- SET NOCOUNT ON added to prevent extra result sets from
+// 	-- interfering with SELECT statements.
+// 	SET NOCOUNT ON;
+	
+// select a.id as athleteId,u.[name],u.family,asp.createdAt,asp.createdAt+sp.durationInDays as expirationDate, m.id as mentorId from Mentor m
+// inner join SportPackage sp on m.id=sp.mentorId
+// inner join AthleteSportPackage asp on asp.mentorId=m.id and asp.sportPackageId=sp.id
+// inner join Athlete a on a.id=asp.athleteId
+// inner join [User] u on a.userId=u.id
+// where m.userId=@userId and asp.createdAt+sp.durationInDays>GETUTCDATE()
+
+
+// END
+
