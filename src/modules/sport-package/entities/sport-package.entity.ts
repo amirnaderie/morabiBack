@@ -27,7 +27,13 @@ export class SportPackage extends BaseEntity {
     type: 'tinyint',
     nullable: false,
   })
-  duration: number; // day
+  duration: number;
+
+  @Column({
+    type: 'int',
+    nullable: false,
+  })
+  durationInDays: number;
 
   @Column({
     type: 'tinyint',
@@ -39,6 +45,7 @@ export class SportPackage extends BaseEntity {
   @Column({
     type: 'bigint',
     nullable: false,
+    default: 0,
   })
   cost: number;
 
@@ -59,12 +66,6 @@ export class SportPackage extends BaseEntity {
 
   @Column()
   mentorId: string;
-
-  // @ManyToOne(() => Category, (category) => category.sportPackages)
-  // category: Category;
-
-  // @Column()
-  // categoryId: number;
 
   @OneToMany(
     () => AthleteSportPackage,

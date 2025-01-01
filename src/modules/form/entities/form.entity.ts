@@ -9,8 +9,11 @@ import {
   ManyToOne,
   JoinColumn,
   PrimaryGeneratedColumn,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { BaseEntity } from 'src/modules/base/base.entity';
+import { Athlete } from 'src/modules/athlete/entities/athlete.entity';
 
 @Entity('Form')
 export class Form extends BaseEntity {
@@ -61,4 +64,12 @@ export class Form extends BaseEntity {
     cascade: true,
   })
   questions: FormQuestion[];
+
+  @ManyToMany(() => Athlete, (athlete) => athlete.forms, {
+    onDelete: 'CASCADE',
+  })
+  @JoinTable({
+    name: 'FormAthlete',
+  })
+  athletes: Athlete[];
 }

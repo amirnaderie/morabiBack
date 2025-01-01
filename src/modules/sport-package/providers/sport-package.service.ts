@@ -23,6 +23,16 @@ export class SportPackageService {
     private readonly mentorService: MentorService,
   ) {}
 
+  calculateDurationInDays = (duration: number, durationType: number) => {
+    return durationType === 2
+      ? duration * 7
+      : durationType === 3
+        ? duration * 30
+        : durationType === 4
+          ? duration * 365
+          : duration;
+  };
+
   async create(createSportPackageDto: CreateSportPackageDto, userId: string) {
     const { cost, duration, durationType, name, categoryId } =
       createSportPackageDto;
@@ -40,6 +50,7 @@ export class SportPackageService {
         cost,
         duration,
         durationType,
+        durationInDays: this.calculateDurationInDays(duration, durationType),
         name,
         mentorId: mentor.id,
         // categoryId: categoryId,
@@ -131,6 +142,7 @@ export class SportPackageService {
           cost,
           duration,
           durationType,
+          durationInDays: this.calculateDurationInDays(duration, durationType),
           name,
         });
 
