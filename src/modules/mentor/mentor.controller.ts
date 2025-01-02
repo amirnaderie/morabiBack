@@ -21,7 +21,7 @@ import { UpdateMentorDto } from './dto/update-mentor.dto';
 // import { AssignAthletesDto } from './dto/assign-athlete.dto';
 import { HttpResponseTransform } from 'src/interceptors/http-response-transform.interceptor';
 import { MentorService } from './providers/mentor.service';
-import { AssignAthletesDto } from './dto/assign-athlete.dto';
+// import { AssignAthletesDto } from './dto/assign-athlete.dto';
 
 @Controller('mentors')
 @UseGuards(AuthGuard)
@@ -35,14 +35,14 @@ export class MentorController {
     return this.mentorService.create(createMentorDto);
   }
 
-  @Post('assign-athletes')
-  @SetMetadata('permission', 'create-mentor')
-  async assignAthletes(
-    @GetUser() user: User,
-    @Body() assignAthletesDto: AssignAthletesDto,
-  ): Promise<Mentor> {
-    return this.mentorService.assignAthletes(assignAthletesDto, user);
-  }
+  // @Post('assign-athletes')
+  // @SetMetadata('permission', 'create-mentor')
+  // async assignAthletes(
+  //   @GetUser() user: User,
+  //   @Body() assignAthletesDto: AssignAthletesDto,
+  // ): Promise<Mentor> {
+  //   return this.mentorService.assignAthletes(assignAthletesDto, user);
+  // }
 
   @Get('/athletes')
   getAthletes(@GetUser() user: User, @Query('category') category?: number) {

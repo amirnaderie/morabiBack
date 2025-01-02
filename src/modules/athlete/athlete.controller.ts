@@ -11,14 +11,15 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 
+import { User } from '../users/entities/user.entity';
+import { GetUser } from 'src/decorators/getUser.decorator';
 import { Athlete } from './entities/athlete.entity';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { AthleteService } from './providers/athlete.service';
 import { CreateAthleteDto } from './dto/create-athlete.dto';
 import { UpdateAthleteDto } from './dto/update-athlete.dto';
 import { HttpResponseTransform } from 'src/interceptors/http-response-transform.interceptor';
-import { GetUser } from 'src/decorators/getUser.decorator';
-import { User } from '../users/entities/user.entity';
+import { AssignPlanDto } from './dto/assign-plan.dto';
 
 @Controller('athletes')
 @UseGuards(AuthGuard)
@@ -29,6 +30,12 @@ export class AthleteController {
   @Post()
   create(@Body() createAthleteDto: CreateAthleteDto): Promise<Athlete> {
     return this.athleteService.create(createAthleteDto);
+  }
+
+  @Post()
+  @SetMetadata('permission', 'update-athletes')
+  assignPlan(@Body() assignPlanDto: AssignPlanDto): Promise<void> {
+    return this.athleteService.assignPlan(assignPlanDto);
   }
 
   @Get()
