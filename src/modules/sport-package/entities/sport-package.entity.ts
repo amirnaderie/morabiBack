@@ -36,13 +36,6 @@ export class SportPackage extends BaseEntity {
   durationInDays: number;
 
   @Column({
-    type: 'tinyint',
-    nullable: false,
-    default: 1,
-  })
-  durationType: number; // i recommend to have one type . just DAY
-
-  @Column({
     type: 'bigint',
     nullable: false,
     default: 0,

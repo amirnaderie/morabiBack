@@ -77,7 +77,7 @@ export class PaymentService {
         throw new ConflictException('اطلاعات تکراری است');
       else
         throw new InternalServerErrorException(
-          'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
+          'مشکل فنی رخ داده است. در حال رفع مشکل هستیم. ممنون از شکیبایی شما',
         );
     }
   }

@@ -23,19 +23,12 @@ export class SportPackageService {
     private readonly mentorService: MentorService,
   ) {}
 
-  calculateDurationInDays = (duration: number, durationType: number) => {
-    return durationType === 2
-      ? duration * 7
-      : durationType === 3
-        ? duration * 30
-        : durationType === 4
-          ? duration * 365
-          : duration;
+  calculateDurationInDays = (duration: number) => {
+    return duration * 30;
   };
 
   async create(createSportPackageDto: CreateSportPackageDto, userId: string) {
-    const { cost, duration, durationType, name, categoryId } =
-      createSportPackageDto;
+    const { cost, duration, name, categoryId } = createSportPackageDto;
 
     if (!this.utilityService.onlyLettersAndNumbers(name))
       throw new BadRequestException('مقادیر ورودی معتبر نیست');
@@ -49,8 +42,7 @@ export class SportPackageService {
       const createdPackage = this.sportPackageRepository.create({
         cost,
         duration,
-        durationType,
-        durationInDays: this.calculateDurationInDays(duration, durationType),
+        durationInDays: this.calculateDurationInDays(duration),
         name,
         mentorId: mentor.id,
         // categoryId: categoryId,
@@ -64,7 +56,7 @@ export class SportPackageService {
       );
 
       throw new InternalServerErrorException(
-        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
+        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم. ممنون از شکیبایی شما',
       );
     }
   }
@@ -101,7 +93,7 @@ export class SportPackageService {
         error?.stack ? error.stack : 'error not have message!!',
       );
       throw new InternalServerErrorException(
-        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
+        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم. ممنون از شکیبایی شما',
       );
     }
   }
@@ -122,7 +114,7 @@ export class SportPackageService {
     updateSportPackageDto: UpdateSportPackageDto,
   ) {
     try {
-      const { cost, duration, durationType, name } = updateSportPackageDto;
+      const { cost, duration, name } = updateSportPackageDto;
 
       if (!this.utilityService.onlyLettersAndNumbers(name))
         throw new BadRequestException('مقادیر ورودی معتبر نیست');
@@ -141,8 +133,7 @@ export class SportPackageService {
         await this.sportPackageRepository.update(id, {
           cost,
           duration,
-          durationType,
-          durationInDays: this.calculateDurationInDays(duration, durationType),
+          durationInDays: this.calculateDurationInDays(duration),
           name,
         });
 
@@ -158,7 +149,7 @@ export class SportPackageService {
         error?.stack ? error.stack : 'error not have message!!',
       );
       throw new InternalServerErrorException(
-        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
+        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم. ممنون از شکیبایی شما',
       );
     }
   }
@@ -189,7 +180,7 @@ export class SportPackageService {
           error?.stack ? error.stack : 'error not have message!!',
         );
         throw new InternalServerErrorException(
-          'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
+          'مشکل فنی رخ داده است. در حال رفع مشکل هستیم. ممنون از شکیبایی شما',
         );
       }
     }
@@ -208,7 +199,7 @@ export class SportPackageService {
     });
     if (selectedPackage.length > 0) {
       try {
-        await this.sportPackageRepository.remove(selectedPackage);
+        await this.sportPackageRepository.softDelete(id);
         return {
           message: `عملیات با موفقیت انجام پذیرفت`,
         };
@@ -219,7 +210,7 @@ export class SportPackageService {
           error?.stack ? error.stack : 'error not have message!!',
         );
         throw new InternalServerErrorException(
-          'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
+          'مشکل فنی رخ داده است. در حال رفع مشکل هستیم. ممنون از شکیبایی شما',
         );
       }
     }

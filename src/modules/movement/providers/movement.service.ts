@@ -72,7 +72,7 @@ export class MovementService {
         throw new ConflictException('اطلاعات تکراری است');
       else
         throw new InternalServerErrorException(
-          'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
+          'مشکل فنی رخ داده است. در حال رفع مشکل هستیم. ممنون از شکیبایی شما',
         );
     }
   }
@@ -118,7 +118,7 @@ export class MovementService {
         error?.stack ? error.stack : 'error not have message!!',
       );
       throw new InternalServerErrorException(
-        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
+        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم. ممنون از شکیبایی شما',
       );
     }
   }
@@ -141,7 +141,7 @@ export class MovementService {
         error?.stack ? error.stack : 'error not have message!!',
       );
       throw new InternalServerErrorException(
-        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
+        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم. ممنون از شکیبایی شما',
       );
     }
   }
@@ -219,7 +219,7 @@ export class MovementService {
         error?.stack ? error.stack : 'error not have message!!',
       );
       throw new InternalServerErrorException(
-        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
+        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم. ممنون از شکیبایی شما',
       );
     }
   }
@@ -257,7 +257,7 @@ export class MovementService {
         error?.stack ? error.stack : 'error not have message!!',
       );
       throw new InternalServerErrorException(
-        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
+        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم. ممنون از شکیبایی شما',
       );
     }
   }

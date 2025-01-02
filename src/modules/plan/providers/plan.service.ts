@@ -91,7 +91,7 @@ export class PlanService {
         throw new ConflictException('اطلاعات تکراری است');
       else
         throw new InternalServerErrorException(
-          'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
+          'مشکل فنی رخ داده است. در حال رفع مشکل هستیم. ممنون از شکیبایی شما',
         );
     }
   }
@@ -171,7 +171,7 @@ export class PlanService {
         );
       else
         throw new InternalServerErrorException(
-          'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
+          'مشکل فنی رخ داده است. در حال رفع مشکل هستیم. ممنون از شکیبایی شما',
         );
     }
   }
@@ -213,7 +213,7 @@ export class PlanService {
         error?.stack ? error.stack : 'error not have message!!',
       );
       throw new InternalServerErrorException(
-        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
+        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم. ممنون از شکیبایی شما',
       );
     }
   }
@@ -294,7 +294,7 @@ export class PlanService {
         error?.stack ? error.stack : 'error not have message!!',
       );
       throw new InternalServerErrorException(
-        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
+        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم. ممنون از شکیبایی شما',
       );
     }
   }
@@ -375,7 +375,7 @@ export class PlanService {
       );
 
       throw new InternalServerErrorException(
-        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
+        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم. ممنون از شکیبایی شما',
       );
     }
   }

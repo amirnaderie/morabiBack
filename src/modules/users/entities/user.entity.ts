@@ -17,7 +17,6 @@ import { File } from 'src/modules/file/entities/file.entity';
 import { Tag } from 'src/modules/tag/entities/tag.entity';
 import { Realm } from 'src/modules/realm/entities/realm.entity';
 import { Plan } from 'src/modules/plan/entities/plan.entity';
-// import { Profile } from './profile.entity';
 import { Athlete } from 'src/modules/athlete/entities/athlete.entity';
 import { Mentor } from 'src/modules/mentor/entities/mentor.entity';
 import { BaseEntity } from 'src/modules/base/base.entity';
@@ -114,7 +113,4 @@ export class User extends BaseEntity {
 // inner join Athlete a on a.id=asp.athleteId
 // inner join [User] u on a.userId=u.id
 // where m.userId=@userId and asp.createdAt+sp.durationInDays>GETUTCDATE()
-
-
 // END
-

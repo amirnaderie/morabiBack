@@ -41,7 +41,7 @@ export class MentorService {
         error?.stack ? error.stack : 'error not have message!!',
       );
       throw new InternalServerErrorException(
-        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
+        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم. ممنون از شکیبایی شما',
       );
     }
   }
@@ -74,7 +74,7 @@ export class MentorService {
         error?.stack ? error.stack : 'error not have message!!',
       );
       throw new InternalServerErrorException(
-        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
+        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم. ممنون از شکیبایی شما',
       );
     }
   }
@@ -130,7 +130,7 @@ export class MentorService {
         error?.stack ? error.stack : 'error not have message!!',
       );
       throw new InternalServerErrorException(
-        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
+        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم. ممنون از شکیبایی شما',
       );
     }
   }
@@ -153,7 +153,7 @@ export class MentorService {
         error?.stack ? error.stack : 'error not have message!!',
       );
       throw new InternalServerErrorException(
-        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
+        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم. ممنون از شکیبایی شما',
       );
     }
   }

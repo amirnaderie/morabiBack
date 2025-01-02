@@ -9,6 +9,7 @@ import {
   Injectable,
   BadRequestException,
   InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 
 @Injectable()
@@ -38,7 +39,7 @@ export class AthleteService {
         error?.stack ? error.stack : 'error not have message!!',
       );
       throw new InternalServerErrorException(
-        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
+        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم. ممنون از شکیبایی شما',
       );
     }
   }
@@ -53,13 +54,111 @@ export class AthleteService {
         error?.stack ? error.stack : 'error not have message!!',
       );
       throw new InternalServerErrorException(
-        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
+        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم. ممنون از شکیبایی شما',
       );
     }
   }
 
-  async findOne(athleteId: string, mentorUser: User) {
+  async findActiveAthletes(mentorUserId: string, athleteId?: string) {
+    let activeAthletes;
     try {
+      if (athleteId)
+        activeAthletes = await this.athleteRepository.query(
+          'exec getAthletesOfMentor @mentorUserId=@0 , @athleteId=@1',
+          [mentorUserId, athleteId],
+        );
+      else
+        activeAthletes = await this.athleteRepository.query(
+          'exec getAthletesOfMentor @mentorUserId=@0',
+          [mentorUserId],
+        );
+      return activeAthletes;
+    } catch (error) {
+      this.logService.logData(
+        'findActiveAthletes',
+        JSON.stringify({ mentorUserId, athleteId }),
+        error?.stack ? error.stack : 'error not have message!!',
+      );
+      throw error;
+    }
+  }
+
+  async findOne(athleteId: string, mentorUserId: string) {
+    let athleteOfMentor;
+
+    try {
+      athleteOfMentor = await this.athleteRepository.findOne({
+        relations: ['user'],
+        where: {
+          id: athleteId,
+          athleteSportPackages: {
+            mentor: { userId: mentorUserId },
+          },
+        },
+        select: {
+          id: true,
+          createdAt: true,
+          user: {
+            id: true,
+            name: true,
+            family: true,
+          },
+        },
+      });
+    } catch (error) {
+      this.logService.logData(
+        'findOne-athlete',
+        JSON.stringify({ findOne: 'findOne' }),
+        error?.stack ? error.stack : 'error not have message!!',
+      );
+      throw new InternalServerErrorException(
+        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم. ممنون از شکیبایی شما',
+      );
+    }
+    if (!athleteOfMentor) throw new NotFoundException('اطلاعاتی یافت نشد');
+
+    let activeAthletes;
+
+    try {
+      activeAthletes = await this.findActiveAthletes(mentorUserId, athleteId);
+    } catch (error) {
+      this.logService.logData(
+        'findOne-athlete',
+        JSON.stringify({ findOne: 'findOne' }),
+        error?.stack ? error.stack : 'error not have message!!',
+      );
+      throw new InternalServerErrorException(
+        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم. ممنون از شکیبایی شما',
+      );
+    }
+    if (activeAthletes && activeAthletes.length > 0)
+      return {
+        startedAt: activeAthletes[0].startedAt,
+        expireAt: activeAthletes[0].expireAt,
+        id: activeAthletes[0].athleteId,
+        name: activeAthletes[0].athleteName,
+        family: activeAthletes[0].athleteFamily,
+        status: true,
+      };
+    else {
+      return {
+        startedAt: athleteOfMentor.createdAt,
+        expireAt: null,
+        id: athleteOfMentor.user.id,
+        name: athleteOfMentor.user.name,
+        family: athleteOfMentor.user.family,
+        status: false,
+      };
+    }
+  }
+
+  async findOne1(athleteId: string, mentorUser: User) {
+    try {
+      const activeAthletes = await this.findActiveAthletes(
+        mentorUser.id,
+        athleteId,
+      );
+
       const athleteOfMentor = await this.athleteRepository.findOne({
         relations: [
           'user',
@@ -115,6 +214,10 @@ export class AthleteService {
         },
         { startedAt: null, expireAt: null },
       );
+      console.log(result);
+      console.log(athleteOfMentor.user);
+      console.log(status);
+
       return {
         ...result,
         ...athleteOfMentor.user,
@@ -127,7 +230,7 @@ export class AthleteService {
         error?.stack ? error.stack : 'error not have message!!',
       );
       throw new InternalServerErrorException(
-        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
+        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم. ممنون از شکیبایی شما',
       );
     }
   }
@@ -148,7 +251,7 @@ export class AthleteService {
         error?.stack ? error.stack : 'error not have message!!',
       );
       throw new InternalServerErrorException(
-        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم . ممنون از شکیبایی شما',
+        'مشکل فنی رخ داده است. در حال رفع مشکل هستیم. ممنون از شکیبایی شما',
       );
     }
   }

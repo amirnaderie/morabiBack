@@ -26,13 +26,7 @@ export class CreateSportPackageDto {
   @Type(() => Number)
   duration?: number;
 
-  @IsNumber({}, { message: 'نوع پکیج باید عدد انگلیسی باشد' })
-  @IsNotEmpty({ message: 'نوع پکیج را وارد نمایید!' })
-  @Min(1)
-  @Max(5)
-  @Type(() => Number)
-  durationType?: number;
-
+ 
   @IsNotEmpty({ message: 'مبلغ پکیج را وارد نمایید!' })
   @IsNumber({}, { message: 'مبلغ ورزش باید عدد انگلیسی باشد' })
   @Type(() => Number)

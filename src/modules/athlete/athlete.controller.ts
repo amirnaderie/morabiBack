@@ -37,10 +37,16 @@ export class AthleteController {
     return this.athleteService.findAll();
   }
 
+  @Get('/actives')
+  @SetMetadata('permission', 'read-athletes')
+  findActiveAthletes(@GetUser() user: User) {
+    return this.athleteService.findActiveAthletes(user.id);
+  }
+
   @Get(':id')
   @SetMetadata('permission', 'read-athlete')
   findOne(@Param('id') id: string, @GetUser() user: User) {
-    return this.athleteService.findOne(id, user);
+    return this.athleteService.findOne(id, user.id);
   }
 
   @Patch(':id')
