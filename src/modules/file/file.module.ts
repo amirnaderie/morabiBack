@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 
 import { FileController } from './file.controller';
 import { FileService } from './providers/file.service';
@@ -16,7 +16,7 @@ import { s3Service } from './providers/s3.service';
     TypeOrmModule.forFeature([File]),
     UtilityModule,
     ConfigModule,
-    AuthModule,
+    forwardRef(() => AuthModule),
     LogModule,
   ],
   controllers: [FileController],

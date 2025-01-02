@@ -20,7 +20,6 @@ export class AthleteService {
     // AthleteSportPackage
     @InjectRepository(Athlete)
     readonly athleteRepository: Repository<Athlete>,
-
     readonly logService: LogService,
     readonly planService: PlanService,
   ) {}

@@ -5,7 +5,6 @@ import { AlsModule } from './middleware/als.module';
 import { FileModule } from './modules/file/file.module';
 import { FormModule } from './modules/form/form.module';
 import { AuthModule } from './modules/auth/auth.module';
-import { TasksModule } from './modules/tasks/tasks.module';
 import { RedisModule } from './modules/redis/redis.module';
 import { UsersModule } from './modules/users/users.module';
 import { RolesModule } from './modules/role/role.module';
@@ -42,7 +41,6 @@ import { PaymentModule } from './modules/payment/payment.module';
       envFilePath: `.env.${process.env.ENV}`,
       isGlobal: true,
     }),
-    TasksModule,
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

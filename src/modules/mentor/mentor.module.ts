@@ -7,13 +7,14 @@ import { MentorController } from './mentor.controller';
 // import { AthleteModule } from '../athlete/athlete.module';
 import { MentorService } from './providers/mentor.service';
 import { AthleteSportPackageModule } from '../athlete-sport-package/athlete-sport-package.module';
+import { AthleteModule } from '../athlete/athlete.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Mentor]),
     forwardRef(() => AuthModule),
     forwardRef(() => LogModule),
-    // forwardRef(() => AthleteModule),
+    forwardRef(() => AthleteModule),
     forwardRef(() => AthleteSportPackageModule),
   ],
   controllers: [MentorController],
